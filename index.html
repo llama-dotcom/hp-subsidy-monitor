@@ -4,9 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HP Subsidy Monitor — Global Heat Pump Dashboard</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Fira+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -34,7 +31,7 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-  font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background: var(--bg-dark);
   color: var(--text);
   line-height: 1.6;
@@ -78,7 +75,7 @@ header .container {
 }
 
 .logo h1 {
-  font-family: 'Fira Sans', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 1.3rem;
   font-weight: 700;
   color: white;
@@ -86,7 +83,7 @@ header .container {
 }
 
 .logo .subtitle {
-  font-family: 'Fira Sans', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 0.75rem;
   color: var(--text-muted);
   letter-spacing: 0.3px;
@@ -141,9 +138,9 @@ header .container {
 }
 
 .kpi-card:hover { transform: translateY(-2px); border-color: var(--accent); box-shadow: 0 4px 20px rgba(56, 189, 248, 0.1); }
-.kpi-label { font-family: 'Fira Sans', sans-serif; font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 500; }
-.kpi-value { font-family: 'Fira Code', monospace; font-size: 1.6rem; font-weight: 700; color: white; margin: 4px 0; }
-.kpi-change { font-family: 'Fira Sans', sans-serif; font-size: 0.8rem; }
+.kpi-label { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 500; }
+.kpi-value { font-family: Menlo, Consolas, 'Courier New', monospace; font-size: 1.6rem; font-weight: 700; color: white; margin: 4px 0; }
+.kpi-change { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.8rem; }
 .kpi-change.up { color: var(--green); }
 .kpi-change.down { color: var(--red); }
 .kpi-change.neutral { color: var(--yellow); }
@@ -161,7 +158,7 @@ header .container {
 }
 
 .section-title {
-  font-family: 'Fira Sans', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 1.2rem;
   font-weight: 600;
   display: flex;
@@ -422,7 +419,7 @@ thead { background: var(--bg-card); }
 th {
   padding: 12px 16px;
   text-align: left;
-  font-family: 'Fira Sans', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-weight: 600;
   color: var(--text-muted);
   text-transform: uppercase;
@@ -482,7 +479,7 @@ tr:hover { background: var(--bg-card-hover); }
 .chart-card:hover { border-color: rgba(56, 189, 248, 0.3); box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
 
 .chart-card h3 {
-  font-family: 'Fira Sans', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 0.9rem;
   margin-bottom: 12px;
   color: var(--text-muted);
@@ -723,11 +720,11 @@ footer {
 }
 
 /* Monospace for data values */
-.stat-value, td strong { font-family: 'Fira Code', monospace; }
+.stat-value, td strong { font-family: Menlo, Consolas, 'Courier New', monospace; }
 
 /* Improved timeline styling */
-.timeline-title { font-family: 'Fira Sans', sans-serif; }
-.timeline-date { font-family: 'Fira Code', monospace; font-size: 0.73rem; }
+.timeline-title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+.timeline-date { font-family: Menlo, Consolas, 'Courier New', monospace; font-size: 0.73rem; }
 
 /* Source links hover */
 #sources-section a:hover { color: var(--accent) !important; border-bottom-color: var(--accent) !important; }
@@ -983,6 +980,7 @@ footer {
     <p><strong>HP Subsidy Monitor</strong> — Global Heat Pump & Hybrid Subsidy Dashboard</p>
     <p style="margin-top:4px; font-size:0.75rem;">Data compiled from official government portals, Eurostat, EHPA, IEA, and national heat pump associations.<br>All data should be verified before use in business decisions. Subsidy amounts and conditions may change.</p>
     <p style="margin-top:8px;">Last updated: March 29, 2026</p>
+    <p style="margin-top:8px; font-size:0.75rem;"><a href="../impressum.html" style="color:var(--blue-400); text-decoration:none;">Impressum</a> · <a href="../datenschutz.html" style="color:var(--blue-400); text-decoration:none;">Datenschutz</a></p>
   </div>
 </footer>
 
