@@ -563,20 +563,83 @@ footer .container {
 
 /* Responsive */
 @media (max-width: 768px) {
-  .hero h1 { font-size: 1.7rem; }
+  .container { padding: 0 16px; }
+
+  .hero { padding: 40px 0 32px; }
+  .hero h1 { font-size: 1.5rem; }
+  .hero .subtitle { font-size: 0.9rem; }
+  .hero-badge { font-size: 0.68rem; }
+  .hero-meta { flex-direction: column; gap: 6px; font-size: 0.75rem; }
+
+  .quick-nav .container { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .quick-nav-links { gap: 2px; }
+  .quick-nav-links a { padding: 5px 10px; font-size: 0.75rem; }
+  .btn-pdf { width: 100%; justify-content: center; }
+
+  .section { padding: 32px 0; }
+  .section h2 { font-size: 1.3rem; }
+  .section .section-desc { font-size: 0.88rem; }
+
   .subsidy-grid { grid-template-columns: 1fr; }
   .summary-grid { grid-template-columns: 1fr; }
-  .steps { grid-template-columns: 1fr 1fr; }
-  .hero-meta { flex-direction: column; gap: 8px; }
-  .quick-nav .container { flex-direction: column; align-items: flex-start; }
-  .alert-card { flex-direction: column; }
+  .steps { grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .alert-card { flex-direction: column; gap: 8px; padding: 14px 16px; }
   .alert-impact { width: auto; align-self: flex-start; }
+
+  /* Energy prices: stack vertically */
+  #prices .container > div { grid-template-columns: 1fr !important; }
+
+  /* Wärmeplanung: explanation cards stack */
+  #waermeplanung .container > div:first-of-type { grid-template-columns: 1fr !important; }
+
+  /* Wärmeplanung: map + table stack */
+  #waermeplanung .container > div:last-of-type > div { grid-template-columns: 1fr !important; }
+
+  /* State map height on mobile */
+  #state-map { height: 300px; }
+
+  /* Probability badges wrap */
+  .probability { font-size: 0.7rem; padding: 6px 10px; }
+  .probability .prob-label { font-size: 0.7rem; }
+  .probability .prob-value { font-size: 0.7rem; }
+
+  /* Max subsidy card: stack budget box */
+  .card-full > div { flex-direction: column !important; }
+
+  /* Challenges / homeowner boxes */
+  #waermeplanung .container > div > div:nth-child(4) { grid-template-columns: 1fr !important; }
+
+  /* Timeline items */
+  .outlook-box { padding: 18px; }
+  .outlook-box p { font-size: 0.84rem; }
+
+  /* Table scroll */
+  table { font-size: 0.76rem; }
+  th, td { padding: 6px 8px; }
 }
 
 @media (max-width: 480px) {
+  .hero { padding: 32px 0 24px; }
+  .hero h1 { font-size: 1.3rem; }
+  .hero .subtitle { font-size: 0.85rem; }
+
+  .section { padding: 24px 0; }
+  .section h2 { font-size: 1.15rem; }
+
   .steps { grid-template-columns: 1fr; }
-  .hero { padding: 40px 0 36px; }
-  .section { padding: 32px 0; }
+  .step { padding: 14px 12px; }
+
+  .card-value { font-size: 1.3rem; }
+  .subsidy-card { padding: 16px; }
+
+  .alert-title { font-size: 0.88rem; }
+  .alert-desc { font-size: 0.8rem; }
+
+  #state-map { height: 260px; }
+
+  .outlook-box h3 { font-size: 0.95rem; }
+  .outlook-box p { font-size: 0.8rem; line-height: 1.6; }
 }
 
 /* Print / PDF optimization */
