@@ -1,0 +1,1574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Germany Heat Pump Subsidies — Policy Brief 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --blue-900: #003366;
+  --blue-800: #004080;
+  --blue-700: #005599;
+  --blue-600: #0066b3;
+  --blue-500: #0078d4;
+  --blue-400: #2b9aed;
+  --blue-100: #e8f4fd;
+  --blue-50: #f0f7ff;
+  --green-600: #198038;
+  --green-100: #defbe6;
+  --red-600: #da1e28;
+  --red-100: #fff1f1;
+  --orange-600: #b35c00;
+  --orange-100: #fff3e0;
+  --yellow-600: #8a6d00;
+  --yellow-100: #fff8e1;
+  --gray-900: #1a1a2e;
+  --gray-800: #2d2d3f;
+  --gray-700: #444;
+  --gray-600: #555;
+  --gray-500: #6b7280;
+  --gray-400: #9ca3af;
+  --gray-300: #d1d5db;
+  --gray-200: #e5e7eb;
+  --gray-100: #f3f4f6;
+  --gray-50: #f9fafb;
+  --white: #ffffff;
+  --radius: 12px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 30px rgba(0,0,0,0.1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--gray-50);
+  color: var(--gray-700);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+.container { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+
+/* Hero */
+.hero {
+  background: linear-gradient(135deg, var(--blue-900) 0%, var(--blue-700) 50%, var(--blue-500) 100%);
+  color: white;
+  padding: 60px 0 50px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(6px);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  margin-bottom: 20px;
+}
+
+.hero h1 {
+  font-size: 2.4rem;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 12px;
+  letter-spacing: -0.5px;
+}
+
+.hero .subtitle {
+  font-size: 1.1rem;
+  font-weight: 300;
+  opacity: 0.9;
+  max-width: 600px;
+  line-height: 1.6;
+}
+
+.hero-meta {
+  margin-top: 24px;
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  font-size: 0.82rem;
+  opacity: 0.8;
+}
+
+.hero-meta span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Nav / Quick Links */
+.quick-nav {
+  background: var(--white);
+  border-bottom: 1px solid var(--gray-200);
+  padding: 14px 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow-sm);
+}
+
+.quick-nav .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.quick-nav-links {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.quick-nav-links a {
+  text-decoration: none;
+  color: var(--gray-600);
+  font-size: 0.82rem;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.quick-nav-links a:hover {
+  background: var(--blue-50);
+  color: var(--blue-600);
+}
+
+.btn-pdf {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--blue-600);
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.btn-pdf:hover { background: var(--blue-800); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+
+/* Sections */
+.section {
+  padding: 48px 0;
+}
+
+.section-divider {
+  border: none;
+  height: 1px;
+  background: var(--gray-200);
+  margin: 0;
+}
+
+.section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--blue-600);
+  margin-bottom: 12px;
+}
+
+.section h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin-bottom: 8px;
+  letter-spacing: -0.3px;
+}
+
+.section .section-desc {
+  font-size: 1rem;
+  color: var(--gray-500);
+  margin-bottom: 32px;
+  max-width: 700px;
+}
+
+/* Subsidy Cards */
+.subsidy-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.subsidy-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 24px;
+  border: 1px solid var(--gray-200);
+  transition: all 0.2s;
+  position: relative;
+}
+
+.subsidy-card:hover { box-shadow: var(--shadow-md); border-color: var(--blue-400); }
+
+.subsidy-card .card-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.icon-blue { background: var(--blue-100); color: var(--blue-600); }
+.icon-green { background: var(--green-100); color: var(--green-600); }
+.icon-orange { background: var(--orange-100); color: var(--orange-600); }
+
+.subsidy-card h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-bottom: 4px;
+}
+
+.subsidy-card .card-value {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--blue-600);
+  margin-bottom: 8px;
+}
+
+.subsidy-card p {
+  font-size: 0.85rem;
+  color: var(--gray-500);
+  line-height: 1.6;
+}
+
+/* Full-width card */
+.card-full {
+  grid-column: 1 / -1;
+}
+
+/* Steps / How to apply */
+.steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.step {
+  text-align: center;
+  padding: 20px 12px;
+  background: var(--white);
+  border-radius: var(--radius);
+  border: 1px solid var(--gray-200);
+}
+
+.step-number {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--blue-600);
+  color: white;
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px;
+}
+
+.step h4 {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-bottom: 6px;
+}
+
+.step p {
+  font-size: 0.78rem;
+  color: var(--gray-500);
+  line-height: 1.5;
+}
+
+/* Connector between steps */
+.steps-connector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-top: 24px;
+  position: relative;
+}
+
+/* Alert Cards */
+.alert-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.alert-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  border: 1px solid var(--gray-200);
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  transition: all 0.2s;
+  border-left: 4px solid transparent;
+}
+
+.alert-card:hover { box-shadow: var(--shadow-md); }
+
+.alert-high { border-left-color: var(--red-600); }
+.alert-medium { border-left-color: var(--orange-600); }
+.alert-low { border-left-color: var(--blue-500); }
+
+.alert-impact {
+  flex-shrink: 0;
+  width: 72px;
+  text-align: center;
+  padding: 6px 8px;
+  border-radius: 8px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.impact-high { background: var(--red-100); color: var(--red-600); }
+.impact-medium { background: var(--orange-100); color: var(--orange-600); }
+.impact-low { background: var(--blue-100); color: var(--blue-600); }
+
+.alert-content { flex: 1; }
+
+.alert-date {
+  font-size: 0.75rem;
+  color: var(--gray-400);
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.alert-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-bottom: 4px;
+}
+
+.alert-desc {
+  font-size: 0.85rem;
+  color: var(--gray-500);
+  line-height: 1.6;
+}
+
+.alert-source {
+  margin-top: 6px;
+}
+
+.alert-source a {
+  font-size: 0.75rem;
+  color: var(--blue-500);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.alert-source a:hover { text-decoration: underline; }
+
+/* Summary Section */
+.summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.summary-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 24px;
+  border: 1px solid var(--gray-200);
+}
+
+.summary-card h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.summary-card ul {
+  list-style: none;
+  padding: 0;
+}
+
+.summary-card li {
+  font-size: 0.85rem;
+  color: var(--gray-600);
+  padding: 6px 0;
+  border-bottom: 1px solid var(--gray-100);
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  line-height: 1.5;
+}
+
+.summary-card li:last-child { border-bottom: none; }
+
+.li-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* Outlook box */
+.outlook-box {
+  background: linear-gradient(135deg, var(--blue-50), var(--white));
+  border: 1px solid var(--blue-400);
+  border-radius: var(--radius);
+  padding: 28px;
+}
+
+.outlook-box h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--blue-900);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.outlook-box p {
+  font-size: 0.9rem;
+  color: var(--gray-700);
+  line-height: 1.8;
+  margin-bottom: 12px;
+}
+
+.outlook-box p:last-child { margin-bottom: 0; }
+
+/* Probability indicator */
+.probability {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  padding: 8px 16px;
+  border-radius: 8px;
+  margin: 4px 4px 4px 0;
+}
+
+.prob-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.prob-high { background: var(--red-600); }
+.prob-medium { background: var(--orange-600); }
+.prob-low { background: var(--green-600); }
+
+.probability .prob-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--gray-700);
+}
+
+.probability .prob-value {
+  font-size: 0.78rem;
+  color: var(--gray-500);
+}
+
+/* Change indicator (Jan 2026) */
+.change-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.tag-new { background: var(--blue-100); color: var(--blue-600); }
+.tag-change { background: var(--orange-100); color: var(--orange-600); }
+.tag-risk { background: var(--red-100); color: var(--red-600); }
+
+/* Footer */
+footer {
+  background: var(--gray-900);
+  color: var(--gray-400);
+  padding: 40px 0;
+  margin-top: 0;
+}
+
+footer .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.footer-left p {
+  font-size: 0.8rem;
+  line-height: 1.8;
+}
+
+.footer-left a {
+  color: var(--blue-400);
+  text-decoration: none;
+}
+
+.footer-right {
+  text-align: right;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container { padding: 0 16px; }
+
+  .hero { padding: 40px 0 32px; }
+  .hero h1 { font-size: 1.5rem; }
+  .hero .subtitle { font-size: 0.9rem; }
+  .hero-badge { font-size: 0.68rem; }
+  .hero-meta { flex-direction: column; gap: 6px; font-size: 0.75rem; }
+
+  .quick-nav .container { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .quick-nav-links { gap: 2px; }
+  .quick-nav-links a { padding: 5px 10px; font-size: 0.75rem; }
+  .btn-pdf { width: 100%; justify-content: center; }
+
+  .section { padding: 32px 0; }
+  .section h2 { font-size: 1.3rem; }
+  .section .section-desc { font-size: 0.88rem; }
+
+  .subsidy-grid { grid-template-columns: 1fr; }
+  .summary-grid { grid-template-columns: 1fr; }
+  .steps { grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .alert-card { flex-direction: column; gap: 8px; padding: 14px 16px; }
+  .alert-impact { width: auto; align-self: flex-start; }
+
+  /* Energy prices: stack vertically */
+  #prices .container > div { grid-template-columns: 1fr !important; }
+
+  /* Wärmeplanung: explanation cards stack */
+  #waermeplanung .container > div:first-of-type { grid-template-columns: 1fr !important; }
+
+  /* Wärmeplanung: map + table stack */
+  #waermeplanung .container > div:last-of-type > div { grid-template-columns: 1fr !important; }
+
+  /* State map height on mobile */
+  #state-map { height: 300px; }
+
+  /* Probability badges wrap */
+  .probability { font-size: 0.7rem; padding: 6px 10px; }
+  .probability .prob-label { font-size: 0.7rem; }
+  .probability .prob-value { font-size: 0.7rem; }
+
+  /* Max subsidy card: stack budget box */
+  .card-full > div { flex-direction: column !important; }
+
+  /* Challenges / homeowner boxes */
+  #waermeplanung .container > div > div:nth-child(4) { grid-template-columns: 1fr !important; }
+
+  /* Timeline items */
+  .outlook-box { padding: 18px; }
+  .outlook-box p { font-size: 0.84rem; }
+
+  /* Table scroll */
+  table { font-size: 0.76rem; }
+  th, td { padding: 6px 8px; }
+}
+
+@media (max-width: 480px) {
+  .hero { padding: 32px 0 24px; }
+  .hero h1 { font-size: 1.3rem; }
+  .hero .subtitle { font-size: 0.85rem; }
+
+  .section { padding: 24px 0; }
+  .section h2 { font-size: 1.15rem; }
+
+  .steps { grid-template-columns: 1fr; }
+  .step { padding: 14px 12px; }
+
+  .card-value { font-size: 1.3rem; }
+  .subsidy-card { padding: 16px; }
+
+  .alert-title { font-size: 0.88rem; }
+  .alert-desc { font-size: 0.8rem; }
+
+  #state-map { height: 260px; }
+
+  .outlook-box h3 { font-size: 0.95rem; }
+  .outlook-box p { font-size: 0.8rem; line-height: 1.6; }
+}
+
+/* Print / PDF optimization */
+@media print {
+  .quick-nav, .btn-pdf, .scroll-top-light { display: none !important; }
+
+  body { font-size: 8.5pt; color: #222; background: white; line-height: 1.4; }
+
+  .container { max-width: 100%; padding: 0 16px; }
+
+  .hero {
+    background: var(--blue-900) !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    padding: 20px 0 16px;
+  }
+
+  .hero h1 { font-size: 1.2rem; margin-bottom: 6px; }
+  .hero .subtitle { font-size: 0.8rem; line-height: 1.3; }
+  .hero-badge { font-size: 0.6rem; padding: 3px 8px; margin-bottom: 10px; }
+  .hero-meta { margin-top: 10px; gap: 12px; font-size: 0.65rem; }
+
+  .section { padding: 12px 0; }
+  .section-label { font-size: 0.6rem; margin-bottom: 4px; }
+  .section h2 { font-size: 1rem; margin-bottom: 4px; }
+  .section .section-desc { font-size: 0.75rem; margin-bottom: 12px; line-height: 1.4; }
+
+  .subsidy-grid { gap: 8px; margin-bottom: 12px; }
+  .subsidy-card { padding: 10px 12px; border-radius: 6px; }
+  .subsidy-card .card-icon { width: 28px; height: 28px; margin-bottom: 6px; border-radius: 6px; }
+  .subsidy-card .card-icon svg { width: 14px !important; height: 14px !important; }
+  .subsidy-card h3 { font-size: 0.75rem; margin-bottom: 2px; }
+  .card-value { font-size: 1.1rem; margin-bottom: 4px; }
+  .subsidy-card p { font-size: 0.68rem; line-height: 1.35; }
+
+  .steps { gap: 8px; margin-top: 12px; }
+  .step { padding: 10px 8px; }
+  .step-number { width: 24px; height: 24px; font-size: 0.7rem; margin-bottom: 6px; }
+  .step h4 { font-size: 0.72rem; margin-bottom: 3px; }
+  .step p { font-size: 0.62rem; line-height: 1.3; }
+
+  .alert-list { gap: 6px; }
+  .alert-card { padding: 10px 12px; gap: 10px; border-radius: 6px; }
+  .alert-impact { width: 56px; padding: 4px 6px; font-size: 0.55rem; border-radius: 4px; }
+  .alert-date { font-size: 0.6rem; margin-bottom: 2px; }
+  .alert-title { font-size: 0.75rem; margin-bottom: 2px; }
+  .alert-desc { font-size: 0.68rem; line-height: 1.35; }
+  .alert-source { margin-top: 3px; }
+  .alert-source a { font-size: 0.6rem; }
+
+  .summary-grid { gap: 8px; margin-bottom: 12px; }
+  .summary-card { padding: 12px; }
+  .summary-card h3 { font-size: 0.78rem; margin-bottom: 6px; }
+  .summary-card li { font-size: 0.68rem; padding: 3px 0; line-height: 1.35; }
+
+  .outlook-box { padding: 14px; }
+  .outlook-box h3 { font-size: 0.85rem; margin-bottom: 8px; }
+  .outlook-box p { font-size: 0.72rem; line-height: 1.45; margin-bottom: 6px; }
+
+  .probability { padding: 4px 8px; margin: 2px; }
+  .probability .prob-label { font-size: 0.62rem; }
+  .probability .prob-value { font-size: 0.62rem; }
+  .prob-dot { width: 7px; height: 7px; }
+
+  .section-divider { margin: 0; }
+
+  .alert-card, .subsidy-card, .summary-card, .step, .outlook-box {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .section-divider { break-after: avoid; page-break-after: avoid; }
+  h2, h3, .section-label { break-after: avoid; page-break-after: avoid; }
+
+  .alert-card, .subsidy-card, .summary-card { box-shadow: none; }
+
+  a { color: var(--blue-600) !important; }
+
+  #state-map { display: none !important; }
+  canvas { max-height: 180px !important; }
+
+  footer { background: #f3f4f6 !important; color: #444 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; padding: 16px 0; }
+  footer p { font-size: 0.65rem; line-height: 1.4; }
+}
+
+#state-map {
+  height: 420px;
+  border-radius: 8px;
+  background: #f0f7ff;
+  z-index: 1;
+}
+
+.leaflet-popup-content-wrapper {
+  background: white !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12) !important;
+  font-family: 'Inter', sans-serif !important;
+}
+
+.leaflet-popup-content { font-size: 13px; color: #334155; line-height: 1.5; }
+.leaflet-popup-content strong { color: #0f172a; }
+
+/* Scroll to top */
+.scroll-top-light {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 44px;
+  height: 44px;
+  background: var(--blue-600);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  box-shadow: var(--shadow-lg);
+  transition: all 0.2s;
+}
+
+.scroll-top-light:hover { background: var(--blue-800); transform: translateY(-2px); }
+.scroll-top-light.show { display: flex; }
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-badge">
+      <i data-lucide="shield-check" style="width:14px;height:14px;"></i>
+      Policy Brief — Updated March 2026
+    </div>
+    <h1>Germany Heat Pump &<br>Hybrid Subsidies</h1>
+    <p class="subtitle">Complete overview of the BEG subsidy program, latest policy changes, and market outlook for heat pumps and hybrid heating systems.</p>
+    <div class="hero-meta">
+      <span><i data-lucide="calendar" style="width:14px;height:14px;"></i> Last updated: March 30, 2026</span>
+      <span><i data-lucide="map-pin" style="width:14px;height:14px;"></i> Germany (Federal)</span>
+      <span><i data-lucide="building-2" style="width:14px;height:14px;"></i> Sources: KfW (458), BAFA, BWP, BMWK</span>
+    </div>
+  </div>
+</section>
+
+<!-- Quick Nav -->
+<nav class="quick-nav">
+  <div class="container">
+    <div class="quick-nav-links">
+      <a href="#subsidies">Current Subsidies</a>
+      <a href="#how-to-apply">How to Apply</a>
+      <a href="#alerts">News & Alerts</a>
+      <a href="#timeline">Timeline</a>
+      <a href="#prices">Energy Prices</a>
+      <a href="#waermeplanung">Wärmeplanung</a>
+      <a href="#outlook">Outlook</a>
+    </div>
+    <button class="btn-pdf" onclick="exportPDF()">
+      <i data-lucide="download" style="width:16px;height:16px;"></i> Download PDF
+    </button>
+  </div>
+</nav>
+
+<div id="page-content">
+
+<!-- Current Subsidies -->
+<section class="section" id="subsidies">
+  <div class="container">
+    <div class="section-label">
+      <i data-lucide="coins" style="width:16px;height:16px;"></i>
+      Current Subsidies
+    </div>
+    <h2>BEG — Federal Subsidy for Efficient Buildings (KfW 458)</h2>
+    <p class="section-desc">Active since February 27, 2024 via <a href="https://www.kfw.de/inlandsfoerderung/Privatpersonen/Bestehende-Immobilie/F%C3%B6rderprodukte/Heizungsf%C3%B6rderung-f%C3%BCr-Privatpersonen-Wohngeb%C3%A4ude-(458)/" target="_blank" style="color:var(--blue-600);">KfW Program 458</a>. Subsidies cover 30–70% of heat pump installation costs. Program guaranteed to continue until at least 2029, as confirmed in the CDU/CSU–SPD coalition agreement. Subsidy rates may be adjusted during this period. Additional Emissionsminderungszuschlag of €2,500 available — total max subsidy up to €23,500.</p>
+
+    <div class="subsidy-grid">
+
+      <div class="subsidy-card">
+        <div class="card-icon icon-blue">
+          <i data-lucide="percent" style="width:22px;height:22px;"></i>
+        </div>
+        <h3>Base Rate</h3>
+        <div class="card-value">30%</div>
+        <p>Available to all homeowners replacing any existing heating system with a heat pump. No income requirements. Applies to all heat pump types including hybrids.</p>
+      </div>
+
+      <div class="subsidy-card">
+        <div class="card-icon icon-green">
+          <i data-lucide="zap" style="width:22px;height:22px;"></i>
+        </div>
+        <h3>Speed Bonus (Klimageschwindigkeitsbonus)</h3>
+        <div class="card-value">+20%</div>
+        <p>For replacing a functioning fossil fuel heater that is 20+ years old. Bonus decreases by 3 percentage points every 2 years starting 2028.</p>
+      </div>
+
+      <div class="subsidy-card">
+        <div class="card-icon icon-green">
+          <i data-lucide="wallet" style="width:22px;height:22px;"></i>
+        </div>
+        <h3>Income Bonus (Einkommensbonus)</h3>
+        <div class="card-value">+30%</div>
+        <p>For households with a taxable annual income below €40,000. Can be combined with all other bonuses.</p>
+      </div>
+
+      <div class="subsidy-card">
+        <div class="card-icon icon-blue">
+          <i data-lucide="leaf" style="width:22px;height:22px;"></i>
+        </div>
+        <h3>Efficiency Bonus</h3>
+        <div class="card-value">+5%</div>
+        <p>For heat pumps using natural refrigerants (propane, CO₂) or ground-source / water-source systems.</p>
+      </div>
+
+      <div class="subsidy-card card-full" style="background: linear-gradient(135deg, var(--blue-50), var(--white));">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+          <div>
+            <h3 style="margin-bottom:4px;">Maximum Combined Subsidy</h3>
+            <div class="card-value" style="font-size:2rem;">Up to 70% — max €23,500</div>
+            <p>Maximum eligible costs: €30,000 for single-family homes. All bonuses stackable up to 70% (€21,000) + Emissionsminderungszuschlag €2,500.</p>
+          </div>
+          <div style="text-align:center; padding:16px 24px; background:var(--white); border-radius:10px; border:1px solid var(--gray-200);">
+            <div style="font-size:0.75rem; color:var(--gray-500); text-transform:uppercase; letter-spacing:1px; font-weight:600;">Budget 2026</div>
+            <div style="font-size:1.3rem; font-weight:800; color:var(--blue-600);">€11.96B</div>
+            <div style="font-size:0.75rem; color:var(--red-600); font-weight:600;">↓ €3.36B cut from 2025</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Changes Jan 2026 -->
+    <div style="background:var(--white); border-radius:var(--radius); padding:20px 24px; border:1px solid var(--gray-200); margin-bottom:16px;">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+        <span class="change-tag tag-change"><i data-lucide="alert-triangle" style="width:12px;height:12px;"></i> Change from Jan 1, 2026</span>
+      </div>
+      <h3 style="font-size:0.95rem; color:var(--gray-900); margin-bottom:6px;">New Noise Requirements for Air-Source Heat Pumps</h3>
+      <p style="font-size:0.85rem; color:var(--gray-600); line-height:1.6;">Outdoor units must now be at least <strong>10 dB below legal limits</strong> (previously 5 dB). Heat pumps under 6 kW may not exceed <strong>55 dB</strong>. This affects some older models that may no longer qualify for subsidies.</p>
+    </div>
+
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- How to Apply -->
+<section class="section" id="how-to-apply">
+  <div class="container">
+    <div class="section-label">
+      <i data-lucide="file-check" style="width:16px;height:16px;"></i>
+      How to Apply
+    </div>
+    <h2>Application Process via KfW</h2>
+    <p class="section-desc">All applications go through KfW (Kreditanstalt für Wiederaufbau). You must apply before starting any installation work.</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-number">1</div>
+        <h4>Get a Quote</h4>
+        <p>Hire a certified energy consultant (Energieberater). Get a detailed quote from a qualified installer (Fachunternehmen).</p>
+      </div>
+      <div class="step">
+        <div class="step-number">2</div>
+        <h4>Apply Online</h4>
+        <p>Submit your application through the <strong>KfW Zuschussportal</strong> before any work begins. Include the quote and energy consultant's report.</p>
+      </div>
+      <div class="step">
+        <div class="step-number">3</div>
+        <h4>Receive Approval</h4>
+        <p>Wait for the <strong>Zusage</strong> (approval letter) from KfW. Only then may installation begin. Processing typically takes 4–8 weeks.</p>
+      </div>
+      <div class="step">
+        <div class="step-number">4</div>
+        <h4>Complete & Claim</h4>
+        <p>After installation, submit invoices and proof of completion. KfW transfers the subsidy directly to your account.</p>
+      </div>
+    </div>
+
+    <div style="margin-top:20px; padding:16px 20px; background:var(--blue-50); border-radius:8px; font-size:0.85rem; color:var(--blue-800); display:flex; align-items:flex-start; gap:10px;">
+      <i data-lucide="info" style="width:18px;height:18px;flex-shrink:0;margin-top:2px;"></i>
+      <span><strong>Important:</strong> You must first sign a contract with a certified installer (Fachunternehmen) that includes a suspensive condition (aufschiebende Bedingung) tied to KfW approval. Apply online via <a href="https://www.kfw.de/inlandsfoerderung/Meine-KfW/Online-Antrag-Heizungsf%C3%B6rderung-f%C3%BCr-Privatpersonen-Wohngeb%C3%A4ude/" target="_blank" style="color:var(--blue-600);">Meine KfW Portal</a>. Starting work before receiving the Zusage will void your eligibility.</span>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- News & Alerts -->
+<section class="section" id="alerts">
+  <div class="container">
+    <div class="section-label">
+      <i data-lucide="bell-ring" style="width:16px;height:16px;"></i>
+      Latest News & Alerts
+    </div>
+    <h2>Policy Changes & Signals</h2>
+    <p class="section-desc">Recent developments that may affect heat pump subsidies and the heating market in Germany.</p>
+
+    <div class="alert-list">
+
+      <div class="alert-card alert-high">
+        <div class="alert-impact impact-high">Critical</div>
+        <div class="alert-content">
+          <div class="alert-date">February 24, 2026</div>
+          <div class="alert-title">Heizungsgesetz (GEG) abgeschafft — ersetzt durch Gebäudemodernisierungsgesetz (GMG)</div>
+          <div class="alert-desc">The federal government formally scrapped the GEG heating law and replaced it with the Building Modernisation Act (Gebäudemodernisierungsgesetz). The mandatory 65% renewable energy requirement for new heating systems has been dropped. Homeowners can now install oil and gas boilers without restrictions. Heat pump subsidies remain but the regulatory push for adoption is gone.</div>
+          <div class="alert-source">
+            <a href="https://www.cleanenergywire.org/news/reform-germanys-heating-law-be-tabled-february-2026" target="_blank">Clean Energy Wire</a> ·
+            <a href="https://www.euronews.com/2026/02/26/this-reform-is-a-disaster-climate-groups-slam-germany-for-scrapping-renewable-heating-law" target="_blank">Euronews</a> ·
+            <a href="https://www.nachhaltiges-zuhause.de/wird-das-heizungsgesetz-wieder-abgeschafft" target="_blank">Nachhaltiges Zuhause (DE)</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="alert-card alert-high">
+        <div class="alert-impact impact-high">Critical</div>
+        <div class="alert-content">
+          <div class="alert-date">March 2026</div>
+          <div class="alert-title">BEG-Fördertopf gekürzt: €3,36 Mrd. weniger für 2026</div>
+          <div class="alert-desc">Federal budget for building efficiency subsidies reduced from €15.32B to €11.96B. While current subsidy rates remain unchanged, the budget reduction signals political deprioritization and may lead to faster fund depletion. Energy Minister has indicated a shift toward "greater personal responsibility" (mehr Eigenverantwortung).</div>
+          <div class="alert-source">
+            <a href="https://www.t-online.de/heim-garten/aktuelles/id_101000088/heizungsgesetz-regierung-streicht-foerdermittel-zusammen.html" target="_blank">t-online (DE)</a> ·
+            <a href="https://www.polarstern-energie.de/magazin/artikel/waermepumpe-foerderung-2026-wie-lange-noch/" target="_blank">Polarstern Energie (DE)</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="alert-card alert-medium">
+        <div class="alert-impact impact-medium">Medium</div>
+        <div class="alert-content">
+          <div class="alert-date">March 2026</div>
+          <div class="alert-title">CSU calls for "excessive" heat pump subsidies to be stopped</div>
+          <div class="alert-desc">Leaders of the CSU (part of the governing coalition) have publicly called for ending "excessive" heat pump subsidies. While the government has maintained support through 2029, this signals growing political pressure to reduce subsidy levels.</div>
+          <div class="alert-source">
+            <a href="https://www.yahoo.com/news/articles/germany-could-scrap-heat-pump-154257683.html" target="_blank">Yahoo News</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="alert-card alert-medium">
+        <div class="alert-impact impact-medium">Medium</div>
+        <div class="alert-content">
+          <div class="alert-date">February 2026</div>
+          <div class="alert-title">Gebäudemodernisierungsgesetz (GMG) — expected to take effect July 1, 2026</div>
+          <div class="alert-desc">The new Building Modernisation Act (replacing GEG) is expected to pass parliament in April and take effect July 1, 2026. Fuel suppliers will be required to gradually increase the "green" share in their networks starting from 2029. Cabinet draft postponed from Easter to after Easter break.</div>
+          <div class="alert-source">
+            <a href="https://www.cleanenergywire.org/factsheets/qa-how-merz-government-aims-resolve-germanys-heating-energy-row" target="_blank">Clean Energy Wire</a> ·
+            <a href="https://www.deloittelegal.de/dl/en/services/legal/perspectives/gebaeudemodernisierungsgesetz.html" target="_blank">Deloitte Legal</a> ·
+            <a href="https://www.energie-fachberater.de/news/diskussion-um-geg-wie-gehts-weiter-mit-dem-heizungsgesetz.php" target="_blank">Energie-Fachberater (DE)</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="alert-card alert-low">
+        <div class="alert-impact impact-low">Info</div>
+        <div class="alert-content">
+          <div class="alert-date">January 1, 2026</div>
+          <div class="alert-title">Verschärfte Schallanforderungen: Viele Geräte fallen durchs Raster</div>
+          <div class="alert-desc">New BEG rules require air-source heat pump outdoor units to be at least 10 dB below legal noise limits (previously 5 dB). Units under 6 kW must not exceed 55 dB. Some heat pump models may no longer qualify for subsidies under the new requirements.</div>
+          <div class="alert-source">
+            <a href="https://www.waermepumpe.de/presse/pressemitteilungen/details/beg-foerderung-2026-neue-schallanforderungen-fuer-waermepumpen/" target="_blank">BWP (DE)</a> ·
+            <a href="https://www.immowelt.de/ratgeber/news/waermepumpen-foerderung-warum-2026-viele-geraete-ploetzlich-durchs-raster-fallen" target="_blank">Immowelt (DE)</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="alert-card alert-low">
+        <div class="alert-impact impact-low">Info</div>
+        <div class="alert-content">
+          <div class="alert-date">December 2025 / Forecast 2026</div>
+          <div class="alert-title">Market recovery confirmed: 299k units in 2025 (+55%) — BWP forecasts 410k–530k for 2026</div>
+          <div class="alert-desc">After a 46% crash in 2024, heat pump sales rebounded to 299,000 units in 2025 (+55%). For the first time, nearly half of all heating systems sold in Germany are heat pumps. BWP raised its 2026 forecast to 410,000 units (conservative) or up to 530,000 (ambitious scenario) — provided subsidy and regulatory conditions remain stable. Q1 2026 data not yet published; next BWP update expected ~May 2026.</div>
+          <div class="alert-source">
+            <a href="https://www.waermepumpe.de/presse/zahlen-daten/absatzzahlen/" target="_blank">BWP Absatzzahlen (DE)</a> ·
+            <a href="https://www.cleanenergywire.org/news/heat-pump-sales-germany-surge-must-double-hit-expansion-targets-industry" target="_blank">Clean Energy Wire</a> ·
+            <a href="https://www.elektrowirtschaft.de/erwartungen-uebertroffen-neue-prognose-fuer-den-waermepumpenmarkt-2026/" target="_blank">ElektroWirtschaft (DE)</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- Subsidy Timeline -->
+<section class="section" id="timeline">
+  <div class="container">
+    <div class="section-label"><i data-lucide="calendar-range" style="width:16px;height:16px;"></i> Subsidy Timeline</div>
+    <h2>BEG Program — Key Dates & Milestones</h2>
+    <p class="section-desc">Visual overview of when subsidy rules changed and what to expect going forward.</p>
+
+    <div style="position:relative; padding:24px 0 24px 32px;">
+      <!-- Vertical line -->
+      <div style="position:absolute; left:14px; top:0; bottom:0; width:3px; background:linear-gradient(to bottom, var(--blue-600), var(--blue-400), var(--gray-300)); border-radius:2px;"></div>
+
+      <!-- 2024 Jan -->
+      <div style="position:relative; margin-bottom:28px;">
+        <div style="position:absolute; left:-26px; top:2px; width:24px; height:24px; border-radius:50%; background:var(--blue-600); display:flex; align-items:center; justify-content:center;">
+          <div style="width:10px; height:10px; border-radius:50%; background:white;"></div>
+        </div>
+        <div style="background:var(--white); border:1px solid var(--gray-200); border-radius:10px; padding:16px 20px; margin-left:16px;">
+          <div style="font-size:0.72rem; font-weight:600; color:var(--blue-600); text-transform:uppercase; letter-spacing:1px;">January 2024</div>
+          <div style="font-size:0.95rem; font-weight:600; color:var(--gray-900); margin:4px 0;">GEG Heating Law takes effect</div>
+          <div style="font-size:0.83rem; color:var(--gray-500);">New heating installations in new construction areas must meet 65% renewable energy requirement. Existing buildings tied to municipal heat planning timelines.</div>
+        </div>
+      </div>
+
+      <!-- 2024 Feb -->
+      <div style="position:relative; margin-bottom:28px;">
+        <div style="position:absolute; left:-26px; top:2px; width:24px; height:24px; border-radius:50%; background:var(--green-600); display:flex; align-items:center; justify-content:center;">
+          <div style="width:10px; height:10px; border-radius:50%; background:white;"></div>
+        </div>
+        <div style="background:var(--green-100); border:1px solid #86efac; border-radius:10px; padding:16px 20px; margin-left:16px;">
+          <div style="font-size:0.72rem; font-weight:600; color:var(--green-600); text-transform:uppercase; letter-spacing:1px;">February 27, 2024</div>
+          <div style="font-size:0.95rem; font-weight:600; color:var(--gray-900); margin:4px 0;">BEG subsidy program launches via KfW 458</div>
+          <div style="font-size:0.83rem; color:var(--gray-500);">30–70% subsidies for heat pump installations. Base 30% + speed bonus 20% + income bonus 30% + efficiency bonus 5%. Max eligible costs €30,000.</div>
+        </div>
+      </div>
+
+      <!-- 2026 Jan -->
+      <div style="position:relative; margin-bottom:28px;">
+        <div style="position:absolute; left:-26px; top:2px; width:24px; height:24px; border-radius:50%; background:var(--orange-600); display:flex; align-items:center; justify-content:center;">
+          <div style="width:10px; height:10px; border-radius:50%; background:white;"></div>
+        </div>
+        <div style="background:var(--orange-100); border:1px solid #fdba74; border-radius:10px; padding:16px 20px; margin-left:16px;">
+          <div style="font-size:0.72rem; font-weight:600; color:var(--orange-600); text-transform:uppercase; letter-spacing:1px;">January 1, 2026</div>
+          <div style="font-size:0.95rem; font-weight:600; color:var(--gray-900); margin:4px 0;">Stricter noise requirements for subsidized heat pumps</div>
+          <div style="font-size:0.83rem; color:var(--gray-500);">Outdoor units must be 10 dB below legal limits (was 5 dB). Some models no longer qualify.</div>
+        </div>
+      </div>
+
+      <!-- 2026 Feb -->
+      <div style="position:relative; margin-bottom:28px;">
+        <div style="position:absolute; left:-26px; top:2px; width:24px; height:24px; border-radius:50%; background:var(--red-600); display:flex; align-items:center; justify-content:center;">
+          <div style="width:10px; height:10px; border-radius:50%; background:white;"></div>
+        </div>
+        <div style="background:var(--red-100); border:1px solid #fca5a5; border-radius:10px; padding:16px 20px; margin-left:16px;">
+          <div style="font-size:0.72rem; font-weight:600; color:var(--red-600); text-transform:uppercase; letter-spacing:1px;">February 24, 2026</div>
+          <div style="font-size:0.95rem; font-weight:600; color:var(--gray-900); margin:4px 0;">GEG abolished — 65% rule scrapped</div>
+          <div style="font-size:0.83rem; color:var(--gray-500);">CDU/CSU–SPD coalition replaces GEG with Building Modernisation Act (GMG). Mandatory renewable heating requirement removed. Gas/oil boilers allowed again.</div>
+        </div>
+      </div>
+
+      <!-- 2026 Mar -->
+      <div style="position:relative; margin-bottom:28px;">
+        <div style="position:absolute; left:-26px; top:2px; width:24px; height:24px; border-radius:50%; background:var(--orange-600); display:flex; align-items:center; justify-content:center;">
+          <div style="width:10px; height:10px; border-radius:50%; background:white;"></div>
+        </div>
+        <div style="background:var(--orange-100); border:1px solid #fdba74; border-radius:10px; padding:16px 20px; margin-left:16px;">
+          <div style="font-size:0.72rem; font-weight:600; color:var(--orange-600); text-transform:uppercase; letter-spacing:1px;">March 2026</div>
+          <div style="font-size:0.95rem; font-weight:600; color:var(--gray-900); margin:4px 0;">BEG budget cut by €3.36B</div>
+          <div style="font-size:0.83rem; color:var(--gray-500);">Federal BEG budget reduced from €15.32B to €11.96B. Subsidy rates unchanged but political pressure mounting.</div>
+        </div>
+      </div>
+
+      <!-- 2026 Jun -->
+      <div style="position:relative; margin-bottom:28px;">
+        <div style="position:absolute; left:-26px; top:2px; width:24px; height:24px; border-radius:50%; background:var(--blue-600); display:flex; align-items:center; justify-content:center;">
+          <div style="width:10px; height:10px; border-radius:50%; background:white;"></div>
+        </div>
+        <div style="background:var(--blue-100); border:1px solid #93c5fd; border-radius:10px; padding:16px 20px; margin-left:16px; border-style:dashed;">
+          <div style="font-size:0.72rem; font-weight:600; color:var(--blue-600); text-transform:uppercase; letter-spacing:1px;">June 30, 2026 — Upcoming</div>
+          <div style="font-size:0.95rem; font-weight:600; color:var(--gray-900); margin:4px 0;">Wärmeplanung deadline for cities >100,000 residents</div>
+          <div style="font-size:0.83rem; color:var(--gray-500);">Large cities must publish municipal heat plans. This triggers GEG obligations for homeowners in planned areas.</div>
+        </div>
+      </div>
+
+      <!-- 2026 Jul -->
+      <div style="position:relative; margin-bottom:28px;">
+        <div style="position:absolute; left:-26px; top:2px; width:24px; height:24px; border-radius:50%; background:var(--blue-400); display:flex; align-items:center; justify-content:center;">
+          <div style="width:10px; height:10px; border-radius:50%; background:white;"></div>
+        </div>
+        <div style="background:var(--blue-100); border:1px solid #93c5fd; border-radius:10px; padding:16px 20px; margin-left:16px; border-style:dashed;">
+          <div style="font-size:0.72rem; font-weight:600; color:var(--blue-600); text-transform:uppercase; letter-spacing:1px;">July 1, 2026 — Expected</div>
+          <div style="font-size:0.95rem; font-weight:600; color:var(--gray-900); margin:4px 0;">GMG (Building Modernisation Act) takes effect</div>
+          <div style="font-size:0.83rem; color:var(--gray-500);">New law replacing GEG enters into force. "Technology-open" approach. Fuel suppliers must increase green share from 2029.</div>
+        </div>
+      </div>
+
+      <!-- 2028 -->
+      <div style="position:relative; margin-bottom:28px;">
+        <div style="position:absolute; left:-26px; top:2px; width:24px; height:24px; border-radius:50%; background:var(--gray-400); display:flex; align-items:center; justify-content:center;">
+          <div style="width:10px; height:10px; border-radius:50%; background:white;"></div>
+        </div>
+        <div style="background:var(--gray-100); border:1px solid var(--gray-300); border-radius:10px; padding:16px 20px; margin-left:16px; border-style:dashed;">
+          <div style="font-size:0.72rem; font-weight:600; color:var(--gray-500); text-transform:uppercase; letter-spacing:1px;">2028</div>
+          <div style="font-size:0.95rem; font-weight:600; color:var(--gray-900); margin:4px 0;">Speed bonus starts declining · Wärmeplanung deadline for smaller cities</div>
+          <div style="font-size:0.83rem; color:var(--gray-500);">Klimageschwindigkeitsbonus drops from 20% to 17%. All municipalities <100,000 must publish heat plans by June 30, 2028.</div>
+        </div>
+      </div>
+
+      <!-- 2029 -->
+      <div style="position:relative;">
+        <div style="position:absolute; left:-26px; top:2px; width:24px; height:24px; border-radius:50%; background:var(--gray-400); display:flex; align-items:center; justify-content:center;">
+          <div style="width:10px; height:10px; border-radius:50%; background:white;"></div>
+        </div>
+        <div style="background:var(--gray-100); border:1px solid var(--gray-300); border-radius:10px; padding:16px 20px; margin-left:16px; border-style:dashed;">
+          <div style="font-size:0.72rem; font-weight:600; color:var(--gray-500); text-transform:uppercase; letter-spacing:1px;">2029+</div>
+          <div style="font-size:0.95rem; font-weight:600; color:var(--gray-900); margin:4px 0;">BEG program guaranteed until here · Fuel suppliers must add green share</div>
+          <div style="font-size:0.83rem; color:var(--gray-500);">Subsidy program confirmed through 2029 per coalition agreement. Future beyond 2029 uncertain. Green fuel blending obligations begin.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- Energy Prices -->
+<section class="section" id="prices">
+  <div class="container">
+    <div class="section-label"><i data-lucide="bolt" style="width:16px;height:16px;"></i> Energy Prices</div>
+    <h2>Electricity vs Gas — Germany</h2>
+    <p class="section-desc">Residential energy prices 2020–2025 (€/kWh). The electricity-to-gas price ratio is a key driver of heat pump economics — the lower the ratio, the more financially attractive heat pumps become. Source: Eurostat.</p>
+
+    <div style="display:grid; grid-template-columns:2fr 1fr; gap:16px;">
+      <div style="background:var(--white); border:1px solid var(--gray-200); border-radius:var(--radius); padding:20px;">
+        <canvas id="chart-energy-prices" height="220"></canvas>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <div style="background:var(--white); border:1px solid var(--gray-200); border-radius:var(--radius); padding:16px; text-align:center;">
+          <div style="font-size:0.72rem; color:var(--gray-500); text-transform:uppercase; font-weight:600; letter-spacing:1px;">Electricity (H1 2025)</div>
+          <div style="font-size:1.5rem; font-weight:800; color:var(--blue-600);">€0.384/kWh</div>
+          <div style="font-size:0.75rem; color:var(--gray-500);">Highest in EU</div>
+        </div>
+        <div style="background:var(--white); border:1px solid var(--gray-200); border-radius:var(--radius); padding:16px; text-align:center;">
+          <div style="font-size:0.72rem; color:var(--gray-500); text-transform:uppercase; font-weight:600; letter-spacing:1px;">Gas (H1 2025)</div>
+          <div style="font-size:1.5rem; font-weight:800; color:var(--orange-600);">€0.122/kWh</div>
+          <div style="font-size:0.75rem; color:var(--gray-500);">Above EU average</div>
+        </div>
+        <div style="background:var(--white); border:1px solid var(--gray-200); border-radius:var(--radius); padding:16px; text-align:center;">
+          <div style="font-size:0.72rem; color:var(--gray-500); text-transform:uppercase; font-weight:600; letter-spacing:1px;">Ratio Elec / Gas</div>
+          <div style="font-size:1.5rem; font-weight:800; color:var(--red-600);">3.14x</div>
+          <div style="font-size:0.75rem; color:var(--gray-500);">HP needs COP >3.1 to beat gas</div>
+        </div>
+        <div style="background:var(--blue-50); border:1px solid var(--blue-400); border-radius:var(--radius); padding:12px; font-size:0.78rem; color:var(--blue-800); line-height:1.5;">
+          <strong>2026 outlook:</strong> €6.5B government subsidy for grid costs may reduce electricity prices by ~16% for households, improving heat pump economics.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- Wärmeplanung Map -->
+<section class="section" id="waermeplanung">
+  <div class="container">
+    <div class="section-label"><i data-lucide="map" style="width:16px;height:16px;"></i> Municipal Heat Planning</div>
+    <h2>Kommunale Wärmeplanung — Status Map</h2>
+    <p class="section-desc">Municipal heat planning (Wärmeplanung) is a legal requirement for all German municipalities. It determines how each area will be heated in the future — district heating, heat pumps, hydrogen, or other solutions. The plan directly affects homeowners' obligations and subsidy eligibility.</p>
+
+    <!-- Explanation cards -->
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:24px;">
+      <div style="background:var(--white); border:1px solid var(--gray-200); border-radius:var(--radius); padding:16px;">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+          <i data-lucide="help-circle" style="width:18px;height:18px;color:var(--blue-600);"></i>
+          <strong style="font-size:0.9rem; color:var(--gray-900);">What is it?</strong>
+        </div>
+        <p style="font-size:0.83rem; color:var(--gray-500); line-height:1.5;">A legally mandated plan that maps out how each neighborhood will be heated in the future. The Wärmeplanungsgesetz (Heat Planning Act) came into force on January 1, 2024.</p>
+      </div>
+      <div style="background:var(--white); border:1px solid var(--gray-200); border-radius:var(--radius); padding:16px;">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+          <i data-lucide="target" style="width:18px;height:18px;color:var(--blue-600);"></i>
+          <strong style="font-size:0.9rem; color:var(--gray-900);">Why does it matter?</strong>
+        </div>
+        <p style="font-size:0.83rem; color:var(--gray-500); line-height:1.5;">Once your municipality publishes its heat plan, it triggers specific obligations for homeowners in designated areas. If your area is marked for heat pumps — you'll need to switch. If marked for district heating — you may need to connect.</p>
+      </div>
+      <div style="background:var(--white); border:1px solid var(--gray-200); border-radius:var(--radius); padding:16px;">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+          <i data-lucide="clock" style="width:18px;height:18px;color:var(--blue-600);"></i>
+          <strong style="font-size:0.9rem; color:var(--gray-900);">Deadlines</strong>
+        </div>
+        <p style="font-size:0.83rem; color:var(--gray-500); line-height:1.5;"><strong>June 30, 2026</strong> — cities with >100,000 residents<br><strong>June 30, 2028</strong> — all other municipalities<br>Plans must be publicly accessible.</p>
+      </div>
+    </div>
+
+    <!-- Status overview -->
+    <div style="background:var(--white); border:1px solid var(--gray-200); border-radius:var(--radius); padding:24px;">
+      <h3 style="font-size:1rem; font-weight:600; color:var(--gray-900); margin-bottom:16px;">Current Progress (as of early 2026)</h3>
+
+      <!-- Progress bars -->
+      <div style="margin-bottom:20px;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+          <span style="font-size:0.85rem; font-weight:600; color:var(--gray-700);">Large cities (>100,000 residents)</span>
+          <span style="font-size:0.85rem; font-weight:600; color:var(--green-600);">63% started, 38% completed</span>
+        </div>
+        <div style="height:12px; background:var(--gray-100); border-radius:6px; overflow:hidden;">
+          <div style="height:100%; width:63%; background:linear-gradient(90deg, var(--green-600) 60%, var(--blue-400)); border-radius:6px;"></div>
+        </div>
+        <div style="font-size:0.75rem; color:var(--gray-400); margin-top:4px;">Deadline: June 30, 2026 — 80 major municipalities</div>
+      </div>
+
+      <div style="margin-bottom:20px;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+          <span style="font-size:0.85rem; font-weight:600; color:var(--gray-700);">Medium cities (10,000–100,000)</span>
+          <span style="font-size:0.85rem; font-weight:600; color:var(--orange-600);">~45% in progress</span>
+        </div>
+        <div style="height:12px; background:var(--gray-100); border-radius:6px; overflow:hidden;">
+          <div style="height:100%; width:45%; background:linear-gradient(90deg, var(--orange-600), var(--yellow-600)); border-radius:6px;"></div>
+        </div>
+        <div style="font-size:0.75rem; color:var(--gray-400); margin-top:4px;">Deadline: June 30, 2028 — 1,518 municipalities</div>
+      </div>
+
+      <div style="margin-bottom:20px;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+          <span style="font-size:0.85rem; font-weight:600; color:var(--gray-700);">Small municipalities (<10,000)</span>
+          <span style="font-size:0.85rem; font-weight:600; color:var(--red-600);">~8% started</span>
+        </div>
+        <div style="height:12px; background:var(--gray-100); border-radius:6px; overflow:hidden;">
+          <div style="height:100%; width:8%; background:var(--red-600); border-radius:6px;"></div>
+        </div>
+        <div style="font-size:0.75rem; color:var(--gray-400); margin-top:4px;">Deadline: June 30, 2028 — thousands of small municipalities</div>
+      </div>
+
+      <!-- Key challenges -->
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:20px;">
+        <div style="background:var(--red-100); border-radius:8px; padding:12px 16px;">
+          <div style="font-size:0.82rem; font-weight:600; color:var(--red-600); margin-bottom:4px;">Challenges</div>
+          <ul style="font-size:0.8rem; color:var(--gray-600); margin-left:16px; line-height:1.6;">
+            <li>Lack of financial resources in smaller municipalities</li>
+            <li>Personnel shortages for planning</li>
+            <li>48% of municipalities have not formally begun</li>
+            <li>Political uncertainty after GEG abolition</li>
+          </ul>
+        </div>
+        <div style="background:var(--blue-100); border-radius:8px; padding:12px 16px;">
+          <div style="font-size:0.82rem; font-weight:600; color:var(--blue-600); margin-bottom:4px;">What this means for homeowners</div>
+          <ul style="font-size:0.8rem; color:var(--gray-600); margin-left:16px; line-height:1.6;">
+            <li>Check your municipality's status at your local Stadtwerk</li>
+            <li>If your area is planned for district heating — wait before installing HP</li>
+            <li>If planned for decentralized heating — heat pump is the best option</li>
+            <li>If no plan yet — installing a heat pump with BEG subsidy now is safe</li>
+          </ul>
+        </div>
+      </div>
+
+      <div style="margin-top:16px; font-size:0.78rem; color:var(--gray-400);">
+        Sources: <a href="https://www.bmwsb.bund.de/DE/stadtentwicklung/klimagerechte-stadtentwicklung/kommunale-waermeplanung/kommunale-waermeplanung_node.html" target="_blank" style="color:var(--blue-500);">BMWSB</a> · <a href="https://www.bdew.de/energie/kommunale-waermeplanung-fortschritte-sichtbar-doch-weitere-schritte-noetig/" target="_blank" style="color:var(--blue-500);">BDEW</a> · <a href="https://www.bbsr.bund.de/BBSR/DE/veroeffentlichungen/analysen-kompakt/2024/ak-07-2024.html" target="_blank" style="color:var(--blue-500);">BBSR</a>
+      </div>
+    </div>
+
+    <!-- State-level map -->
+    <div style="background:var(--white); border:1px solid var(--gray-200); border-radius:var(--radius); padding:24px; margin-top:16px;">
+      <h3 style="font-size:1rem; font-weight:600; color:var(--gray-900); margin-bottom:6px;">Progress by Federal State (Bundesland)</h3>
+      <p style="font-size:0.83rem; color:var(--gray-500); margin-bottom:16px;">14 of 16 states have implemented heat planning law. States with own laws before federal act (2020–2023) are furthest ahead.</p>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; align-items:start;">
+
+        <!-- Leaflet Map -->
+        <div>
+          <div id="state-map"></div>
+          <!-- Legend -->
+          <div style="display:flex; gap:12px; justify-content:center; margin-top:10px; flex-wrap:wrap;">
+            <div style="display:flex; align-items:center; gap:5px; font-size:0.72rem; color:var(--gray-600);">
+              <div style="width:14px; height:14px; border-radius:3px; background:#198038;"></div> Own state law (advanced)
+            </div>
+            <div style="display:flex; align-items:center; gap:5px; font-size:0.72rem; color:var(--gray-600);">
+              <div style="width:14px; height:14px; border-radius:3px; background:#0066b3;"></div> Implemented federal law
+            </div>
+            <div style="display:flex; align-items:center; gap:5px; font-size:0.72rem; color:var(--gray-600);">
+              <div style="width:14px; height:14px; border-radius:3px; background:#b35c00;"></div> In progress / pending
+            </div>
+            <div style="display:flex; align-items:center; gap:5px; font-size:0.72rem; color:var(--gray-600);">
+              <div style="width:14px; height:14px; border-radius:3px; background:#da1e28;"></div> Not yet implemented
+            </div>
+          </div>
+        </div>
+
+        <!-- State details table -->
+        <div style="font-size:0.78rem;">
+          <table style="width:100%; border-collapse:collapse;">
+            <thead>
+              <tr style="border-bottom:2px solid var(--gray-200);">
+                <th style="text-align:left; padding:6px 8px; font-size:0.7rem; color:var(--gray-500); text-transform:uppercase; letter-spacing:0.5px;">State</th>
+                <th style="text-align:left; padding:6px 8px; font-size:0.7rem; color:var(--gray-500); text-transform:uppercase; letter-spacing:0.5px;">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid var(--gray-100);"><td style="padding:5px 8px; font-weight:500;">Baden-Württemberg</td><td style="padding:5px 8px;"><span style="color:#198038; font-weight:600;">●</span> Own law since 2020. 27% completed, 39% in progress</td></tr>
+              <tr style="border-bottom:1px solid var(--gray-100);"><td style="padding:5px 8px; font-weight:500;">Schleswig-Holstein</td><td style="padding:5px 8px;"><span style="color:#198038; font-weight:600;">●</span> Own state law. Advanced implementation</td></tr>
+              <tr style="border-bottom:1px solid var(--gray-100);"><td style="padding:5px 8px; font-weight:500;">Hamburg</td><td style="padding:5px 8px;"><span style="color:#198038; font-weight:600;">●</span> Own law (Climate Protection Act). Heat cadastre active</td></tr>
+              <tr style="border-bottom:1px solid var(--gray-100);"><td style="padding:5px 8px; font-weight:500;">Hessen</td><td style="padding:5px 8px;"><span style="color:#198038; font-weight:600;">●</span> State regulation published Nov 2025</td></tr>
+              <tr style="border-bottom:1px solid var(--gray-100);"><td style="padding:5px 8px; font-weight:500;">Niedersachsen</td><td style="padding:5px 8px;"><span style="color:#198038; font-weight:600;">●</span> Own law. Deadline Dec 31, 2026</td></tr>
+              <tr style="border-bottom:1px solid var(--gray-100);"><td style="padding:5px 8px; font-weight:500;">NRW</td><td style="padding:5px 8px;"><span style="color:#0066b3; font-weight:600;">●</span> State law (LWPG) enacted</td></tr>
+              <tr style="border-bottom:1px solid var(--gray-100);"><td style="padding:5px 8px; font-weight:500;">Berlin</td><td style="padding:5px 8px;"><span style="color:#0066b3; font-weight:600;">●</span> Federal law implemented</td></tr>
+              <tr style="border-bottom:1px solid var(--gray-100);"><td style="padding:5px 8px; font-weight:500;">Brandenburg</td><td style="padding:5px 8px;"><span style="color:#0066b3; font-weight:600;">●</span> Funding program launched</td></tr>
+              <tr style="border-bottom:1px solid var(--gray-100);"><td style="padding:5px 8px; font-weight:500;">Sachsen</td><td style="padding:5px 8px;"><span style="color:#0066b3; font-weight:600;">●</span> SächsWPVO regulation active</td></tr>
+              <tr style="border-bottom:1px solid var(--gray-100);"><td style="padding:5px 8px; font-weight:500;">Bremen</td><td style="padding:5px 8px;"><span style="color:#0066b3; font-weight:600;">●</span> Federal law implemented</td></tr>
+              <tr style="border-bottom:1px solid var(--gray-100);"><td style="padding:5px 8px; font-weight:500;">Bayern</td><td style="padding:5px 8px;"><span style="color:#b35c00; font-weight:600;">●</span> No own law yet. Voluntary support only</td></tr>
+              <tr style="border-bottom:1px solid var(--gray-100);"><td style="padding:5px 8px; font-weight:500;">Rheinland-Pfalz</td><td style="padding:5px 8px;"><span style="color:#b35c00; font-weight:600;">●</span> Implementation in progress</td></tr>
+              <tr style="border-bottom:1px solid var(--gray-100);"><td style="padding:5px 8px; font-weight:500;">Thüringen</td><td style="padding:5px 8px;"><span style="color:#b35c00; font-weight:600;">●</span> Implementation in progress</td></tr>
+              <tr style="border-bottom:1px solid var(--gray-100);"><td style="padding:5px 8px; font-weight:500;">Saarland</td><td style="padding:5px 8px;"><span style="color:#b35c00; font-weight:600;">●</span> Implementation in progress</td></tr>
+              <tr style="border-bottom:1px solid var(--gray-100);"><td style="padding:5px 8px; font-weight:500;">Sachsen-Anhalt</td><td style="padding:5px 8px;"><span style="color:#b35c00; font-weight:600;">●</span> Pending state implementation</td></tr>
+              <tr><td style="padding:5px 8px; font-weight:500;">Mecklenburg-Vorp.</td><td style="padding:5px 8px;"><span style="color:#da1e28; font-weight:600;">●</span> Not yet implemented</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div style="margin-top:12px; font-size:0.75rem; color:var(--gray-400);">
+        Source: <a href="https://www.roedl.com/insights/waermeplanungsgesetz-auf-landesebene-einheitliche-regelungen-oder-foederaler-flickenteppich/" target="_blank" style="color:var(--blue-500);">Rödl & Partner</a> · <a href="https://deea.de/2026/01/20/ueberblick-der-kommunalen-waermeplanung-in-deutschland/" target="_blank" style="color:var(--blue-500);">DEEA</a> · <a href="https://www.bbsr.bund.de/BBSR/DE/veroeffentlichungen/sonderveroeffentlichungen/2025/waermewende-in-deutschland.html" target="_blank" style="color:var(--blue-500);">BBSR 2025</a> · Status as of early 2026
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- Outlook & Summary -->
+<section class="section" id="outlook">
+  <div class="container">
+    <div class="section-label">
+      <i data-lucide="telescope" style="width:16px;height:16px;"></i>
+      Summary & Outlook
+    </div>
+    <h2>Where Is Germany Heading?</h2>
+    <p class="section-desc">Assessment of the political direction, probability of further changes, and long-term market implications.</p>
+
+    <!-- Probability indicators -->
+    <div style="margin-bottom:24px;">
+      <div style="font-size:0.82rem; font-weight:600; color:var(--gray-700); margin-bottom:10px;">Change Probability Assessment</div>
+      <div style="display:flex; flex-wrap:wrap; gap:8px;">
+        <div class="probability">
+          <div class="prob-dot prob-high"></div>
+          <span class="prob-label">65% rule already scrapped</span>
+          <span class="prob-value">Confirmed</span>
+        </div>
+        <div class="probability">
+          <div class="prob-dot prob-medium"></div>
+          <span class="prob-label">Subsidy rate reduction</span>
+          <span class="prob-value">Possible (2027–28)</span>
+        </div>
+        <div class="probability">
+          <div class="prob-dot prob-low"></div>
+          <span class="prob-label">Full subsidy cancellation</span>
+          <span class="prob-value">Unlikely before 2029</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="summary-grid">
+      <div class="summary-card">
+        <h3><i data-lucide="trending-up" style="width:18px;height:18px;color:var(--green-600);"></i> Positive Signals</h3>
+        <ul>
+          <li><span class="li-icon" style="color:var(--green-600);">+</span> Subsidies confirmed through at least 2029</li>
+          <li><span class="li-icon" style="color:var(--green-600);">+</span> Market rebounding — 299k units in 2025 (+55%)</li>
+          <li><span class="li-icon" style="color:var(--green-600);">+</span> BWP forecast for 2026: 410k–530k units</li>
+          <li><span class="li-icon" style="color:var(--green-600);">+</span> Heat pump prices stabilizing / declining</li>
+          <li><span class="li-icon" style="color:var(--green-600);">+</span> Government target: 6M heat pumps by 2030</li>
+        </ul>
+      </div>
+      <div class="summary-card">
+        <h3><i data-lucide="trending-down" style="width:18px;height:18px;color:var(--red-600);"></i> Risk Factors</h3>
+        <ul>
+          <li><span class="li-icon" style="color:var(--red-600);">−</span> GEG abolished — no regulatory push for HP adoption</li>
+          <li><span class="li-icon" style="color:var(--red-600);">−</span> BEG budget cut by €3.36B in 2026</li>
+          <li><span class="li-icon" style="color:var(--red-600);">−</span> CSU pushing to end "excessive" subsidies</li>
+          <li><span class="li-icon" style="color:var(--red-600);">−</span> Gas/oil boilers allowed again without restrictions</li>
+          <li><span class="li-icon" style="color:var(--red-600);">−</span> Political shift toward "technology openness"</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="outlook-box">
+      <h3><i data-lucide="compass" style="width:20px;height:20px;"></i> Long-Term Market Outlook</h3>
+      <p>Germany is entering a <strong>policy paradox</strong>: the government maintains generous heat pump subsidies (up to 70%) while simultaneously removing the regulatory framework that drove adoption. The abolition of the GEG's 65% renewable heating rule eliminates the most powerful market driver — mandatory compliance.</p>
+      <p>In the short term (2026–2027), the market will likely continue growing due to locked-in subsidies, municipal heat planning deadlines (Wärmeplanung), and improving economics. The BWP's forecast of 410,000 units in 2026 appears achievable. However, the <strong>removal of regulatory urgency combined with budget cuts creates a ceiling effect</strong> — growth may slow after the initial recovery.</p>
+      <p>The critical period is <strong>2027–2028</strong>, when the speed bonus begins declining and the coalition may revisit subsidy levels. If gas prices remain low and no new regulatory pressure emerges, the government's target of 500,000 annual installations and 6 million heat pumps by 2030 will be extremely difficult to achieve.</p>
+      <p><strong>Bottom line:</strong> For consumers, the current subsidy window (2026–2028) represents the best financial opportunity. For the industry, diversifying beyond the German market and investing in cost reduction will be essential to sustain growth in a less supportive policy environment.</p>
+    </div>
+
+  </div>
+</section>
+
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <div class="footer-left">
+      <p><strong>HP Subsidy Monitor</strong> — Germany Policy Brief</p>
+      <p>Data sources: <a href="https://www.kfw.de/inlandsfoerderung/Privatpersonen/Bestehende-Immobilie/F%C3%B6rderprodukte/Heizungsf%C3%B6rderung-f%C3%BCr-Privatpersonen-Wohngeb%C3%A4ude-(458)/" target="_blank">KfW 458</a> · <a href="https://www.bafa.de/DE/Energie/Heizen_mit_Erneuerbaren_Energien/heizen_mit_erneuerbaren_energien_node.html" target="_blank">BAFA</a> · <a href="https://www.waermepumpe.de" target="_blank">BWP</a> · <a href="https://www.cleanenergywire.org" target="_blank">CLEW</a> · <a href="https://www.finanztip.de/heizkosten-sparen/foerderung-heizung/" target="_blank">Finanztip</a> · <a href="https://ec.europa.eu/eurostat" target="_blank">Eurostat</a></p>
+      <p style="margin-top:8px; font-size:0.72rem; color:var(--gray-500);">This document is for informational purposes only. Subsidy amounts and conditions may change.<br>Always verify current rates at <a href="https://www.kfw.de" target="_blank">kfw.de</a> and <a href="https://www.gebaeudeforum.de/realisieren/heizungstechnik/waermepumpen/foerderung/" target="_blank">gebaeudeforum.de</a> before making decisions.</p>
+    </div>
+    <div class="footer-right">
+      <p style="font-size:0.8rem;">Last updated: March 30, 2026</p>
+    </div>
+  </div>
+</footer>
+
+<!-- Scroll to top -->
+<button class="scroll-top-light" id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+  <i data-lucide="chevron-up" style="width:20px;height:20px;"></i>
+</button>
+
+<script>
+// Initialize Lucide icons
+lucide.createIcons();
+
+// Scroll to top button
+window.addEventListener('scroll', () => {
+  document.getElementById('scroll-top').classList.toggle('show', window.scrollY > 400);
+});
+
+// Smooth scroll for nav links
+document.querySelectorAll('.quick-nav-links a').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+
+// === Bundesländer Map ===
+const stateData = {
+  'Schleswig-Holstein': { status: 'advanced', color: '#198038', detail: 'Own state law. Advanced implementation' },
+  'Hamburg': { status: 'advanced', color: '#198038', detail: 'Own law (Climate Protection Act). Heat cadastre active' },
+  'Niedersachsen': { status: 'advanced', color: '#198038', detail: 'Own law. Deadline Dec 31, 2026' },
+  'Mecklenburg-Vorpommern': { status: 'not_implemented', color: '#da1e28', detail: 'Not yet implemented at state level' },
+  'Brandenburg': { status: 'implemented', color: '#0066b3', detail: 'Funding program launched' },
+  'Berlin': { status: 'implemented', color: '#0066b3', detail: 'Federal law implemented' },
+  'Sachsen-Anhalt': { status: 'pending', color: '#b35c00', detail: 'Pending state implementation' },
+  'Sachsen': { status: 'implemented', color: '#0066b3', detail: 'SächsWPVO regulation active' },
+  'Thüringen': { status: 'pending', color: '#b35c00', detail: 'Implementation in progress' },
+  'Hessen': { status: 'advanced', color: '#198038', detail: 'State regulation published Nov 2025' },
+  'Nordrhein-Westfalen': { status: 'implemented', color: '#0066b3', detail: 'State law (LWPG) enacted' },
+  'Rheinland-Pfalz': { status: 'pending', color: '#b35c00', detail: 'Implementation in progress' },
+  'Saarland': { status: 'pending', color: '#b35c00', detail: 'Implementation in progress' },
+  'Baden-Württemberg': { status: 'advanced', color: '#198038', detail: '27% completed, 39% in progress. Own law since 2020' },
+  'Bayern': { status: 'pending', color: '#b35c00', detail: 'No own law yet. Voluntary support only' },
+  'Bremen': { status: 'implemented', color: '#0066b3', detail: 'Federal law implemented' }
+};
+
+const stateMapEl = document.getElementById('state-map');
+if (stateMapEl) {
+  const stateMap = L.map('state-map', { scrollWheelZoom: false, zoomControl: true, dragging: true }).setView([51.2, 10.4], 6);
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+    attribution: '© OSM © CARTO',
+    maxZoom: 10
+  }).addTo(stateMap);
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', {
+    maxZoom: 10,
+    pane: 'overlayPane'
+  }).addTo(stateMap);
+
+  // Load GeoJSON from local file to avoid CORS issues
+  fetch('bundeslaender.geo.json')
+    .then(r => r.json())
+    .then(geojson => {
+      L.geoJSON(geojson, {
+        style: function(feature) {
+          const name = feature.properties.name;
+          const sd = stateData[name];
+          return {
+            fillColor: sd ? sd.color : '#94a3b8',
+            weight: 1.5,
+            opacity: 1,
+            color: 'white',
+            fillOpacity: 0.75
+          };
+        },
+        onEachFeature: function(feature, layer) {
+          const name = feature.properties.name;
+          const sd = stateData[name];
+          const statusLabel = sd ? ({'advanced':'Own state law','implemented':'Federal law implemented','pending':'In progress','not_implemented':'Not implemented'})[sd.status] : 'Unknown';
+          const detail = sd ? sd.detail : '';
+          layer.bindPopup('<div style="font-family:Inter,sans-serif;"><strong style="font-size:14px;">' + name + '</strong><br><span style="font-size:12px;color:#6b7280;">' + statusLabel + '</span><br><span style="font-size:12px;">' + detail + '</span></div>', { maxWidth: 250 });
+          layer.on('mouseover', function(e) { e.target.setStyle({ weight: 3, color: '#0066b3', fillOpacity: 0.9 }); });
+          layer.on('mouseout', function(e) { e.target.setStyle({ weight: 1.5, color: 'white', fillOpacity: 0.75 }); });
+        }
+      }).addTo(stateMap);
+    })
+    .catch(err => { stateMapEl.innerHTML = '<p style="padding:20px;color:#6b7280;">Map could not be loaded. See table for details.</p>'; });
+}
+
+// Energy price chart
+const ctx = document.getElementById('chart-energy-prices');
+if (ctx) {
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['2020', '2021', '2022', '2023', '2024', 'H1 2025'],
+      datasets: [
+        {
+          label: 'Electricity (€/kWh)',
+          data: [0.301, 0.319, 0.346, 0.417, 0.394, 0.384],
+          borderColor: '#0066b3',
+          backgroundColor: 'rgba(0,102,179,0.1)',
+          fill: true,
+          tension: 0.3,
+          borderWidth: 2.5,
+          pointRadius: 4,
+          pointBackgroundColor: '#0066b3'
+        },
+        {
+          label: 'Gas (€/kWh)',
+          data: [0.061, 0.064, 0.114, 0.123, 0.122, 0.122],
+          borderColor: '#b35c00',
+          backgroundColor: 'rgba(179,92,0,0.1)',
+          fill: true,
+          tension: 0.3,
+          borderWidth: 2.5,
+          pointRadius: 4,
+          pointBackgroundColor: '#b35c00'
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'top', labels: { font: { family: 'Inter', size: 12 }, color: '#6b7280', usePointStyle: true, pointStyle: 'circle' } },
+        tooltip: { callbacks: { label: function(ctx) { return ctx.dataset.label + ': €' + ctx.parsed.y.toFixed(3); } } }
+      },
+      scales: {
+        x: { grid: { color: '#f3f4f6' }, ticks: { font: { family: 'Inter', size: 11 }, color: '#6b7280' } },
+        y: { grid: { color: '#f3f4f6' }, ticks: { font: { family: 'Inter', size: 11 }, color: '#6b7280', callback: function(v) { return '€' + v.toFixed(2); } }, min: 0, max: 0.45 }
+      }
+    }
+  });
+}
+
+// PDF Export — uses browser's native print (handles page breaks properly)
+function exportPDF() {
+  window.print();
+}
+</script>
+</body>
+</html>
