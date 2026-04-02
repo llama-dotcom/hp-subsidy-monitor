@@ -59,29 +59,20 @@ header .container { display:flex; justify-content:space-between; align-items:cen
 .tab-content { display:none; }
 .tab-content.active { display:block; }
 
-/* Main layout: stats left + map right */
-.main-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; padding:16px 0; }
-
-/* Stats panel */
-.stats-panel { display:flex; flex-direction:column; gap:12px; }
-.stat-card { background:var(--card); border-radius:var(--radius); padding:16px; border:1px solid var(--border); }
-.stat-card h3 { font-size:0.82rem; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:10px; display:flex; align-items:center; gap:6px; }
-.rank-list { list-style:none; }
-.rank-item { display:flex; justify-content:space-between; align-items:center; padding:7px 0; border-bottom:1px solid var(--border); font-size:0.85rem; }
-.rank-item:last-child { border-bottom:none; }
-.rank-pos { width:22px; color:var(--muted); font-size:0.75rem; font-weight:600; }
-.rank-country { flex:1; font-weight:500; }
-.rank-value { font-family:Menlo,Consolas,monospace; font-weight:600; color:white; font-size:0.85rem; }
-.rank-change { font-size:0.72rem; margin-left:8px; }
-
 /* Map */
-.map-panel { display:flex; flex-direction:column; gap:12px; }
-#map { height:100%; min-height:420px; border-radius:var(--radius); border:1px solid var(--border); background:#0a1628; z-index:1; }
+#map { height:450px; border-radius:var(--radius); border:1px solid var(--border); background:#0a1628; z-index:1; }
 .map-legend { background:var(--card); border-radius:8px; padding:10px 14px; border:1px solid var(--border); }
 .map-legend h4 { font-size:0.7rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px; }
 .legend-row { display:flex; gap:10px; flex-wrap:wrap; }
 .legend-item { display:flex; align-items:center; gap:5px; font-size:0.72rem; color:var(--muted); }
 .legend-dot { width:12px; height:12px; border-radius:3px; }
+.th-style { padding:10px 12px; text-align:left; color:var(--muted); font-size:0.68rem; text-transform:uppercase; letter-spacing:0.5px; border-bottom:2px solid var(--border); cursor:pointer; white-space:nowrap; user-select:none; }
+.th-style:hover { color:var(--accent); }
+.tech-hp { display:inline-block; padding:2px 7px; border-radius:5px; font-size:0.7rem; font-weight:600; background:rgba(56,189,248,0.15); color:var(--accent); }
+.tech-hybrid { display:inline-block; padding:2px 7px; border-radius:5px; font-size:0.7rem; font-weight:600; background:rgba(74,222,128,0.15); color:var(--green); }
+.badge-new { display:inline-block; background:var(--red); color:white; font-size:0.6rem; font-weight:700; padding:2px 6px; border-radius:8px; text-transform:uppercase; animation:pulse 2s infinite; }
+.badge-updated { display:inline-block; background:var(--orange); color:white; font-size:0.6rem; font-weight:700; padding:2px 6px; border-radius:8px; text-transform:uppercase; }
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.6;} }
 
 /* Country popup */
 .leaflet-popup-content-wrapper { background:var(--card) !important; color:var(--text) !important; border-radius:10px !important; box-shadow:0 4px 20px rgba(0,0,0,0.5) !important; }
@@ -223,45 +214,41 @@ footer { text-align:center; padding:24px 0; margin-top:20px; border-top:1px soli
 <!-- Dashboard Tab -->
 <div id="tab-dashboard" class="tab-content active">
 
-  <div class="main-grid">
-    <!-- Left: Stats -->
-    <div class="stats-panel">
-      <div class="stat-card">
-        <h3><i data-lucide="coins" style="width:14px;height:14px;color:var(--green);"></i> Highest Subsidies</h3>
-        <ul class="rank-list" id="rank-subsidies"></ul>
+  <!-- Map (full width, centered) -->
+  <section style="padding:10px 0;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+      <h2 style="font-size:1.1rem;font-weight:600;display:flex;align-items:center;gap:8px;">
+        <i data-lucide="globe" style="width:18px;height:18px;color:var(--accent);"></i> European Subsidy Map
+      </h2>
+      <div class="map-legend" style="display:inline-flex;gap:10px;padding:6px 12px;">
+        <div class="legend-item"><div class="legend-dot" style="background:#06d6a0;"></div> >€15k</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#38b000;"></div> €8–15k</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#d49b54;"></div> €3–8k</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#c74b50;"></div> <€3k</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#1a1a2e;"></div> No data</div>
       </div>
     </div>
-
-    <!-- Right: Map -->
-    <div class="map-panel">
-      <div id="map"></div>
-      <div class="map-legend">
-        <h4>Subsidy Level</h4>
-        <div class="legend-row">
-          <div class="legend-item"><div class="legend-dot" style="background:#06d6a0;"></div> >€15k</div>
-          <div class="legend-item"><div class="legend-dot" style="background:#38b000;"></div> €8–15k</div>
-          <div class="legend-item"><div class="legend-dot" style="background:#d49b54;"></div> €3–8k</div>
-          <div class="legend-item"><div class="legend-dot" style="background:#c74b50;"></div> <€3k</div>
-          <div class="legend-item"><div class="legend-dot" style="background:#1a1a2e;"></div> No data</div>
-        </div>
-      </div>
-    </div>
-  </div>
+    <div id="map" style="height:450px;"></div>
+  </section>
 
   <!-- Subsidy Table -->
   <section style="padding:20px 0;">
     <h2 style="font-size:1.1rem;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px;">
-      <i data-lucide="table" style="width:18px;height:18px;color:var(--accent);"></i> All Subsidy Programs by Country
+      <i data-lucide="table" style="width:18px;height:18px;color:var(--accent);"></i> Subsidy Programs by Country
     </h2>
     <div style="overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border);">
       <table style="width:100%;border-collapse:collapse;font-size:0.82rem;">
         <thead style="background:var(--card);">
           <tr>
-            <th style="padding:10px 14px;text-align:left;color:var(--muted);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid var(--border);cursor:pointer;" onclick="sortSubsidyTable(0)">Country</th>
-            <th style="padding:10px 14px;text-align:left;color:var(--muted);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid var(--border);cursor:pointer;" onclick="sortSubsidyTable(1)">Program</th>
-            <th style="padding:10px 14px;text-align:left;color:var(--muted);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid var(--border);cursor:pointer;" onclick="sortSubsidyTable(2)">Max Amount</th>
-            <th style="padding:10px 14px;text-align:left;color:var(--muted);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid var(--border);">Status</th>
-            <th style="padding:10px 14px;text-align:left;color:var(--muted);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid var(--border);">Source</th>
+            <th class="th-style" onclick="sortSubsidyTable(0)">Country</th>
+            <th class="th-style" onclick="sortSubsidyTable(1)">Program</th>
+            <th class="th-style">Type</th>
+            <th class="th-style" onclick="sortSubsidyTable(3)">Amount (EUR)</th>
+            <th class="th-style">Technology</th>
+            <th class="th-style">Status</th>
+            <th class="th-style">Valid Until</th>
+            <th class="th-style">Alert</th>
+            <th class="th-style">Source</th>
           </tr>
         </thead>
         <tbody id="subsidy-table-body"></tbody>
@@ -302,15 +289,38 @@ footer { text-align:center; padding:24px 0; margin-top:20px; border-top:1px soli
   </h2>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
     <div style="background:var(--card);border-radius:var(--radius);padding:16px;border:1px solid var(--border);">
-      <h4 style="color:var(--accent);font-size:0.82rem;margin-bottom:8px;">Subsidy Programs</h4>
-      <div style="font-size:0.78rem;line-height:2;color:var(--text);">
-        <a href="https://www.kfw.de" target="_blank">KfW (Germany)</a> · <a href="https://www.service-public.gouv.fr" target="_blank">Service-Public (France)</a> · <a href="https://www.gov.uk/apply-boiler-upgrade-scheme" target="_blank">GOV.UK</a> · <a href="https://www.gse.it" target="_blank">GSE (Italy)</a> · <a href="https://www.rvo.nl" target="_blank">RVO (Netherlands)</a> · <a href="https://czystepowietrze.gov.pl" target="_blank">Czyste Powietrze (Poland)</a> · <a href="https://www.sanierungsoffensive.gv.at" target="_blank">Sanierungsoffensive (Austria)</a> · <a href="https://guichet.public.lu" target="_blank">Guichet (Luxembourg)</a> · <a href="https://www.enova.no" target="_blank">Enova (Norway)</a> · <a href="https://www.idae.es" target="_blank">IDAE (Spain)</a> · <a href="https://www.dasgebaeudeprogramm.ch" target="_blank">Gebäudeprogramm (Switzerland)</a>
+      <h4 style="color:var(--accent);font-size:0.85rem;margin-bottom:10px;">Subsidy Programs</h4>
+      <div style="font-size:0.78rem;line-height:2.2;">
+        🇩🇪 <a href="https://www.kfw.de" target="_blank">Germany — BEG/KfW (kfw.de)</a><br>
+        🇫🇷 <a href="https://www.service-public.gouv.fr/particuliers/vosdroits/F35083" target="_blank">France — MaPrimeRénov' (service-public.gouv.fr)</a><br>
+        🇬🇧 <a href="https://www.gov.uk/apply-boiler-upgrade-scheme" target="_blank">UK — Boiler Upgrade Scheme (gov.uk)</a><br>
+        🇮🇹 <a href="https://www.gse.it/servizi-per-te/conto-termico" target="_blank">Italy — Conto Termico 3.0 (gse.it)</a><br>
+        🇳🇱 <a href="https://www.rvo.nl/subsidies-financiering/isde" target="_blank">Netherlands — ISDE (rvo.nl)</a><br>
+        🇵🇱 <a href="https://czystepowietrze.gov.pl/" target="_blank">Poland — Czyste Powietrze (czystepowietrze.gov.pl)</a><br>
+        🇦🇹 <a href="https://www.sanierungsoffensive.gv.at/" target="_blank">Austria — Sanierungsoffensive (sanierungsoffensive.gv.at)</a><br>
+        🇱🇺 <a href="https://guichet.public.lu/" target="_blank">Luxembourg — Klimabonus (guichet.public.lu)</a><br>
+        🇨🇭 <a href="https://www.dasgebaeudeprogramm.ch/" target="_blank">Switzerland — Gebäudeprogramm (dasgebaeudeprogramm.ch)</a><br>
+        🇪🇸 <a href="https://www.idae.es/" target="_blank">Spain — PRTR/IDAE (idae.es)</a><br>
+        🇵🇹 <a href="https://elar.pfrr.gov.pt/" target="_blank">Portugal — E-Lar (elar.pfrr.gov.pt)</a><br>
+        🇸🇪 <a href="https://www.energimyndigheten.se/" target="_blank">Sweden — Energy Efficiency Grant (energimyndigheten.se)</a><br>
+        🇳🇴 <a href="https://www.enova.no/" target="_blank">Norway — Enova (enova.no)</a><br>
+        🇩🇰 <a href="https://ens.dk/" target="_blank">Denmark — Varmepumpepuljen (ens.dk)</a>
       </div>
     </div>
     <div style="background:var(--card);border-radius:var(--radius);padding:16px;border:1px solid var(--border);">
-      <h4 style="color:var(--accent);font-size:0.82rem;margin-bottom:8px;">Market Data & Energy Prices</h4>
-      <div style="font-size:0.78rem;line-height:2;color:var(--text);">
-        <a href="https://www.ehpa.org/market-data/" target="_blank">EHPA Market Report 2025</a> · <a href="https://ec.europa.eu/eurostat/web/energy/database" target="_blank">Eurostat Energy Prices</a> · <a href="https://www.iea.org/energy-system/buildings/heat-pumps" target="_blank">IEA Heat Pump Tracker</a> · <a href="https://www.waermepumpe.de" target="_blank">BWP (Germany)</a> · <a href="https://www.cleanenergywire.org" target="_blank">Clean Energy Wire</a> · <a href="https://www.mcscertified.com" target="_blank">MCS (UK)</a>
+      <h4 style="color:var(--accent);font-size:0.85rem;margin-bottom:10px;">Energy Prices</h4>
+      <div style="font-size:0.78rem;line-height:2.2;">
+        🇪🇺 <a href="https://ec.europa.eu/eurostat/web/energy/database" target="_blank">Eurostat — EU Electricity & Gas Prices</a><br>
+        🇬🇧 <a href="https://www.ofgem.gov.uk/check-if-energy-price-cap-affects-you" target="_blank">Ofgem — UK Energy Price Cap</a><br>
+        🇳🇴 <a href="https://www.ssb.no/en/energi-og-industri/energi/statistikk/elektrisitetspriser" target="_blank">SSB — Norway Electricity Prices</a>
+      </div>
+      <h4 style="color:var(--accent);font-size:0.85rem;margin-bottom:10px;margin-top:16px;">Market Data & Analytics</h4>
+      <div style="font-size:0.78rem;line-height:2.2;">
+        ‣ <a href="https://www.ehpa.org/market-data/" target="_blank">EHPA — European Heat Pump Association Market Report 2025</a><br>
+        ‣ <a href="https://www.iea.org/energy-system/buildings/heat-pumps" target="_blank">IEA — International Energy Agency Heat Pump Tracker</a><br>
+        🇩🇪 <a href="https://www.waermepumpe.de/presse/" target="_blank">BWP — German Heat Pump Association</a><br>
+        🇬🇧 <a href="https://www.mcscertified.com/mcs-data-dashboard/" target="_blank">MCS — UK Certified HP Installations</a><br>
+        ‣ <a href="https://www.cleanenergywire.org" target="_blank">Clean Energy Wire — Policy Analysis</a>
       </div>
     </div>
   </div>
@@ -387,17 +397,6 @@ function showTab(tab, btn) {
   if (tab === 'countries') renderCountryGrid();
 }
 
-// ===== RANKINGS =====
-function renderRankings() {
-  const subs = [...countries].filter(c=>c.maxSubsidy>0).sort((a,b) => b.maxSubsidy - a.maxSubsidy).slice(0,10);
-  document.getElementById('rank-subsidies').innerHTML = subs.map((c,i) => `
-    <li class="rank-item">
-      <span class="rank-pos">${i+1}</span>
-      <span class="rank-country">${c.flag} ${c.name}</span>
-      <span class="rank-value" style="color:var(--green);">€${(c.maxSubsidy/1000).toFixed(1)}k</span>
-    </li>`).join('');
-}
-renderRankings();
 
 // ===== MAP =====
 const map = L.map('map', { scrollWheelZoom:true, zoomControl:true }).setView([52, 12], 4);
@@ -465,13 +464,21 @@ function renderSubsidyTable() {
   const sorted = [...countries].filter(c=>c.maxSubsidy>0).sort((a,b) => b.maxSubsidy - a.maxSubsidy);
   document.getElementById('subsidy-table-body').innerHTML = sorted.map(c => {
     const statusColor = c.status==='active'?'var(--green)':c.status==='expiring'?'var(--yellow)':'var(--accent)';
-    const link = c.subsidyLink ? `<a href="${c.subsidyLink}" target="_blank" style="font-size:0.75rem;">Official →</a>` : '';
+    const type = c.subsidyProgram.includes('Tax')||c.subsidyProgram.includes('IRPF')||c.subsidyProgram.includes('ROT')?'Tax Credit':c.subsidyProgram.includes('IQ Energy')?'Loan':'Grant';
+    const tech = c.detail&&c.detail.toLowerCase().includes('hybrid')?'<span class="tech-hybrid">HP + Hybrid</span>':'<span class="tech-hp">Heat Pump</span>';
+    const validUntil = c.status==='expiring'?'Suspended':c.detail.match(/through (\d{4})/)?'Through '+c.detail.match(/through (\d{4})/)[1]:c.detail.match(/expires? .*?(\w+ \d{4})/i)?c.detail.match(/expires? .*?(\w+ \d{4})/i)[1]:'Ongoing';
+    const alert = c.status==='expiring'?'<span class="badge-updated">Updated</span>':c.maxSubsidy>=20000?'<span class="badge-new">Top</span>':'';
+    const link = c.subsidyLink ? `<a href="${c.subsidyLink}" target="_blank" style="font-size:0.72rem;">Source →</a>` : '';
     return `<tr style="border-bottom:1px solid var(--border);cursor:pointer;" onclick="openModal('${c.name}')" onmouseover="this.style.background='var(--card-hover)'" onmouseout="this.style.background=''">
-      <td style="padding:8px 14px;font-weight:500;">${c.flag} ${c.name}</td>
-      <td style="padding:8px 14px;">${c.subsidyProgram}</td>
-      <td style="padding:8px 14px;font-family:Menlo,Consolas,monospace;font-weight:600;color:var(--green);">€${c.maxSubsidy.toLocaleString()}</td>
-      <td style="padding:8px 14px;"><span style="color:${statusColor};font-weight:600;">${c.status}</span></td>
-      <td style="padding:8px 14px;">${link}</td>
+      <td style="padding:7px 12px;font-weight:500;">${c.flag} ${c.name}</td>
+      <td style="padding:7px 12px;">${c.subsidyProgram}</td>
+      <td style="padding:7px 12px;">${type}</td>
+      <td style="padding:7px 12px;font-family:Menlo,Consolas,monospace;font-weight:600;color:var(--green);">€${c.maxSubsidy.toLocaleString()}</td>
+      <td style="padding:7px 12px;">${tech}</td>
+      <td style="padding:7px 12px;"><span style="color:${statusColor};font-weight:600;">${c.status}</span></td>
+      <td style="padding:7px 12px;font-size:0.78rem;color:var(--muted);">${validUntil}</td>
+      <td style="padding:7px 12px;">${alert}</td>
+      <td style="padding:7px 12px;">${link}</td>
     </tr>`;
   }).join('');
 }
@@ -481,7 +488,7 @@ function sortSubsidyTable(col) {
   if (tableSortCol===col) tableSortAsc=!tableSortAsc; else { tableSortCol=col; tableSortAsc=true; }
   rows.sort((a,b) => {
     let aV=a.cells[col].textContent.trim(), bV=b.cells[col].textContent.trim();
-    if (col===2) { aV=parseInt(aV.replace(/[^0-9]/g,'')); bV=parseInt(bV.replace(/[^0-9]/g,'')); return tableSortAsc?aV-bV:bV-aV; }
+    if (col===3) { aV=parseInt(aV.replace(/[^0-9]/g,'')||0); bV=parseInt(bV.replace(/[^0-9]/g,'')||0); return tableSortAsc?aV-bV:bV-aV; }
     return tableSortAsc?aV.localeCompare(bV):bV.localeCompare(aV);
   });
   rows.forEach(r=>tbody.appendChild(r));
