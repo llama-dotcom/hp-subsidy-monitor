@@ -3,174 +3,157 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HP Subsidy Monitor — European Heat Pump & Hybrid Subsidy Dashboard</title>
+<title>HP Subsidy Monitor — European Heat Pump Subsidy Dashboard</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
 <script src="https://unpkg.com/lucide@latest"></script>
 <style>
 :root {
-  --bg: #0f172a;
-  --card: #1e293b;
-  --card-hover: #334155;
-  --accent: #38bdf8;
-  --accent2: #22d3ee;
-  --green: #4ade80;
-  --red: #f87171;
-  --yellow: #fbbf24;
-  --orange: #fb923c;
-  --text: #e2e8f0;
-  --muted: #94a3b8;
-  --border: #334155;
-  --radius: 12px;
+  --bg:#080d1a; --bg2:#0c1225; --card:rgba(15,23,42,0.6); --card-solid:#111827;
+  --glass:rgba(30,41,59,0.35); --glass-border:rgba(100,116,139,0.2); --glass-hover:rgba(56,189,248,0.12);
+  --accent:#38bdf8; --accent2:#22d3ee; --green:#4ade80; --red:#f87171; --yellow:#fbbf24; --orange:#fb923c;
+  --text:#e2e8f0; --muted:#94a3b8; --dim:#64748b; --border:rgba(51,65,85,0.5); --radius:14px;
 }
-* { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:var(--bg); color:var(--text); line-height:1.6; }
-.container { max-width:1400px; margin:0 auto; padding:0 20px; }
-a { color:var(--accent); text-decoration:none; }
-a:hover { text-decoration:underline; }
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh;}
+a{color:var(--accent);text-decoration:none;}a:hover{text-decoration:underline;}
+.container{max-width:1360px;margin:0 auto;padding:0 20px;}
 
 /* Header */
-header { background:linear-gradient(135deg,#0f172a,#1e3a5f); border-bottom:1px solid var(--border); padding:16px 0; position:sticky; top:0; z-index:1000; }
-header .container { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; }
-.logo { display:flex; align-items:center; gap:10px; }
-.logo-icon { width:36px; height:36px; background:linear-gradient(135deg,var(--accent),var(--green)); border-radius:8px; display:flex; align-items:center; justify-content:center; }
-.logo h1 { font-size:1.15rem; font-weight:700; color:white; }
-.logo .subtitle { font-size:0.7rem; color:var(--muted); }
-.nav-tabs { display:flex; gap:4px; }
-.nav-tab { padding:6px 14px; border-radius:8px; font-size:0.82rem; font-weight:500; color:var(--muted); cursor:pointer; border:1px solid transparent; transition:all 0.2s; background:none; }
-.nav-tab:hover { color:var(--text); background:var(--card); }
-.nav-tab.active { color:var(--accent); background:rgba(56,189,248,0.1); border-color:rgba(56,189,248,0.3); }
-.header-right { display:flex; align-items:center; gap:12px; }
-.last-updated { font-size:0.7rem; color:var(--muted); }
+header{background:linear-gradient(135deg,rgba(8,13,26,0.95),rgba(15,30,60,0.95));border-bottom:1px solid var(--glass-border);padding:14px 0;position:sticky;top:0;z-index:1000;backdrop-filter:blur(20px);}
+header .container{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+.logo{display:flex;align-items:center;gap:10px;}
+.logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--accent),var(--green));border-radius:9px;display:flex;align-items:center;justify-content:center;}
+.logo h1{font-size:1.1rem;font-weight:700;color:white;letter-spacing:0.3px;}
+.logo .sub{font-size:0.68rem;color:var(--dim);}
+.header-r{display:flex;align-items:center;gap:14px;}
+.scope-tag{font-size:0.62rem;color:var(--dim);background:rgba(100,116,139,0.15);padding:4px 10px;border-radius:6px;letter-spacing:0.3px;}
+.updated{font-size:0.68rem;color:var(--dim);}
+
+/* Glass card base */
+.g-card{background:var(--glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--glass-border);border-radius:var(--radius);transition:all 0.25s;}
+.g-card:hover{border-color:rgba(56,189,248,0.25);box-shadow:0 0 20px rgba(56,189,248,0.06);}
 
 /* KPI */
-.kpi-bar { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:10px; padding:16px 0; }
-.kpi-card { background:linear-gradient(135deg,rgba(30,41,59,0.8),rgba(30,41,59,0.5)); backdrop-filter:blur(10px); border-radius:var(--radius); padding:14px; border:1px solid rgba(71,85,105,0.4); transition:all 0.2s; }
-.kpi-card:hover { border-color:var(--accent); transform:translateY(-1px); }
-.kpi-label { font-size:0.68rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.8px; font-weight:500; }
-.kpi-value { font-size:1.5rem; font-weight:700; color:white; font-family:Menlo,Consolas,monospace; margin:2px 0; }
-.kpi-sub { font-size:0.75rem; }
-.kpi-up { color:var(--green); }
-.kpi-down { color:var(--red); }
-.kpi-neutral { color:var(--yellow); }
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;padding:16px 0;}
+.kpi{padding:14px 16px;}
+.kpi-label{font-size:0.64rem;color:var(--dim);text-transform:uppercase;letter-spacing:1px;font-weight:600;}
+.kpi-val{font-size:1.45rem;font-weight:700;color:white;font-family:Menlo,Consolas,monospace;margin:2px 0;}
+.kpi-sub{font-size:0.72rem;}
+.up{color:var(--green);}.down{color:var(--red);}.neu{color:var(--yellow);}
 
-/* Tab content */
-.tab-content { display:none; }
-.tab-content.active { display:block; }
+/* Section headers */
+.sec-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
+.sec-title{font-size:1rem;font-weight:600;display:flex;align-items:center;gap:8px;color:var(--text);}
 
 /* Map */
-#map { height:450px; border-radius:var(--radius); border:1px solid var(--border); background:#0a1628; z-index:1; }
-.map-legend { background:var(--card); border-radius:8px; padding:10px 14px; border:1px solid var(--border); }
-.map-legend h4 { font-size:0.7rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px; }
-.legend-row { display:flex; gap:10px; flex-wrap:wrap; }
-.legend-item { display:flex; align-items:center; gap:5px; font-size:0.72rem; color:var(--muted); }
-.legend-dot { width:12px; height:12px; border-radius:3px; }
-.th-style { padding:10px 12px; text-align:left; color:var(--muted); font-size:0.68rem; text-transform:uppercase; letter-spacing:0.5px; border-bottom:2px solid var(--border); cursor:pointer; white-space:nowrap; user-select:none; }
-.th-style:hover { color:var(--accent); }
-.tech-hp { display:inline-block; padding:2px 7px; border-radius:5px; font-size:0.7rem; font-weight:600; background:rgba(56,189,248,0.15); color:var(--accent); }
-.tech-hybrid { display:inline-block; padding:2px 7px; border-radius:5px; font-size:0.7rem; font-weight:600; background:rgba(74,222,128,0.15); color:var(--green); }
-.badge-new { display:inline-block; background:var(--red); color:white; font-size:0.6rem; font-weight:700; padding:2px 6px; border-radius:8px; text-transform:uppercase; animation:pulse 2s infinite; }
-.badge-updated { display:inline-block; background:var(--orange); color:white; font-size:0.6rem; font-weight:700; padding:2px 6px; border-radius:8px; text-transform:uppercase; }
-@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.6;} }
+#map{height:420px;border-radius:var(--radius);border:1px solid var(--glass-border);background:#060a14;z-index:1;}
+.legend-bar{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:0.7rem;color:var(--dim);}
+.leg-dot{width:11px;height:11px;border-radius:3px;}
 
-/* Country popup */
-.leaflet-popup-content-wrapper { background:var(--card) !important; color:var(--text) !important; border-radius:10px !important; box-shadow:0 4px 20px rgba(0,0,0,0.5) !important; }
-.leaflet-popup-tip { background:var(--card) !important; }
-.popup-title { font-size:1rem; font-weight:600; color:white; margin-bottom:6px; }
-.popup-row { display:flex; justify-content:space-between; padding:3px 0; font-size:0.82rem; }
-.popup-label { color:var(--muted); }
-.popup-val { color:white; font-weight:600; font-family:Menlo,Consolas,monospace; }
-.popup-link { display:inline-block; margin-top:8px; font-size:0.78rem; color:var(--accent); }
+/* Popup */
+.leaflet-popup-content-wrapper{background:rgba(15,23,42,0.95)!important;color:var(--text)!important;border-radius:12px!important;border:1px solid var(--glass-border)!important;backdrop-filter:blur(16px)!important;box-shadow:0 8px 32px rgba(0,0,0,0.4)!important;}
+.leaflet-popup-tip{background:rgba(15,23,42,0.95)!important;}
+.pop-title{font-size:1rem;font-weight:600;color:white;margin-bottom:6px;}
+.pop-row{display:flex;justify-content:space-between;padding:3px 0;font-size:0.82rem;}
+.pop-l{color:var(--muted);}.pop-v{color:white;font-weight:600;font-family:Menlo,Consolas,monospace;}
+.pop-link{display:inline-block;margin-top:8px;font-size:0.78rem;color:var(--accent);}
 
-/* News section */
-.news-section { padding:20px 0; }
-.news-section h2 { font-size:1.1rem; font-weight:600; margin-bottom:14px; display:flex; align-items:center; gap:8px; }
-.news-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(380px,1fr)); gap:10px; }
-.news-card { background:var(--card); border-radius:var(--radius); padding:14px 16px; border:1px solid var(--border); border-left:3px solid transparent; transition:all 0.2s; }
-.news-card:hover { border-color:var(--accent); }
-.news-high { border-left-color:var(--red); }
-.news-medium { border-left-color:var(--orange); }
-.news-low { border-left-color:var(--accent); }
-.news-meta { display:flex; justify-content:space-between; font-size:0.72rem; color:var(--muted); margin-bottom:4px; }
-.news-title { font-size:0.9rem; font-weight:600; color:white; margin-bottom:4px; }
-.news-desc { font-size:0.8rem; color:var(--muted); line-height:1.5; }
-.news-source { margin-top:6px; }
-.news-source a { font-size:0.72rem; color:var(--accent); }
-.impact-badge { padding:2px 8px; border-radius:6px; font-size:0.62rem; font-weight:700; text-transform:uppercase; letter-spacing:0.3px; }
-.badge-critical { background:rgba(248,113,113,0.2); color:var(--red); }
-.badge-medium { background:rgba(251,146,60,0.2); color:var(--orange); }
-.badge-info { background:rgba(56,189,248,0.2); color:var(--accent); }
+/* Table */
+.tbl-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--glass-border);}
+table{width:100%;border-collapse:collapse;font-size:0.8rem;}
+thead{background:rgba(15,23,42,0.8);}
+th{padding:10px 12px;text-align:left;color:var(--dim);font-size:0.66rem;text-transform:uppercase;letter-spacing:0.6px;border-bottom:1px solid var(--border);cursor:pointer;white-space:nowrap;user-select:none;font-weight:600;}
+th:hover{color:var(--accent);}
+td{padding:8px 12px;border-bottom:1px solid rgba(51,65,85,0.3);vertical-align:middle;}
+tr:hover{background:rgba(56,189,248,0.04);}
+.t-hp{display:inline-block;padding:2px 7px;border-radius:5px;font-size:0.68rem;font-weight:600;background:rgba(56,189,248,0.12);color:var(--accent);}
+.t-hyb{display:inline-block;padding:2px 7px;border-radius:5px;font-size:0.68rem;font-weight:600;background:rgba(74,222,128,0.12);color:var(--green);}
+.st-active{color:var(--green);font-weight:600;}
+.st-exp{color:var(--yellow);font-weight:600;}
+.st-ann{color:var(--accent);font-weight:600;}
+.badge-new{display:inline-block;background:var(--red);color:white;font-size:0.58rem;font-weight:700;padding:2px 6px;border-radius:8px;text-transform:uppercase;animation:pulse 2s infinite;}
+.badge-upd{display:inline-block;background:var(--orange);color:white;font-size:0.58rem;font-weight:700;padding:2px 6px;border-radius:8px;text-transform:uppercase;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.6;}}
 
-/* Country list tab */
-.country-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:10px; padding:16px 0; }
-.country-card { background:var(--card); border-radius:var(--radius); padding:16px; border:1px solid var(--border); cursor:pointer; transition:all 0.2s; }
-.country-card:hover { border-color:var(--accent); transform:translateY(-1px); }
-.country-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
-.country-name { font-size:1rem; font-weight:600; color:white; }
-.country-market { font-size:0.75rem; color:var(--muted); font-family:Menlo,Consolas,monospace; }
-.country-subsidy { font-size:0.85rem; color:var(--green); font-weight:600; margin-bottom:4px; }
-.country-detail-row { display:flex; justify-content:space-between; font-size:0.78rem; padding:3px 0; border-bottom:1px solid var(--border); }
-.country-detail-row:last-child { border:none; }
+/* News */
+.news-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:10px;}
+.news-card{padding:14px 16px;border-left:3px solid transparent;cursor:default;}
+.n-high{border-left-color:var(--red);}.n-med{border-left-color:var(--orange);}.n-low{border-left-color:var(--accent);}
+.n-meta{display:flex;justify-content:space-between;font-size:0.7rem;color:var(--dim);margin-bottom:4px;}
+.n-title{font-size:0.88rem;font-weight:600;color:white;margin-bottom:3px;}
+.n-desc{font-size:0.78rem;color:var(--muted);line-height:1.5;}
+.n-src{margin-top:5px;}.n-src a{font-size:0.7rem;}
+.imp{padding:2px 7px;border-radius:5px;font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.3px;}
+.imp-c{background:rgba(248,113,113,0.15);color:var(--red);}
+.imp-m{background:rgba(251,146,60,0.15);color:var(--orange);}
+.imp-i{background:rgba(56,189,248,0.15);color:var(--accent);}
 
-/* Country detail modal */
-.modal-overlay { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.7); z-index:2000; justify-content:center; align-items:flex-start; padding:40px 20px; overflow-y:auto; }
-.modal-overlay.show { display:flex; }
-.modal { background:var(--bg); border:1px solid var(--border); border-radius:16px; max-width:700px; width:100%; padding:28px; position:relative; }
-.modal-close { position:absolute; top:16px; right:16px; background:none; border:none; color:var(--muted); cursor:pointer; font-size:1.2rem; }
-.modal-close:hover { color:white; }
-.modal h2 { font-size:1.4rem; font-weight:700; color:white; margin-bottom:16px; }
-.modal-section { margin-bottom:20px; }
-.modal-section h3 { font-size:0.85rem; color:var(--accent); text-transform:uppercase; letter-spacing:1px; font-weight:600; margin-bottom:8px; display:flex; align-items:center; gap:6px; }
-.modal-card { background:var(--card); border-radius:8px; padding:12px; border:1px solid var(--border); margin-bottom:8px; }
-.modal-card .s-name { font-weight:600; color:white; font-size:0.88rem; }
-.modal-card .s-amount { color:var(--green); font-size:0.85rem; }
-.modal-card .s-detail { color:var(--muted); font-size:0.78rem; margin-top:2px; }
-.modal-stat { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--border); font-size:0.85rem; }
-.modal-stat:last-child { border:none; }
+/* Sources */
+.src-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.src-card{padding:16px;}
+.src-card h4{color:var(--accent);font-size:0.82rem;margin-bottom:8px;}
+.src-card div{font-size:0.76rem;line-height:2.1;}
+
+/* Modal */
+.modal-bg{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:2000;justify-content:center;align-items:flex-start;padding:40px 20px;overflow-y:auto;backdrop-filter:blur(4px);}
+.modal-bg.show{display:flex;}
+.modal{background:var(--bg2);border:1px solid var(--glass-border);border-radius:16px;max-width:680px;width:100%;padding:28px;position:relative;}
+.modal-x{position:absolute;top:14px;right:14px;background:none;border:none;color:var(--dim);cursor:pointer;font-size:1.2rem;}
+.modal-x:hover{color:white;}
+.modal h2{font-size:1.3rem;font-weight:700;color:white;margin-bottom:16px;}
+.m-sec{margin-bottom:18px;}
+.m-sec h3{font-size:0.8rem;color:var(--accent);text-transform:uppercase;letter-spacing:0.8px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.m-card{background:var(--glass);border-radius:10px;padding:12px;border:1px solid var(--glass-border);margin-bottom:6px;}
+.m-card .nm{font-weight:600;color:white;font-size:0.86rem;}
+.m-card .am{color:var(--green);font-size:0.84rem;}
+.m-card .dt{color:var(--muted);font-size:0.76rem;margin-top:2px;}
+.m-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);font-size:0.84rem;}
+.m-row:last-child{border:none;}
 
 /* Footer */
-footer { text-align:center; padding:24px 0; margin-top:20px; border-top:1px solid var(--border); color:var(--muted); font-size:0.75rem; }
+footer{text-align:center;padding:24px 0;margin-top:16px;border-top:1px solid var(--glass-border);color:var(--dim);font-size:0.72rem;}
 
 /* Responsive */
-@media (max-width:900px) {
-  .main-grid { grid-template-columns:1fr; }
-  #map { min-height:300px; }
-  .news-grid { grid-template-columns:1fr; }
-  .country-grid { grid-template-columns:1fr; }
-  .kpi-bar { grid-template-columns:repeat(2,1fr); }
-  header .container { flex-direction:column; align-items:flex-start; }
+@media(max-width:900px){
+  .kpi-row{grid-template-columns:repeat(2,1fr);}
+  .news-grid{grid-template-columns:1fr;}
+  .src-grid{grid-template-columns:1fr;}
+  #map{height:320px;}
+  header .container{flex-direction:column;align-items:flex-start;}
+  table{font-size:0.74rem;}
+  th,td{padding:6px 8px;}
 }
-@media (max-width:480px) {
-  .kpi-bar { grid-template-columns:1fr; }
-  .kpi-value { font-size:1.2rem; }
+@media(max-width:480px){
+  .kpi-row{grid-template-columns:1fr;}
+  .kpi-val{font-size:1.2rem;}
+  #map{height:260px;}
+  .modal{padding:20px;margin:20px 10px;}
 }
-@media print {
-  header,.nav-tabs { display:none !important; }
-  body { font-size:9pt; background:white; color:#222; }
-  .kpi-card,.stat-card,.news-card,.country-card { box-shadow:none; border:1px solid #ddd; background:white; }
-  #map { display:none; }
+@media print{
+  header{display:none!important;}
+  body{background:white;color:#222;font-size:9pt;}
+  .g-card,.news-card,.src-card{background:white!important;border:1px solid #ddd!important;backdrop-filter:none!important;}
+  #map{display:none!important;}
 }
 </style>
 </head>
 <body>
 
-<!-- Header -->
 <header>
   <div class="container">
     <div class="logo">
-      <div class="logo-icon"><i data-lucide="zap" style="width:20px;height:20px;color:#0f172a;"></i></div>
+      <div class="logo-icon"><i data-lucide="zap" style="width:18px;height:18px;color:#080d1a;"></i></div>
       <div>
         <h1>HP Subsidy Monitor</h1>
-        <div class="subtitle">European Heat Pump & Hybrid Subsidy Dashboard</div>
+        <div class="sub">European Heat Pump Subsidy Dashboard</div>
       </div>
     </div>
-    <div class="nav-tabs">
-      <button class="nav-tab active" onclick="showTab('dashboard',this)">Dashboard</button>
-      <button class="nav-tab" onclick="showTab('countries',this)">Country List</button>
-    </div>
-    <div class="header-right">
-      <div class="last-updated">Updated: April 2, 2026</div>
+    <div class="header-r">
+      <span class="scope-tag">AW · LW · EW · Hybrids · Residential & Commercial</span>
+      <span class="updated">Updated: April 2, 2026</span>
     </div>
   </div>
 </header>
@@ -178,412 +161,285 @@ footer { text-align:center; padding:24px 0; margin-top:20px; border-top:1px soli
 <div class="container">
 
 <!-- KPI -->
-<section class="kpi-bar">
-  <div class="kpi-card">
-    <div class="kpi-label">Countries Tracked</div>
-    <div class="kpi-value">28</div>
-    <div class="kpi-sub kpi-neutral">40+ subsidy programs</div>
+<div class="kpi-row">
+  <div class="g-card kpi"><div class="kpi-label">Countries</div><div class="kpi-val">28</div><div class="kpi-sub neu">40+ subsidy programs</div></div>
+  <div class="g-card kpi"><div class="kpi-label">Highest Subsidy</div><div class="kpi-val">€24,000</div><div class="kpi-sub up">Luxembourg (Klimabonus)</div></div>
+  <div class="g-card kpi"><div class="kpi-label">Largest Market</div><div class="kpi-val">Germany</div><div class="kpi-sub up">299k units (2025)</div></div>
+  <div class="g-card kpi"><div class="kpi-label">Fastest Growing</div><div class="kpi-val">Denmark</div><div class="kpi-sub up">+65% in 2025</div></div>
+  <div class="g-card kpi"><div class="kpi-label">HP Penetration</div><div class="kpi-val">Norway</div><div class="kpi-sub neu">632 per 1,000 households</div></div>
+  <div class="g-card kpi"><div class="kpi-label">EU Trend 2025</div><div class="kpi-val">+11%</div><div class="kpi-sub up">Recovery after 2024 decline</div></div>
+</div>
+
+<!-- Map -->
+<section style="padding:10px 0 16px;">
+  <div class="sec-h">
+    <div class="sec-title"><i data-lucide="globe" style="width:18px;height:18px;color:var(--accent);"></i> Electricity Prices Across Europe</div>
   </div>
-  <div class="kpi-card">
-    <div class="kpi-label">Highest Subsidy</div>
-    <div class="kpi-value">€24,000</div>
-    <div class="kpi-sub kpi-up">Luxembourg (Klimabonus)</div>
-  </div>
-  <div class="kpi-card">
-    <div class="kpi-label">Largest Market</div>
-    <div class="kpi-value">Germany</div>
-    <div class="kpi-sub kpi-up">299k units 2025 (hydronic)</div>
-  </div>
-  <div class="kpi-card">
-    <div class="kpi-label">Fastest Growing</div>
-    <div class="kpi-value">Denmark</div>
-    <div class="kpi-sub kpi-up">+65% in 2025</div>
-  </div>
-  <div class="kpi-card">
-    <div class="kpi-label">Highest Penetration</div>
-    <div class="kpi-value">Norway</div>
-    <div class="kpi-sub kpi-neutral">632 per 1,000 households</div>
-  </div>
-  <div class="kpi-card">
-    <div class="kpi-label">EU Trend 2025</div>
-    <div class="kpi-value">+11%</div>
-    <div class="kpi-sub kpi-up">Recovery after 2024 decline</div>
+  <div id="map"></div>
+  <div class="legend-bar">
+    <div class="leg-item"><div class="leg-dot" style="background:#06d6a0;"></div> <€0.10/kWh</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#38b000;"></div> €0.10–0.20</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#d49b54;"></div> €0.20–0.30</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#c74b50;"></div> €0.30–0.40</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#8b1a1a;"></div> >€0.40</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#1a1a2e;"></div> No data</div>
   </div>
 </section>
 
-<!-- Dashboard Tab -->
-<div id="tab-dashboard" class="tab-content active">
-
-  <!-- Map (full width, centered) -->
-  <section style="padding:10px 0;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-      <h2 style="font-size:1.1rem;font-weight:600;display:flex;align-items:center;gap:8px;">
-        <i data-lucide="globe" style="width:18px;height:18px;color:var(--accent);"></i> European Subsidy Map
-      </h2>
-      <div class="map-legend" style="display:inline-flex;gap:10px;padding:6px 12px;">
-        <div class="legend-item"><div class="legend-dot" style="background:#06d6a0;"></div> >€15k</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#38b000;"></div> €8–15k</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#d49b54;"></div> €3–8k</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#c74b50;"></div> <€3k</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#1a1a2e;"></div> No data</div>
-      </div>
-    </div>
-    <div id="map" style="height:450px;"></div>
-  </section>
-
-  <!-- Subsidy Table -->
-  <section style="padding:20px 0;">
-    <h2 style="font-size:1.1rem;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px;">
-      <i data-lucide="table" style="width:18px;height:18px;color:var(--accent);"></i> Subsidy Programs by Country
-    </h2>
-    <div style="overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border);">
-      <table style="width:100%;border-collapse:collapse;font-size:0.82rem;">
-        <thead style="background:var(--card);">
-          <tr>
-            <th class="th-style" onclick="sortSubsidyTable(0)">Country</th>
-            <th class="th-style" onclick="sortSubsidyTable(1)">Program</th>
-            <th class="th-style">Type</th>
-            <th class="th-style" onclick="sortSubsidyTable(3)">Amount (EUR)</th>
-            <th class="th-style">Technology</th>
-            <th class="th-style">Status</th>
-            <th class="th-style">Valid Until</th>
-            <th class="th-style">Alert</th>
-            <th class="th-style">Source</th>
-          </tr>
-        </thead>
-        <tbody id="subsidy-table-body"></tbody>
-      </table>
-    </div>
-  </section>
-
-  <!-- News -->
-  <section class="news-section">
-    <h2><i data-lucide="radio-tower" style="width:18px;height:18px;color:var(--accent);"></i> Latest Subsidy News & Signals</h2>
-    <div class="news-grid" id="news-grid"></div>
-  </section>
-
-</div>
-
-<!-- Country List Tab -->
-<div id="tab-countries" class="tab-content">
-  <div style="padding:16px 0 8px;">
-    <input type="text" id="country-search" placeholder="Search country..." oninput="filterCountries()" style="width:100%;max-width:300px;padding:8px 14px;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--text);font-size:0.85rem;">
+<!-- Subsidy Table -->
+<section style="padding:10px 0 16px;">
+  <div class="sec-h">
+    <div class="sec-title"><i data-lucide="table" style="width:18px;height:18px;color:var(--accent);"></i> Subsidy Programs by Country</div>
   </div>
-  <div class="country-grid" id="country-grid"></div>
-</div>
-
-</div>
-
-<!-- Country Modal -->
-<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal()"><i data-lucide="x" style="width:20px;height:20px;"></i></button>
-    <div id="modal-body"></div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr>
+        <th onclick="sortTbl(0)">Country</th>
+        <th onclick="sortTbl(1)">Program</th>
+        <th>Type</th>
+        <th onclick="sortTbl(3)">Amount (EUR)</th>
+        <th>Technology</th>
+        <th>Status</th>
+        <th>Valid Until</th>
+        <th>Alert</th>
+        <th>Source</th>
+      </tr></thead>
+      <tbody id="tbl-body"></tbody>
+    </table>
   </div>
-</div>
+</section>
 
-<!-- Data Sources -->
-<section style="padding:20px 0;">
-  <h2 style="font-size:1.1rem;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px;">
-    <i data-lucide="link" style="width:18px;height:18px;color:var(--accent);"></i> Data Sources
-  </h2>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-    <div style="background:var(--card);border-radius:var(--radius);padding:16px;border:1px solid var(--border);">
-      <h4 style="color:var(--accent);font-size:0.85rem;margin-bottom:10px;">Subsidy Programs</h4>
-      <div style="font-size:0.78rem;line-height:2.2;">
+<!-- News -->
+<section style="padding:10px 0 16px;">
+  <div class="sec-h">
+    <div class="sec-title"><i data-lucide="radio-tower" style="width:18px;height:18px;color:var(--accent);"></i> Latest Subsidy News & Signals</div>
+  </div>
+  <div class="news-grid" id="news-grid"></div>
+</section>
+
+<!-- Sources -->
+<section style="padding:10px 0 16px;">
+  <div class="sec-h">
+    <div class="sec-title"><i data-lucide="link" style="width:18px;height:18px;color:var(--accent);"></i> Data Sources</div>
+  </div>
+  <div class="src-grid">
+    <div class="g-card src-card">
+      <h4>Subsidy Programs</h4>
+      <div>
         🇩🇪 <a href="https://www.kfw.de" target="_blank">Germany — BEG/KfW (kfw.de)</a><br>
-        🇫🇷 <a href="https://www.service-public.gouv.fr/particuliers/vosdroits/F35083" target="_blank">France — MaPrimeRénov' (service-public.gouv.fr)</a><br>
-        🇬🇧 <a href="https://www.gov.uk/apply-boiler-upgrade-scheme" target="_blank">UK — Boiler Upgrade Scheme (gov.uk)</a><br>
-        🇮🇹 <a href="https://www.gse.it/servizi-per-te/conto-termico" target="_blank">Italy — Conto Termico 3.0 (gse.it)</a><br>
-        🇳🇱 <a href="https://www.rvo.nl/subsidies-financiering/isde" target="_blank">Netherlands — ISDE (rvo.nl)</a><br>
-        🇵🇱 <a href="https://czystepowietrze.gov.pl/" target="_blank">Poland — Czyste Powietrze (czystepowietrze.gov.pl)</a><br>
-        🇦🇹 <a href="https://www.sanierungsoffensive.gv.at/" target="_blank">Austria — Sanierungsoffensive (sanierungsoffensive.gv.at)</a><br>
-        🇱🇺 <a href="https://guichet.public.lu/" target="_blank">Luxembourg — Klimabonus (guichet.public.lu)</a><br>
-        🇨🇭 <a href="https://www.dasgebaeudeprogramm.ch/" target="_blank">Switzerland — Gebäudeprogramm (dasgebaeudeprogramm.ch)</a><br>
-        🇪🇸 <a href="https://www.idae.es/" target="_blank">Spain — PRTR/IDAE (idae.es)</a><br>
-        🇵🇹 <a href="https://elar.pfrr.gov.pt/" target="_blank">Portugal — E-Lar (elar.pfrr.gov.pt)</a><br>
-        🇸🇪 <a href="https://www.energimyndigheten.se/" target="_blank">Sweden — Energy Efficiency Grant (energimyndigheten.se)</a><br>
-        🇳🇴 <a href="https://www.enova.no/" target="_blank">Norway — Enova (enova.no)</a><br>
-        🇩🇰 <a href="https://ens.dk/" target="_blank">Denmark — Varmepumpepuljen (ens.dk)</a>
+        🇫🇷 <a href="https://www.service-public.gouv.fr/particuliers/vosdroits/F35083" target="_blank">France — MaPrimeRénov'</a><br>
+        🇬🇧 <a href="https://www.gov.uk/apply-boiler-upgrade-scheme" target="_blank">UK — Boiler Upgrade Scheme</a><br>
+        🇮🇹 <a href="https://www.gse.it/servizi-per-te/conto-termico" target="_blank">Italy — Conto Termico 3.0</a><br>
+        🇳🇱 <a href="https://www.rvo.nl/subsidies-financiering/isde" target="_blank">Netherlands — ISDE</a><br>
+        🇵🇱 <a href="https://czystepowietrze.gov.pl/" target="_blank">Poland — Czyste Powietrze</a><br>
+        🇦🇹 <a href="https://www.sanierungsoffensive.gv.at/" target="_blank">Austria — Sanierungsoffensive</a><br>
+        🇱🇺 <a href="https://guichet.public.lu/" target="_blank">Luxembourg — Klimabonus</a><br>
+        🇨🇭 <a href="https://www.dasgebaeudeprogramm.ch/" target="_blank">Switzerland — Gebäudeprogramm</a><br>
+        🇪🇸 <a href="https://www.idae.es/" target="_blank">Spain — PRTR/IDAE</a><br>
+        🇵🇹 <a href="https://elar.pfrr.gov.pt/" target="_blank">Portugal — E-Lar</a><br>
+        🇳🇴 <a href="https://www.enova.no/" target="_blank">Norway — Enova</a><br>
+        🇩🇰 <a href="https://ens.dk/" target="_blank">Denmark — Varmepumpepuljen</a>
       </div>
     </div>
-    <div style="background:var(--card);border-radius:var(--radius);padding:16px;border:1px solid var(--border);">
-      <h4 style="color:var(--accent);font-size:0.85rem;margin-bottom:10px;">Energy Prices</h4>
-      <div style="font-size:0.78rem;line-height:2.2;">
+    <div class="g-card src-card">
+      <h4>Energy Prices</h4>
+      <div>
         🇪🇺 <a href="https://ec.europa.eu/eurostat/web/energy/database" target="_blank">Eurostat — EU Electricity & Gas Prices</a><br>
-        🇬🇧 <a href="https://www.ofgem.gov.uk/check-if-energy-price-cap-affects-you" target="_blank">Ofgem — UK Energy Price Cap</a><br>
-        🇳🇴 <a href="https://www.ssb.no/en/energi-og-industri/energi/statistikk/elektrisitetspriser" target="_blank">SSB — Norway Electricity Prices</a>
+        🇬🇧 <a href="https://www.ofgem.gov.uk/" target="_blank">Ofgem — UK Energy Price Cap</a><br>
+        🇳🇴 <a href="https://www.ssb.no/en/" target="_blank">SSB — Norway Electricity Prices</a>
       </div>
-      <h4 style="color:var(--accent);font-size:0.85rem;margin-bottom:10px;margin-top:16px;">Market Data & Analytics</h4>
-      <div style="font-size:0.78rem;line-height:2.2;">
-        ‣ <a href="https://www.ehpa.org/market-data/" target="_blank">EHPA — European Heat Pump Association Market Report 2025</a><br>
-        ‣ <a href="https://www.iea.org/energy-system/buildings/heat-pumps" target="_blank">IEA — International Energy Agency Heat Pump Tracker</a><br>
-        🇩🇪 <a href="https://www.waermepumpe.de/presse/" target="_blank">BWP — German Heat Pump Association</a><br>
-        🇬🇧 <a href="https://www.mcscertified.com/mcs-data-dashboard/" target="_blank">MCS — UK Certified HP Installations</a><br>
-        ‣ <a href="https://www.cleanenergywire.org" target="_blank">Clean Energy Wire — Policy Analysis</a>
+      <h4 style="margin-top:14px;">Market Data & Analytics</h4>
+      <div>
+        ‣ <a href="https://www.ehpa.org/market-data/" target="_blank">EHPA — Market Report 2025</a><br>
+        ‣ <a href="https://www.iea.org/energy-system/buildings/heat-pumps" target="_blank">IEA — Heat Pump Tracker</a><br>
+        🇩🇪 <a href="https://www.waermepumpe.de/presse/" target="_blank">BWP — German HP Association</a><br>
+        🇬🇧 <a href="https://www.mcscertified.com/" target="_blank">MCS — UK Installations</a><br>
+        ‣ <a href="https://www.cleanenergywire.org" target="_blank">Clean Energy Wire</a>
       </div>
     </div>
   </div>
 </section>
 
+</div>
+
+<!-- Modal -->
+<div class="modal-bg" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-x" onclick="closeModal()"><i data-lucide="x" style="width:20px;height:20px;"></i></button><div id="modal-body"></div></div>
 </div>
 
 <!-- Footer -->
 <footer>
   <div class="container">
-    <p><strong>HP Subsidy Monitor</strong> — European Heat Pump & Hybrid Subsidy Dashboard</p>
-    <p style="margin-top:4px;">Data: EHPA, Eurostat, KfW, national agencies · Hydronic HP only (AW, LW, EW, Hybrids) · No air-to-air</p>
-    <p style="margin-top:8px;"><a href="/impressum.html">Impressum</a> · <a href="/datenschutz.html">Datenschutz</a></p>
+    <p><strong>HP Subsidy Monitor</strong> — European Heat Pump Subsidy Dashboard</p>
+    <p style="margin-top:3px;">Scope: Air-to-Water · Liquid-to-Water · Exhaust Air · Hybrids (add-on & system) · Residential & Commercial</p>
+    <p style="margin-top:6px;"><a href="/impressum.html">Impressum</a> · <a href="/datenschutz.html">Datenschutz</a></p>
   </div>
 </footer>
 
 <script>
-// ===== DATA =====
-const countries = [
-  { name:"Germany", flag:"🇩🇪", sales:299, salesYear:2025, growth:55, maxSubsidy:23500, subsidyProgram:"BEG/KfW 458", subsidyLink:"https://www.kfw.de/inlandsfoerderung/Privatpersonen/Bestehende-Immobilie/", elec:0.384, gas:0.122, ratio:3.14, status:"active", detail:"30–70% grant. Speed bonus 20%, income bonus 30%, efficiency 5%. Budget cut €3.36B in 2026. GEG abolished Feb 2026.", outlook:"Subsidies confirmed through 2029. Market recovering. Political uncertainty after GEG abolition.", lat:51.2, lng:10.4 },
-  { name:"France", flag:"🇫🇷", sales:250, salesYear:2024, growth:-20, maxSubsidy:11000, subsidyProgram:"MaPrimeRénov'", subsidyLink:"https://www.service-public.gouv.fr/particuliers/vosdroits/F35083", elec:0.266, gas:0.130, ratio:2.05, status:"active", detail:"€2,500–€11,000 grant + CEE rebate €2,500–€4,000. Hybrid bonus €2,000 for rural.", outlook:"Stable subsidy framework. Budget uncertainty continues.", lat:46.6, lng:2.3 },
-  { name:"Italy", flag:"🇮🇹", sales:180, salesYear:2024, growth:-35, maxSubsidy:15000, subsidyProgram:"Conto Termico 3.0", subsidyLink:"https://www.gse.it/servizi-per-te/conto-termico", elec:0.329, gas:0.124, ratio:2.65, status:"active", detail:"Up to 65% grant (Conto Termico) or 50% tax deduction (Ecobonus). €900M annual budget.", outlook:"Post-Superbonus correction. Conto Termico 3.0 launched Dec 2025.", lat:42.5, lng:12.5 },
-  { name:"UK", flag:"🇬🇧", sales:125, salesYear:2025, growth:27, maxSubsidy:8800, subsidyProgram:"Boiler Upgrade Scheme", subsidyLink:"https://www.gov.uk/apply-boiler-upgrade-scheme", elec:0.285, gas:0.067, ratio:4.28, status:"active", detail:"£7,500 (~€8,800) flat grant. England & Wales. Extended to 2028.", outlook:"Fastest growing EU/UK market. Under 5 HPs per 1000 households — massive potential.", lat:54.0, lng:-2.5 },
-  { name:"Netherlands", flag:"🇳🇱", sales:90, salesYear:2024, growth:-30, maxSubsidy:13000, subsidyProgram:"ISDE", subsidyLink:"https://www.rvo.nl/subsidies-financiering/isde", elec:0.290, gas:0.162, ratio:1.79, status:"active", detail:"€1,025 base + €225/kW. Smart-ready mandatory from 2026. Hybrids 30% of market.", outlook:"Grid congestion concerns. Hybrid HP uniquely strong market.", lat:52.1, lng:5.3 },
-  { name:"Poland", flag:"🇵🇱", sales:100, salesYear:2024, growth:-38, maxSubsidy:31400, subsidyProgram:"Czyste Powietrze", subsidyLink:"https://czystepowietrze.gov.pl/", elec:0.256, gas:0.050, ratio:5.12, status:"active", detail:"30–100% of costs. Max PLN 135k (~€31,400). Three income tiers. PLN 10B budget.", outlook:"Large untapped potential. Rising electricity costs slowing adoption.", lat:51.9, lng:19.1 },
-  { name:"Spain", flag:"🇪🇸", sales:220, salesYear:2024, growth:5.5, maxSubsidy:6000, subsidyProgram:"PRTR + IRPF", subsidyLink:"https://www.idae.es/", elec:0.230, gas:0.095, ratio:2.42, status:"active", detail:"€3,000 grant + 20–60% IRPF tax deduction. Tax deduction expires Dec 2026.", outlook:"One of few growing markets. Mediterranean climate favors reversible systems.", lat:40.4, lng:-3.7 },
-  { name:"Sweden", flag:"🇸🇪", sales:65, salesYear:2024, growth:-29, maxSubsidy:5500, subsidyProgram:"Energy Efficiency Grant", subsidyLink:"https://www.energimyndigheten.se/", elec:0.096, gas:0.213, ratio:0.45, status:"active", detail:"Up to SEK 60k (~€5,500) + ROT tax deduction 30% of labor.", outlook:"Most mature market. 50%+ homes already have HP. Replacement cycle.", lat:63.1, lng:16.5 },
-  { name:"Norway", flag:"🇳🇴", sales:95, salesYear:2024, growth:-21, maxSubsidy:3500, subsidyProgram:"Enova", subsidyLink:"https://www.enova.no/", elec:0.124, gas:null, ratio:null, status:"active", detail:"25% of costs, max NOK 40k (~€3,500). Air-to-air no longer supported.", outlook:"World's highest penetration (632/1000). Air-to-air excluded from support.", lat:64.5, lng:11.0 },
-  { name:"Finland", flag:"🇫🇮", sales:80, salesYear:2024, growth:-14, maxSubsidy:6000, subsidyProgram:"ARA Energy Grant", subsidyLink:"https://www.ara.fi/en", elec:0.080, gas:null, ratio:null, status:"active", detail:"€4,000–€6,000 grant + household tax deduction up to €3,500/yr.", outlook:"524 HPs per 1000 households. 2025 showed +10% recovery.", lat:64.0, lng:26.0 },
-  { name:"Denmark", flag:"🇩🇰", sales:40, salesYear:2024, growth:-30, maxSubsidy:3620, subsidyProgram:"Varmepumpepuljen 2026", subsidyLink:"https://ens.dk/", elec:0.290, gas:0.120, ratio:2.42, status:"active", detail:"~€3,620 fixed grant. Simplified rules. Feb–Nov 2026.", outlook:"Strong 2025 recovery (+65%). District heating competition.", lat:56.3, lng:9.5 },
-  { name:"Belgium", flag:"🇧🇪", sales:50, salesYear:2024, growth:-52, maxSubsidy:6000, subsidyProgram:"Regional premiums", subsidyLink:"https://www.vlaanderen.be/", elec:0.330, gas:0.120, ratio:2.75, status:"active", detail:"3 regional programs: Flanders €4k–€5.5k, Wallonia €1k–€6k, Brussels varies.", outlook:"Sharpest EU decline in 2024. 2025 recovering to 111k (all types).", lat:50.8, lng:4.4 },
-  { name:"Austria", flag:"🇦🇹", sales:55, salesYear:2024, growth:0.1, maxSubsidy:7500, subsidyProgram:"Sanierungsoffensive", subsidyLink:"https://www.sanierungsoffensive.gv.at/", elec:0.280, gas:0.110, ratio:2.55, status:"active", detail:"Up to €7,500 grant. 100% for low-income. €1.8B committed through 2030.", outlook:"Remarkably stable market. 46% market share of all heating.", lat:47.5, lng:14.6 },
-  { name:"Switzerland", flag:"🇨🇭", sales:35, salesYear:2024, growth:-30, maxSubsidy:10500, subsidyProgram:"Gebäudeprogramm", subsidyLink:"https://www.dasgebaeudeprogramm.ch/", elec:0.270, gas:0.130, ratio:2.08, status:"active", detail:"€2,100–€10,500 (canton-dependent). 2025 cut by 25%.", outlook:"Budget cuts dampening growth. Canton-level variation.", lat:46.8, lng:8.2 },
-  { name:"Czech Republic", flag:"🇨🇿", sales:20, salesYear:2024, growth:-64, maxSubsidy:6000, subsidyProgram:"Nová Zelená Úsporám", subsidyLink:"https://novazelenausporam.cz/", elec:0.350, gas:0.107, ratio:3.27, status:"expiring", detail:"€3k–€5.2k. Main program suspended Jan 2026 (funds exhausted). Light version for low-income expected Jun 2026.", outlook:"Steepest decline in Europe. Subsidy suspension creating gap.", lat:49.8, lng:15.5 },
-  { name:"Portugal", flag:"🇵🇹", sales:70, salesYear:2024, growth:15, maxSubsidy:15000, subsidyProgram:"E-Lar (PRR)", subsidyLink:"https://elar.pfrr.gov.pt/", elec:0.220, gas:0.110, ratio:2.00, status:"active", detail:"Up to €15,000 renovation package. Part of EU Recovery Plan.", outlook:"One of 3 EU markets that grew in 2024. Strong momentum.", lat:39.4, lng:-8.2 },
-  { name:"Luxembourg", flag:"🇱🇺", sales:1, salesYear:2024, growth:0, maxSubsidy:24000, subsidyProgram:"Klimabonus Wunnen", subsidyLink:"https://guichet.public.lu/", elec:0.220, gas:0.080, ratio:2.75, status:"active", detail:"€3k–€24k (doubled for low-income). Overhauled Jan 2026. Most generous in Europe.", outlook:"Small market but highest subsidies per unit in EU.", lat:49.8, lng:6.1 },
-  { name:"Hungary", flag:"🇭🇺", sales:18, salesYear:2024, growth:-15, maxSubsidy:12500, subsidyProgram:"Rural HP + KEHOP", subsidyLink:"https://www.palyazat.gov.hu/", elec:0.110, gas:0.038, ratio:2.89, status:"active", detail:"Up to ~€12,500 grant. Rural program expires Jun 2026.", outlook:"Low energy prices reduce HP urgency. Grant programs time-limited.", lat:47.2, lng:19.5 },
-  { name:"Slovakia", flag:"🇸🇰", sales:10, salesYear:2024, growth:-16, maxSubsidy:4370, subsidyProgram:"Zelená domácnostiam II", subsidyLink:"https://zelenadomacnostiam.sk/", elec:0.210, gas:0.065, ratio:3.23, status:"active", detail:"€3,800–€4,370 grant.", outlook:"Small but stable market.", lat:48.7, lng:19.7 },
-  { name:"Estonia", flag:"🇪🇪", sales:9, salesYear:2024, growth:-10, maxSubsidy:10000, subsidyProgram:"KredEx Heater Upgrade", subsidyLink:"https://kredex.ee/en", elec:0.195, gas:0.060, ratio:3.25, status:"active", detail:"Up to €10,000 grant. Limited budget (€6M).", outlook:"Good subsidy but small budget.", lat:58.6, lng:25.0 },
-  { name:"Latvia", flag:"🇱🇻", sales:4, salesYear:2024, growth:0, maxSubsidy:5000, subsidyProgram:"EKII Programme", subsidyLink:"https://www.kem.gov.lv/", elec:0.250, gas:0.055, ratio:4.55, status:"active", detail:"€85M total budget through 2029.", outlook:"High elec/gas ratio challenging for HP economics.", lat:56.9, lng:24.1 },
-  { name:"Lithuania", flag:"🇱🇹", sales:8, salesYear:2024, growth:-5, maxSubsidy:4280, subsidyProgram:"LEA HP Support", subsidyLink:"https://www.ena.lt/", elec:0.225, gas:0.060, ratio:3.75, status:"active", detail:"Up to ~€4,280 through 2028.", outlook:"Steady growth potential.", lat:55.2, lng:23.9 },
-  { name:"Romania", flag:"🇷🇴", sales:10, salesYear:2024, growth:5, maxSubsidy:8000, subsidyProgram:"Casa Verde Plus", subsidyLink:"https://www.afm.ro/", elec:0.175, gas:0.048, ratio:3.65, status:"active", detail:"€4,500–€8,000 grant. Active from H2 2025.", outlook:"Growing market with EU funding support.", lat:45.9, lng:25.0 },
-  { name:"Bulgaria", flag:"🇧🇬", sales:8, salesYear:2024, growth:0, maxSubsidy:5000, subsidyProgram:"NRRP Renovation", subsidyLink:"https://www.mrrb.bg/", elec:0.115, gas:0.055, ratio:2.09, status:"active", detail:"100% for multifamily renovation. No standalone residential HP grant.", outlook:"Limited standalone HP support. EU renovation funds available.", lat:42.7, lng:25.5 },
-  { name:"Croatia", flag:"🇭🇷", sales:8, salesYear:2024, growth:0, maxSubsidy:8500, subsidyProgram:"FZOEU Energy Renovation", subsidyLink:"https://www.fzoeu.hr/", elec:0.175, gas:0.055, ratio:3.18, status:"announced", detail:"Up to ~€8,500 (HP component). New call expected 2026.", outlook:"Periodic subsidy calls. Growing interest.", lat:45.1, lng:15.2 },
-  { name:"Serbia", flag:"🇷🇸", sales:4, salesYear:2024, growth:0, maxSubsidy:1700, subsidyProgram:"Municipal programs", subsidyLink:"https://www.mre.gov.rs/", elec:0.085, gas:0.042, ratio:2.02, status:"active", detail:"€850–€1,700. Fragmented across municipalities.", outlook:"Very low subsidies. Market in early stage.", lat:44.0, lng:21.0 },
-  { name:"Ukraine", flag:"🇺🇦", sales:3, salesYear:2024, growth:0, maxSubsidy:3000, subsidyProgram:"IQ Energy (EBRD)", subsidyLink:"https://ebrdgeff.com/", elec:0.060, gas:0.035, ratio:1.71, status:"active", detail:"20–35% loan reimbursement. War-limited.", outlook:"Market disrupted by conflict. EBRD support continues.", lat:48.4, lng:31.2 },
-  { name:"Turkey", flag:"🇹🇷", sales:50, salesYear:2024, growth:10, maxSubsidy:0, subsidyProgram:"No residential subsidy", subsidyLink:"", elec:0.090, gas:0.035, ratio:2.57, status:"active", detail:"No dedicated residential HP subsidy. SME support only via KOSGEB.", outlook:"Growing market without subsidy support. Manufacturing hub.", lat:39.9, lng:32.9 }
+const C=[
+  {n:"Germany",f:"🇩🇪",s:299,sy:2025,g:55,ms:23500,sp:"BEG/KfW 458",sl:"https://www.kfw.de",e:0.384,ga:0.122,r:3.14,st:"active",det:"30–70% grant. Speed bonus 20%, income bonus 30%, efficiency 5%. GEG abolished Feb 2026.",ol:"Subsidies confirmed through 2029. Market recovering strongly.",la:51.2,lo:10.4},
+  {n:"France",f:"🇫🇷",s:250,sy:2024,g:-20,ms:11000,sp:"MaPrimeRénov'",sl:"https://www.service-public.gouv.fr/particuliers/vosdroits/F35083",e:0.266,ga:0.130,r:2.05,st:"active",det:"€2,500–€11,000 grant + CEE rebate. Hybrid bonus €2,000 for rural.",ol:"Stable subsidy framework. Budget uncertainty continues.",la:46.6,lo:2.3},
+  {n:"Italy",f:"🇮🇹",s:180,sy:2024,g:-35,ms:15000,sp:"Conto Termico 3.0",sl:"https://www.gse.it/servizi-per-te/conto-termico",e:0.329,ga:0.124,r:2.65,st:"active",det:"Up to 65% grant or 50% tax deduction (Ecobonus). €900M budget.",ol:"Post-Superbonus correction. Conto Termico 3.0 launched Dec 2025.",la:42.5,lo:12.5},
+  {n:"Spain",f:"🇪🇸",s:220,sy:2024,g:5.5,ms:6000,sp:"PRTR + IRPF",sl:"https://www.idae.es/",e:0.230,ga:0.095,r:2.42,st:"active",det:"€3,000 grant + 20–60% tax deduction. Expires Dec 2026.",ol:"One of few growing markets.",la:40.4,lo:-3.7},
+  {n:"UK",f:"🇬🇧",s:125,sy:2025,g:27,ms:8800,sp:"Boiler Upgrade Scheme",sl:"https://www.gov.uk/apply-boiler-upgrade-scheme",e:0.285,ga:0.067,r:4.28,st:"active",det:"£7,500 (~€8,800) flat grant. Extended to 2028.",ol:"Fastest growing market. Massive untapped potential.",la:54.0,lo:-2.5},
+  {n:"Poland",f:"🇵🇱",s:100,sy:2024,g:-38,ms:31400,sp:"Czyste Powietrze",sl:"https://czystepowietrze.gov.pl/",e:0.256,ga:0.050,r:5.12,st:"active",det:"30–100% of costs. Max ~€31,400. Three income tiers.",ol:"Large untapped potential.",la:51.9,lo:19.1},
+  {n:"Netherlands",f:"🇳🇱",s:90,sy:2024,g:-30,ms:13000,sp:"ISDE",sl:"https://www.rvo.nl/subsidies-financiering/isde",e:0.290,ga:0.162,r:1.79,st:"active",det:"€1,025 base + €225/kW. Smart-ready mandatory 2026. Hybrids 30%.",ol:"Grid congestion concerns. Hybrid HP uniquely strong.",la:52.1,lo:5.3},
+  {n:"Norway",f:"🇳🇴",s:95,sy:2024,g:-21,ms:3500,sp:"Enova",sl:"https://www.enova.no/",e:0.124,ga:null,r:null,st:"active",det:"25% of costs, max ~€3,500. Air-to-air no longer supported.",ol:"World's highest penetration. Replacement market.",la:64.5,lo:11.0},
+  {n:"Sweden",f:"🇸🇪",s:65,sy:2024,g:-29,ms:5500,sp:"Energy Efficiency Grant",sl:"https://www.energimyndigheten.se/",e:0.096,ga:0.213,r:0.45,st:"active",det:"Up to SEK 60k (~€5,500) + ROT tax deduction 30%.",ol:"Most mature market. 50%+ homes have HP.",la:63.1,lo:16.5},
+  {n:"Finland",f:"🇫🇮",s:80,sy:2024,g:-14,ms:6000,sp:"ARA Energy Grant",sl:"https://www.ara.fi/en",e:0.080,ga:null,r:null,st:"active",det:"€4,000–€6,000 grant + tax deduction up to €3,500/yr.",ol:"524 HPs per 1000 households. Recovery in 2025.",la:64.0,lo:26.0},
+  {n:"Austria",f:"🇦🇹",s:55,sy:2024,g:0.1,ms:7500,sp:"Sanierungsoffensive",sl:"https://www.sanierungsoffensive.gv.at/",e:0.280,ga:0.110,r:2.55,st:"active",det:"Up to €7,500. 100% for low-income. €1.8B through 2030.",ol:"Remarkably stable. 46% market share.",la:47.5,lo:14.6},
+  {n:"Portugal",f:"🇵🇹",s:70,sy:2024,g:15,ms:15000,sp:"E-Lar (PRR)",sl:"https://elar.pfrr.gov.pt/",e:0.220,ga:0.110,r:2.00,st:"active",det:"Up to €15,000 renovation package.",ol:"One of 3 EU markets that grew in 2024.",la:39.4,lo:-8.2},
+  {n:"Belgium",f:"🇧🇪",s:50,sy:2024,g:-52,ms:6000,sp:"Regional premiums",sl:"https://www.vlaanderen.be/",e:0.330,ga:0.120,r:2.75,st:"active",det:"3 regional programs: Flanders, Wallonia, Brussels.",ol:"Sharp decline in 2024. Recovering in 2025.",la:50.8,lo:4.4},
+  {n:"Turkey",f:"🇹🇷",s:50,sy:2024,g:10,ms:0,sp:"No residential subsidy",sl:"",e:0.090,ga:0.035,r:2.57,st:"none",det:"No dedicated residential HP subsidy. SME only via KOSGEB.",ol:"Growing market without subsidy. Manufacturing hub.",la:39.9,lo:32.9},
+  {n:"Denmark",f:"🇩🇰",s:40,sy:2024,g:-30,ms:3620,sp:"Varmepumpepuljen",sl:"https://ens.dk/",e:0.290,ga:0.120,r:2.42,st:"active",det:"~€3,620 fixed grant. Simplified rules. Feb–Nov 2026.",ol:"Strong 2025 recovery (+65%).",la:56.3,lo:9.5},
+  {n:"Switzerland",f:"🇨🇭",s:35,sy:2024,g:-30,ms:10500,sp:"Gebäudeprogramm",sl:"https://www.dasgebaeudeprogramm.ch/",e:0.270,ga:0.130,r:2.08,st:"active",det:"€2,100–€10,500 (canton-dependent). 2025 cut 25%.",ol:"Budget cuts dampening growth.",la:46.8,lo:8.2},
+  {n:"Czech Republic",f:"🇨🇿",s:20,sy:2024,g:-64,ms:6000,sp:"Nová Zelená Úsporám",sl:"https://novazelenausporam.cz/",e:0.350,ga:0.107,r:3.27,st:"expiring",det:"€3k–€5.2k. Suspended Jan 2026. Light version Jun 2026.",ol:"Steepest EU decline. Subsidy gap.",la:49.8,lo:15.5},
+  {n:"Hungary",f:"🇭🇺",s:18,sy:2024,g:-15,ms:12500,sp:"Rural HP + KEHOP",sl:"https://www.palyazat.gov.hu/",e:0.110,ga:0.038,r:2.89,st:"active",det:"Up to ~€12,500 grant. Rural program expires Jun 2026.",ol:"Low energy prices reduce urgency.",la:47.2,lo:19.5},
+  {n:"Romania",f:"🇷🇴",s:10,sy:2024,g:5,ms:8000,sp:"Casa Verde Plus",sl:"https://www.afm.ro/",e:0.175,ga:0.048,r:3.65,st:"active",det:"€4,500–€8,000 grant.",ol:"Growing with EU funding.",la:45.9,lo:25.0},
+  {n:"Slovakia",f:"🇸🇰",s:10,sy:2024,g:-16,ms:4370,sp:"Zelená domácnostiam",sl:"https://zelenadomacnostiam.sk/",e:0.210,ga:0.065,r:3.23,st:"active",det:"€3,800–€4,370 grant.",ol:"Small stable market.",la:48.7,lo:19.7},
+  {n:"Estonia",f:"🇪🇪",s:9,sy:2024,g:-10,ms:10000,sp:"KredEx",sl:"https://kredex.ee/en",e:0.195,ga:0.060,r:3.25,st:"active",det:"Up to €10,000. Limited budget (€6M).",ol:"Good subsidy, small budget.",la:58.6,lo:25.0},
+  {n:"Lithuania",f:"🇱🇹",s:8,sy:2024,g:-5,ms:4280,sp:"LEA HP Support",sl:"https://www.ena.lt/",e:0.225,ga:0.060,r:3.75,st:"active",det:"Up to ~€4,280 through 2028.",ol:"Steady growth potential.",la:55.2,lo:23.9},
+  {n:"Bulgaria",f:"🇧🇬",s:8,sy:2024,g:0,ms:5000,sp:"NRRP Renovation",sl:"https://www.mrrb.bg/",e:0.115,ga:0.055,r:2.09,st:"active",det:"100% for multifamily. No standalone residential HP grant.",ol:"Limited standalone HP support.",la:42.7,lo:25.5},
+  {n:"Croatia",f:"🇭🇷",s:8,sy:2024,g:0,ms:8500,sp:"FZOEU Renovation",sl:"https://www.fzoeu.hr/",e:0.175,ga:0.055,r:3.18,st:"announced",det:"Up to ~€8,500. New call expected 2026.",ol:"Periodic subsidy calls.",la:45.1,lo:15.2},
+  {n:"Luxembourg",f:"🇱🇺",s:3,sy:2024,g:5,ms:24000,sp:"Klimabonus Wunnen",sl:"https://guichet.public.lu/",e:0.220,ga:0.080,r:2.75,st:"active",det:"€3k–€24k (doubled for low-income). Most generous in EU.",ol:"Small market, highest subsidies.",la:49.8,lo:6.1},
+  {n:"Latvia",f:"🇱🇻",s:4,sy:2024,g:0,ms:5000,sp:"EKII Programme",sl:"https://www.kem.gov.lv/",e:0.250,ga:0.055,r:4.55,st:"active",det:"€85M total budget through 2029.",ol:"High elec/gas ratio challenging.",la:56.9,lo:24.1},
+  {n:"Serbia",f:"🇷🇸",s:4,sy:2024,g:0,ms:1700,sp:"Municipal programs",sl:"",e:0.085,ga:0.042,r:2.02,st:"active",det:"€850–€1,700. Fragmented.",ol:"Early stage market.",la:44.0,lo:21.0},
+  {n:"Ukraine",f:"🇺🇦",s:3,sy:2024,g:0,ms:3000,sp:"IQ Energy (EBRD)",sl:"https://ebrdgeff.com/",e:0.060,ga:0.035,r:1.71,st:"active",det:"20–35% loan reimbursement. War-limited.",ol:"Disrupted by conflict.",la:48.4,lo:31.2}
 ];
 
-const newsData = [
-  { country:"Germany", marketSize:299, date:"Feb 24, 2026", title:"GEG abolished — replaced by Building Modernisation Act", desc:"65% renewable heating rule scrapped. Gas/oil boilers allowed without restrictions. Subsidies remain.", impact:"critical", sources:[{name:"Clean Energy Wire",url:"https://www.cleanenergywire.org/news/reform-germanys-heating-law-be-tabled-february-2026"}] },
-  { country:"Germany", marketSize:299, date:"Mar 2026", title:"BEG budget cut by €3.36B for 2026", desc:"Federal budget reduced from €15.32B to €11.96B. Rates unchanged but political pressure mounting.", impact:"critical", sources:[{name:"t-online",url:"https://www.t-online.de/heim-garten/aktuelles/id_101000088/heizungsgesetz-regierung-streicht-foerdermittel-zusammen.html"}] },
-  { country:"Germany", marketSize:299, date:"Mar 2026", title:"CSU calls for ending 'excessive' HP subsidies", desc:"Coalition partner pushing to reduce subsidy levels. Government maintains support through 2029.", impact:"medium", sources:[{name:"Yahoo News",url:"https://www.yahoo.com/news/articles/germany-could-scrap-heat-pump-154257683.html"}] },
-  { country:"France", marketSize:250, date:"Jan 2026", title:"MaPrimeRénov' hybrid bonus for rural areas", desc:"New €2,000 bonus for hybrid HP installations in rural areas not connected to gas mains.", impact:"medium", sources:[{name:"Service-Public",url:"https://www.service-public.gouv.fr/particuliers/vosdroits/F35083"}] },
-  { country:"Italy", marketSize:180, date:"Dec 2025", title:"Conto Termico 3.0 launched with €900M budget", desc:"New version: up to 65% for private, 100% for public. Payments within 60 days for small projects.", impact:"medium", sources:[{name:"GSE",url:"https://www.gse.it/servizi-per-te/conto-termico"}] },
-  { country:"UK", marketSize:125, date:"2025", title:"UK market surges — record 125k units in 2025", desc:"Boiler Upgrade Scheme driving adoption. Extended to 2028. Still under 5 HPs per 1000 households.", impact:"info", sources:[{name:"MCS",url:"https://www.mcscertified.com/mcs-data-dashboard/"}] },
-  { country:"Czech Republic", marketSize:20, date:"Jan 2026", title:"Nová Zelená Úsporám suspended — funds exhausted", desc:"Main subsidy program halted. Expected restart mid-2026. Low-income version from June.", impact:"critical", sources:[{name:"SFZP",url:"https://sfzp.gov.cz/en/administered-programmes/new-green-savings-programme/"}] },
-  { country:"Luxembourg", marketSize:1, date:"Jan 2026", title:"Klimabonus overhauled — up to €24,000 for low-income", desc:"Most generous HP subsidy in Europe doubled for low-income households.", impact:"medium", sources:[{name:"Guichet.lu",url:"https://guichet.public.lu/"}] },
-  { country:"Switzerland", marketSize:35, date:"2025", title:"Gebäudeprogramm budget cut by 25%", desc:"Federal building subsidy reduced. Canton-level variation remains significant.", impact:"medium", sources:[{name:"BAFU",url:"https://www.bafu.admin.ch/en/funding-in-the-building-sector"}] },
-  { country:"Denmark", marketSize:40, date:"Feb 2026", title:"Varmepumpepuljen 2026 opens with simplified rules", desc:"New subsidy round with higher fixed grant and easier application process.", impact:"info", sources:[{name:"ENS",url:"https://ens.dk/"}] },
-  { country:"Netherlands", marketSize:90, date:"2026", title:"Smart-ready HP mandatory for ISDE subsidy", desc:"All subsidized heat pumps must be remotely controllable for grid management.", impact:"medium", sources:[{name:"RVO",url:"https://www.rvo.nl/subsidies-financiering/isde"}] },
-  { country:"Norway", marketSize:95, date:"Aug 2025", title:"Enova drops air-to-air HP support", desc:"Air-to-air considered mature technology. Only water-based HPs supported.", impact:"info", sources:[{name:"Enova",url:"https://www.enova.no/"}] }
+const NEWS=[
+  {c:"Germany",ms:299,d:"Feb 24, 2026",t:"GEG abolished — replaced by Building Modernisation Act",ds:"65% renewable rule scrapped. Gas/oil boilers allowed. Subsidies remain.",i:"critical",src:[{n:"Clean Energy Wire",u:"https://www.cleanenergywire.org/news/reform-germanys-heating-law-be-tabled-february-2026"}]},
+  {c:"Germany",ms:299,d:"Mar 2026",t:"BEG budget cut by €3.36B for 2026",ds:"Budget reduced from €15.32B to €11.96B. Rates unchanged.",i:"critical",src:[{n:"t-online",u:"https://www.t-online.de/heim-garten/aktuelles/id_101000088/heizungsgesetz-regierung-streicht-foerdermittel-zusammen.html"}]},
+  {c:"Germany",ms:299,d:"Mar 2026",t:"CSU calls for ending 'excessive' HP subsidies",ds:"Coalition partner pushing to reduce subsidy levels.",i:"medium",src:[{n:"Yahoo News",u:"https://www.yahoo.com/news/articles/germany-could-scrap-heat-pump-154257683.html"}]},
+  {c:"France",ms:250,d:"Jan 2026",t:"MaPrimeRénov' hybrid bonus for rural areas",ds:"New €2,000 bonus for hybrid HP in rural areas.",i:"medium",src:[{n:"Service-Public",u:"https://www.service-public.gouv.fr/particuliers/vosdroits/F35083"}]},
+  {c:"Italy",ms:180,d:"Dec 2025",t:"Conto Termico 3.0 launched — €900M budget",ds:"Up to 65% for private, 100% for public buildings.",i:"medium",src:[{n:"GSE",u:"https://www.gse.it/servizi-per-te/conto-termico"}]},
+  {c:"UK",ms:125,d:"2025",t:"UK market record — 125k units in 2025",ds:"Boiler Upgrade Scheme extended to 2028.",i:"info",src:[{n:"MCS",u:"https://www.mcscertified.com/"}]},
+  {c:"Czech Republic",ms:20,d:"Jan 2026",t:"Nová Zelená Úsporám suspended",ds:"Funds exhausted. Expected restart mid-2026.",i:"critical",src:[{n:"SFZP",u:"https://sfzp.gov.cz/"}]},
+  {c:"Luxembourg",ms:3,d:"Jan 2026",t:"Klimabonus overhauled — up to €24,000",ds:"Most generous HP subsidy in Europe. Doubled for low-income.",i:"medium",src:[{n:"Guichet.lu",u:"https://guichet.public.lu/"}]},
+  {c:"Switzerland",ms:35,d:"2025",t:"Gebäudeprogramm budget cut 25%",ds:"Federal building subsidy reduced.",i:"medium",src:[{n:"BAFU",u:"https://www.bafu.admin.ch/"}]},
+  {c:"Denmark",ms:40,d:"Feb 2026",t:"Varmepumpepuljen 2026 — simplified rules",ds:"New round with higher grant and easier application.",i:"info",src:[{n:"ENS",u:"https://ens.dk/"}]},
+  {c:"Netherlands",ms:90,d:"2026",t:"Smart-ready HP mandatory for ISDE",ds:"All subsidized HPs must be remotely controllable.",i:"medium",src:[{n:"RVO",u:"https://www.rvo.nl/subsidies-financiering/isde"}]},
+  {c:"Norway",ms:95,d:"Aug 2025",t:"Enova drops air-to-air HP support",ds:"Only water-based HPs supported now.",i:"info",src:[{n:"Enova",u:"https://www.enova.no/"}]}
 ];
+NEWS.sort((a,b)=>b.ms-a.ms);
 
-// Sort news by market size (largest first), then by date
-newsData.sort((a,b) => b.marketSize - a.marketSize || b.date.localeCompare(a.date));
+const ISO={250:"France",276:"Germany",380:"Italy",528:"Netherlands",616:"Poland",752:"Sweden",578:"Norway",246:"Finland",826:"UK",203:"Czech Republic",56:"Belgium",208:"Denmark",40:"Austria",756:"Switzerland",442:"Luxembourg",703:"Slovakia",233:"Estonia",428:"Latvia",440:"Lithuania",100:"Bulgaria",191:"Croatia",348:"Hungary",642:"Romania",688:"Serbia",804:"Ukraine",792:"Turkey",620:"Portugal",724:"Spain"};
 
-// ===== TABS =====
-function showTab(tab, btn) {
-  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('tab-'+tab).classList.add('active');
-  btn.classList.add('active');
-  if (tab === 'countries') renderCountryGrid();
+function gc(n){return C.find(c=>c.n===n);}
+
+// Electricity price color
+function eColor(v){
+  if(!v)return'#1a1a2e';
+  if(v<0.10)return'#06d6a0';
+  if(v<0.20)return'#38b000';
+  if(v<0.25)return'#76c893';
+  if(v<0.30)return'#d49b54';
+  if(v<0.35)return'#c74b50';
+  return'#8b1a1a';
 }
 
+// === MAP ===
+const map=L.map('map',{scrollWheelZoom:true,zoomControl:true}).setView([52,12],4);
+// English-only labels
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png?lang=en',{attribution:'© OSM © CARTO',maxZoom:10}).addTo(map);
 
-// ===== MAP =====
-const map = L.map('map', { scrollWheelZoom:true, zoomControl:true }).setView([52, 12], 4);
-
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png', {
-  attribution:'© OSM © CARTO', maxZoom:10
-}).addTo(map);
-
-const countryISO = {250:"France",276:"Germany",380:"Italy",528:"Netherlands",616:"Poland",752:"Sweden",578:"Norway",246:"Finland",826:"UK",203:"Czech Republic",56:"Belgium",208:"Denmark",40:"Austria",756:"Switzerland",442:"Luxembourg",703:"Slovakia",233:"Estonia",428:"Latvia",440:"Lithuania",100:"Bulgaria",191:"Croatia",348:"Hungary",642:"Romania",688:"Serbia",804:"Ukraine",792:"Turkey",620:"Portugal",724:"Spain"};
-
-function getSubsidyColor(val) {
-  if (!val || val===0) return '#1a1a2e';
-  if (val>=15000) return '#06d6a0';
-  if (val>=8000) return '#38b000';
-  if (val>=3000) return '#d49b54';
-  return '#c74b50';
-}
-
-function getCountryByName(name) { return countries.find(c=>c.name===name); }
-
-async function loadMap() {
-  try {
-    const r = await fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json');
-    const topo = await r.json();
-    const geo = topojson.feature(topo, topo.objects.countries);
-    L.geoJSON(geo, {
-      style: f => {
-        const name = countryISO[parseInt(f.id)];
-        const c = name ? getCountryByName(name) : null;
-        return {
-          fillColor: c ? getSubsidyColor(c.maxSubsidy) : '#111827',
-          weight: c ? 1.5 : 0.3,
-          color: c ? '#475569' : '#1e293b',
-          fillOpacity: c ? 0.8 : 0.3
-        };
+(async()=>{
+  try{
+    const r=await fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json');
+    const t=await r.json();
+    const geo=topojson.feature(t,t.objects.countries);
+    const layer=L.geoJSON(geo,{
+      style:f=>{
+        const nm=ISO[parseInt(f.id)];const c=nm?gc(nm):null;
+        return{fillColor:c?eColor(c.e):'#111827',weight:c?1.2:0.3,color:c?'#475569':'#1e293b',fillOpacity:c?0.8:0.25};
       },
-      onEachFeature: (f, layer) => {
-        const name = countryISO[parseInt(f.id)];
-        const c = name ? getCountryByName(name) : null;
-        if (!c) return;
-        layer.on('mouseover', e => { e.target.setStyle({weight:2.5,color:'#38bdf8',fillOpacity:0.95}); e.target.bringToFront(); });
-        layer.on('mouseout', e => { if(map._geoLayer) map._geoLayer.resetStyle(e.target); });
-        const gasStr = c.gas ? `€${c.gas.toFixed(3)}/kWh` : 'N/A';
-        const linkStr = c.subsidyLink ? `<a href="${c.subsidyLink}" target="_blank" class="popup-link">Official subsidy info →</a>` : '';
-        layer.bindPopup(`
-          <div class="popup-title">${c.flag} ${c.name}</div>
-          <div class="popup-row"><span class="popup-label">Market size</span><span class="popup-val">${c.sales}k units (${c.salesYear})</span></div>
-          <div class="popup-row"><span class="popup-label">Max subsidy</span><span class="popup-val" style="color:#4ade80;">€${c.maxSubsidy.toLocaleString()}</span></div>
-          <div class="popup-row"><span class="popup-label">Electricity</span><span class="popup-val">€${c.elec.toFixed(3)}/kWh</span></div>
-          <div class="popup-row"><span class="popup-label">Gas</span><span class="popup-val">${gasStr}</span></div>
-          ${c.ratio ? `<div class="popup-row"><span class="popup-label">Ratio</span><span class="popup-val">${c.ratio.toFixed(1)}x</span></div>` : ''}
-          ${linkStr}
-        `, {maxWidth:280});
-        layer.on('click', () => openModal(c.name));
+      onEachFeature:(f,ly)=>{
+        const nm=ISO[parseInt(f.id)];const c=nm?gc(nm):null;
+        if(!c)return;
+        ly.on('mouseover',e=>{e.target.setStyle({weight:2.5,color:'#38bdf8',fillOpacity:0.95});e.target.bringToFront();});
+        ly.on('mouseout',e=>{layer.resetStyle(e.target);});
+        const gasS=c.ga?`€${c.ga.toFixed(3)}/kWh`:'N/A';
+        const lnk=c.sl?`<a href="${c.sl}" target="_blank" class="pop-link">Official subsidy info →</a>`:'';
+        ly.bindPopup(`<div class="pop-title">${c.f} ${c.n}</div>
+          <div class="pop-row"><span class="pop-l">Electricity</span><span class="pop-v">€${c.e.toFixed(3)}/kWh</span></div>
+          <div class="pop-row"><span class="pop-l">Gas</span><span class="pop-v">${gasS}</span></div>
+          ${c.r?`<div class="pop-row"><span class="pop-l">Ratio</span><span class="pop-v">${c.r.toFixed(1)}x</span></div>`:''}
+          <div class="pop-row"><span class="pop-l">Max subsidy</span><span class="pop-v" style="color:#4ade80;">€${c.ms.toLocaleString()}</span></div>
+          <div class="pop-row"><span class="pop-l">Market</span><span class="pop-v">${c.s}k (${c.sy})</span></div>
+          ${lnk}`,{maxWidth:260});
+        ly.on('click',()=>openModal(c.n));
       }
     }).addTo(map);
-    map._geoLayer = map.eachLayer(l => { if(l.resetStyle) return l; });
-  } catch(e) { console.error('Map error',e); }
-}
-loadMap();
+  }catch(e){console.error(e);}
+})();
 
-// ===== SUBSIDY TABLE =====
-let tableSortCol = -1, tableSortAsc = true;
-function renderSubsidyTable() {
-  const sorted = [...countries].filter(c=>c.maxSubsidy>0).sort((a,b) => b.maxSubsidy - a.maxSubsidy);
-  document.getElementById('subsidy-table-body').innerHTML = sorted.map(c => {
-    const statusColor = c.status==='active'?'var(--green)':c.status==='expiring'?'var(--yellow)':'var(--accent)';
-    const type = c.subsidyProgram.includes('Tax')||c.subsidyProgram.includes('IRPF')||c.subsidyProgram.includes('ROT')?'Tax Credit':c.subsidyProgram.includes('IQ Energy')?'Loan':'Grant';
-    const tech = c.detail&&c.detail.toLowerCase().includes('hybrid')?'<span class="tech-hybrid">HP + Hybrid</span>':'<span class="tech-hp">Heat Pump</span>';
-    const validUntil = c.status==='expiring'?'Suspended':c.detail.match(/through (\d{4})/)?'Through '+c.detail.match(/through (\d{4})/)[1]:c.detail.match(/expires? .*?(\w+ \d{4})/i)?c.detail.match(/expires? .*?(\w+ \d{4})/i)[1]:'Ongoing';
-    const alert = c.status==='expiring'?'<span class="badge-updated">Updated</span>':c.maxSubsidy>=20000?'<span class="badge-new">Top</span>':'';
-    const link = c.subsidyLink ? `<a href="${c.subsidyLink}" target="_blank" style="font-size:0.72rem;">Source →</a>` : '';
-    return `<tr style="border-bottom:1px solid var(--border);cursor:pointer;" onclick="openModal('${c.name}')" onmouseover="this.style.background='var(--card-hover)'" onmouseout="this.style.background=''">
-      <td style="padding:7px 12px;font-weight:500;">${c.flag} ${c.name}</td>
-      <td style="padding:7px 12px;">${c.subsidyProgram}</td>
-      <td style="padding:7px 12px;">${type}</td>
-      <td style="padding:7px 12px;font-family:Menlo,Consolas,monospace;font-weight:600;color:var(--green);">€${c.maxSubsidy.toLocaleString()}</td>
-      <td style="padding:7px 12px;">${tech}</td>
-      <td style="padding:7px 12px;"><span style="color:${statusColor};font-weight:600;">${c.status}</span></td>
-      <td style="padding:7px 12px;font-size:0.78rem;color:var(--muted);">${validUntil}</td>
-      <td style="padding:7px 12px;">${alert}</td>
-      <td style="padding:7px 12px;">${link}</td>
-    </tr>`;
+// === TABLE ===
+let sc=-1,sa=true;
+function renderTbl(){
+  const s=[...C].filter(c=>c.ms>0).sort((a,b)=>b.ms-a.ms);
+  document.getElementById('tbl-body').innerHTML=s.map(c=>{
+    const stC=c.st==='active'?'st-active':c.st==='expiring'?'st-exp':'st-ann';
+    const ty=c.sp.includes('Tax')||c.sp.includes('IRPF')?'Tax Credit':c.sp.includes('IQ')?'Loan':'Grant';
+    const tech=c.det.toLowerCase().includes('hybrid')?'<span class="t-hyb">HP+Hybrid</span>':'<span class="t-hp">Heat Pump</span>';
+    const vu=c.st==='expiring'?'Suspended':'Ongoing';
+    const al=c.st==='expiring'?'<span class="badge-upd">Alert</span>':c.ms>=20000?'<span class="badge-new">Top</span>':'';
+    const lnk=c.sl?`<a href="${c.sl}" target="_blank" style="font-size:0.7rem;">Source →</a>`:'';
+    return`<tr onclick="openModal('${c.n}')" style="cursor:pointer;">
+      <td style="font-weight:500;">${c.f} ${c.n}</td><td>${c.sp}</td><td>${ty}</td>
+      <td style="font-family:Menlo,Consolas,monospace;font-weight:600;color:var(--green);">€${c.ms.toLocaleString()}</td>
+      <td>${tech}</td><td><span class="${stC}">${c.st}</span></td><td style="color:var(--muted);font-size:0.76rem;">${vu}</td>
+      <td>${al}</td><td>${lnk}</td></tr>`;
   }).join('');
 }
-function sortSubsidyTable(col) {
-  const tbody = document.getElementById('subsidy-table-body');
-  const rows = Array.from(tbody.querySelectorAll('tr'));
-  if (tableSortCol===col) tableSortAsc=!tableSortAsc; else { tableSortCol=col; tableSortAsc=true; }
-  rows.sort((a,b) => {
-    let aV=a.cells[col].textContent.trim(), bV=b.cells[col].textContent.trim();
-    if (col===3) { aV=parseInt(aV.replace(/[^0-9]/g,'')||0); bV=parseInt(bV.replace(/[^0-9]/g,'')||0); return tableSortAsc?aV-bV:bV-aV; }
-    return tableSortAsc?aV.localeCompare(bV):bV.localeCompare(aV);
-  });
-  rows.forEach(r=>tbody.appendChild(r));
+function sortTbl(col){
+  const tb=document.getElementById('tbl-body');const rows=[...tb.querySelectorAll('tr')];
+  if(sc===col)sa=!sa;else{sc=col;sa=true;}
+  rows.sort((a,b)=>{let av=a.cells[col].textContent.trim(),bv=b.cells[col].textContent.trim();
+    if(col===3){av=parseInt(av.replace(/\D/g,'')||0);bv=parseInt(bv.replace(/\D/g,'')||0);return sa?av-bv:bv-av;}
+    return sa?av.localeCompare(bv):bv.localeCompare(av);});
+  rows.forEach(r=>tb.appendChild(r));
 }
-renderSubsidyTable();
+renderTbl();
 
-// ===== NEWS =====
-function renderNews() {
-  document.getElementById('news-grid').innerHTML = newsData.map(n => {
-    const impClass = n.impact==='critical'?'news-high':n.impact==='medium'?'news-medium':'news-low';
-    const badgeClass = n.impact==='critical'?'badge-critical':n.impact==='medium'?'badge-medium':'badge-info';
-    const label = n.impact==='critical'?'Critical':n.impact==='medium'?'Medium':'Info';
-    return `<div class="news-card ${impClass}">
-      <div class="news-meta">
-        <span>${n.country} · ${n.date}</span>
-        <span class="impact-badge ${badgeClass}">${label}</span>
-      </div>
-      <div class="news-title">${n.title}</div>
-      <div class="news-desc">${n.desc}</div>
-      <div class="news-source">${n.sources.map(s=>`<a href="${s.url}" target="_blank">${s.name}</a>`).join(' · ')}</div>
-    </div>`;
-  }).join('');
-}
-renderNews();
+// === NEWS ===
+document.getElementById('news-grid').innerHTML=NEWS.map(n=>{
+  const ic=n.i==='critical'?'n-high':n.i==='medium'?'n-med':'n-low';
+  const bc=n.i==='critical'?'imp-c':n.i==='medium'?'imp-m':'imp-i';
+  const lb=n.i==='critical'?'Critical':n.i==='medium'?'Medium':'Info';
+  return`<div class="g-card news-card ${ic}"><div class="n-meta"><span>${n.c} · ${n.d}</span><span class="imp ${bc}">${lb}</span></div><div class="n-title">${n.t}</div><div class="n-desc">${n.ds}</div><div class="n-src">${n.src.map(s=>`<a href="${s.u}" target="_blank">${s.n}</a>`).join(' · ')}</div></div>`;
+}).join('');
 
-// ===== COUNTRY GRID =====
-function renderCountryGrid(filter) {
-  const filtered = filter ? countries.filter(c=>c.name.toLowerCase().includes(filter.toLowerCase())) : countries;
-  const sorted = [...filtered].sort((a,b) => b.sales - a.sales);
-  document.getElementById('country-grid').innerHTML = sorted.map(c => `
-    <div class="country-card" onclick="openModal('${c.name}')">
-      <div class="country-header">
-        <span class="country-name">${c.flag} ${c.name}</span>
-        <span class="country-market">${c.sales}k units</span>
-      </div>
-      <div class="country-subsidy">${c.subsidyProgram}: €${c.maxSubsidy.toLocaleString()}</div>
-      <div class="country-detail-row"><span style="color:var(--muted);">Electricity</span><span>€${c.elec.toFixed(3)}/kWh</span></div>
-      <div class="country-detail-row"><span style="color:var(--muted);">Gas</span><span>${c.gas?'€'+c.gas.toFixed(3)+'/kWh':'N/A'}</span></div>
-      <div class="country-detail-row"><span style="color:var(--muted);">Status</span><span style="color:${c.status==='active'?'var(--green)':c.status==='expiring'?'var(--yellow)':'var(--accent)'}">${c.status}</span></div>
-    </div>
-  `).join('');
-}
-
-function filterCountries() {
-  renderCountryGrid(document.getElementById('country-search').value);
-}
-
-// ===== MODAL =====
-function openModal(name) {
-  const c = getCountryByName(name);
-  if (!c) return;
-  const gasStr = c.gas ? `€${c.gas.toFixed(3)}/kWh` : 'N/A';
-  const ratioStr = c.ratio ? `${c.ratio.toFixed(2)}x` : 'N/A';
-  const countryNews = newsData.filter(n => n.country === name);
-
-  let html = `<h2>${c.flag} ${c.name}</h2>`;
-
-  // Subsidies
-  html += `<div class="modal-section"><h3><i data-lucide="coins" style="width:14px;height:14px;"></i> Current Subsidies</h3>`;
-  html += `<div class="modal-card"><div class="s-name">${c.subsidyProgram}</div><div class="s-amount">Max: €${c.maxSubsidy.toLocaleString()}</div><div class="s-detail">${c.detail}</div></div>`;
-  if (c.subsidyLink) html += `<a href="${c.subsidyLink}" target="_blank" style="font-size:0.82rem;">Official subsidy page →</a>`;
-  html += `</div>`;
-
-  // Energy
-  html += `<div class="modal-section"><h3><i data-lucide="bolt" style="width:14px;height:14px;"></i> Electricity vs Gas</h3>`;
-  html += `<div class="modal-stat"><span style="color:var(--muted);">Electricity</span><span>€${c.elec.toFixed(3)}/kWh</span></div>`;
-  html += `<div class="modal-stat"><span style="color:var(--muted);">Gas</span><span>${gasStr}</span></div>`;
-  html += `<div class="modal-stat"><span style="color:var(--muted);">Ratio (Elec/Gas)</span><span style="color:${c.ratio&&c.ratio>3.5?'var(--red)':c.ratio&&c.ratio>2.5?'var(--yellow)':'var(--green)'}">${ratioStr}</span></div>`;
-  html += `<div class="modal-stat"><span style="color:var(--muted);">Market size (${c.salesYear})</span><span>${c.sales}k units (${c.growth>0?'+':''}${c.growth}%)</span></div>`;
-  html += `</div>`;
-
-  // News
-  if (countryNews.length) {
-    html += `<div class="modal-section"><h3><i data-lucide="radio-tower" style="width:14px;height:14px;"></i> Policy Changes & Signals</h3>`;
-    countryNews.forEach(n => {
-      const badgeClass = n.impact==='critical'?'badge-critical':n.impact==='medium'?'badge-medium':'badge-info';
-      html += `<div class="modal-card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><span class="s-name">${n.title}</span><span class="impact-badge ${badgeClass}">${n.impact}</span></div><div class="s-detail">${n.desc}</div></div>`;
-    });
-    html += `</div>`;
+// === MODAL ===
+function openModal(nm){
+  const c=gc(nm);if(!c)return;
+  const gasS=c.ga?`€${c.ga.toFixed(3)}/kWh`:'N/A';
+  const ratS=c.r?`${c.r.toFixed(2)}x`:'N/A';
+  const cn=NEWS.filter(n=>n.c===nm);
+  let h=`<h2>${c.f} ${c.n}</h2>`;
+  h+=`<div class="m-sec"><h3><i data-lucide="coins" style="width:14px;height:14px;"></i> Current Subsidies</h3>`;
+  h+=`<div class="m-card"><div class="nm">${c.sp}</div><div class="am">Max: €${c.ms.toLocaleString()}</div><div class="dt">${c.det}</div></div>`;
+  if(c.sl)h+=`<a href="${c.sl}" target="_blank" style="font-size:0.8rem;">Official subsidy page →</a>`;
+  h+=`</div>`;
+  h+=`<div class="m-sec"><h3><i data-lucide="bolt" style="width:14px;height:14px;"></i> Electricity vs Gas</h3>`;
+  h+=`<div class="m-row"><span style="color:var(--muted)">Electricity</span><span>€${c.e.toFixed(3)}/kWh</span></div>`;
+  h+=`<div class="m-row"><span style="color:var(--muted)">Gas</span><span>${gasS}</span></div>`;
+  h+=`<div class="m-row"><span style="color:var(--muted)">Ratio</span><span style="color:${c.r&&c.r>3.5?'var(--red)':c.r&&c.r>2.5?'var(--yellow)':'var(--green)'}">${ratS}</span></div>`;
+  h+=`<div class="m-row"><span style="color:var(--muted)">Market (${c.sy})</span><span>${c.s}k units (${c.g>0?'+':''}${c.g}%)</span></div></div>`;
+  if(cn.length){
+    h+=`<div class="m-sec"><h3><i data-lucide="radio-tower" style="width:14px;height:14px;"></i> Policy Changes</h3>`;
+    cn.forEach(n=>{const bc=n.i==='critical'?'imp-c':n.i==='medium'?'imp-m':'imp-i';
+      h+=`<div class="m-card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;"><span class="nm">${n.t}</span><span class="imp ${bc}">${n.i}</span></div><div class="dt">${n.ds}</div></div>`;});
+    h+=`</div>`;
   }
-
-  // Outlook
-  html += `<div class="modal-section"><h3><i data-lucide="compass" style="width:14px;height:14px;"></i> Market Outlook</h3>`;
-  html += `<p style="font-size:0.85rem;color:var(--muted);line-height:1.6;">${c.outlook}</p>`;
-  html += `</div>`;
-
-  document.getElementById('modal-body').innerHTML = html;
+  h+=`<div class="m-sec"><h3><i data-lucide="compass" style="width:14px;height:14px;"></i> Outlook</h3><p style="font-size:0.84rem;color:var(--muted);line-height:1.6;">${c.ol}</p></div>`;
+  document.getElementById('modal-body').innerHTML=h;
   document.getElementById('modal').classList.add('show');
   lucide.createIcons();
 }
+function closeModal(){document.getElementById('modal').classList.remove('show');}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 
-function closeModal() { document.getElementById('modal').classList.remove('show'); }
-document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
-
-// Init
 lucide.createIcons();
 </script>
 </body>
