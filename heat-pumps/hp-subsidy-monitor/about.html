@@ -11,7 +11,7 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;}
 header{background:var(--bg);border-bottom:1px solid var(--glass-b);padding:12px 0;position:sticky;top:0;z-index:1000;backdrop-filter:blur(24px);}
-header .inner{max-width:800px;margin:0 auto;padding:0 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+header .inner{max-width:1400px;margin:0 auto;padding:0 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
 .logo{display:flex;align-items:center;gap:10px;}
 .logo-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--accent),#4ade80);border-radius:8px;display:flex;align-items:center;justify-content:center;}
 .logo h1{font-size:1.05rem;font-weight:700;}
@@ -47,13 +47,18 @@ footer{text-align:center;margin-top:40px;padding-top:20px;border-top:1px solid v
 <body>
 <header>
   <div class="inner">
-    <div class="logo"><div class="logo-icon"><i data-lucide="zap" style="width:17px;height:17px;color:#070b16;"></i></div><div><h1>HP Subsidy Monitor</h1><div class="sub">European Heat Pump Subsidy Dashboard</div></div></div>
+    <div class="logo"><div class="logo-icon"><i data-lucide="zap" style="width:17px;height:17px;color:#070b16;"></i></div><div><h1 style="font-size:1.05rem;margin:0;">HP Subsidy Monitor</h1><div class="sub" style="font-size:0.65rem;">European Heat Pump Subsidy Dashboard</div></div></div>
     <div class="tabs">
-      <a href="index.html" class="tab">Dashboard</a>
-      <a href="energy-prices.html" class="tab">Electricity Prices</a>
-      <a href="about.html" class="tab active">About</a>
+      <a href="index.html" class="tab"><i data-lucide="layout-dashboard" style="width:14px;height:14px;"></i> Dashboard</a>
+      <a href="index.html" class="tab"><i data-lucide="globe" style="width:14px;height:14px;"></i> Countries</a>
+      <a href="energy-prices.html" class="tab"><i data-lucide="bolt" style="width:14px;height:14px;"></i> Electricity Prices</a>
+      <a href="about.html" class="tab active"><i data-lucide="info" style="width:14px;height:14px;"></i> About</a>
     </div>
-    <button class="theme-btn" onclick="toggleTheme()">Toggle Theme</button>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span class="scope-tag" style="font-size:0.68rem;color:var(--dim);background:rgba(100,116,139,0.12);padding:3px 8px;border-radius:5px;">AW · LW · EW · Hybrids</span>
+      <button class="theme-btn" onclick="toggleTheme()"><i data-lucide="sun-moon" style="width:13px;height:13px;"></i> Theme</button>
+      <span style="font-size:0.65rem;color:var(--dim);">Apr 7, 2026</span>
+    </div>
   </div>
 </header>
 <div class="container" style="padding-top:20px;">
