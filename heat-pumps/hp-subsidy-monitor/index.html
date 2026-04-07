@@ -17,11 +17,11 @@
   --tbl-even:rgba(20,30,50,0.3);--map-bg:#0a1020;
 }
 [data-theme="light"]{
-  --bg:#f5f7fa;--bg2:#ffffff;--card:rgba(255,255,255,0.85);
-  --glass:rgba(255,255,255,0.7);--glass-b:rgba(200,210,225,0.5);--glass-h:rgba(56,189,248,0.06);
-  --accent:#0078d4;--accent2:#0066b3;--green:#16a34a;--red:#dc2626;--yellow:#ca8a04;--orange:#ea580c;
-  --text:#1e293b;--muted:#475569;--dim:#64748b;--border:rgba(200,210,225,0.6);
-  --tbl-even:rgba(241,245,249,0.6);--map-bg:#e8eef4;
+  --bg:#f0f4f8;--bg2:#ffffff;--card:rgba(255,255,255,0.9);
+  --glass:rgba(255,255,255,0.8);--glass-b:rgba(180,195,215,0.5);--glass-h:rgba(0,120,212,0.06);
+  --accent:#0066b3;--accent2:#005599;--green:#15803d;--red:#b91c1c;--yellow:#a16207;--orange:#c2410c;
+  --text:#0f172a;--muted:#334155;--dim:#475569;--border:rgba(180,195,215,0.5);
+  --tbl-even:rgba(226,232,240,0.5);--map-bg:#dce5ef;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;}
@@ -31,7 +31,7 @@ a{color:var(--accent);text-decoration:none;}a:hover{opacity:0.8;}
 .container{max-width:1400px;margin:0 auto;padding:0 20px;}
 
 /* Header */
-header{background:linear-gradient(180deg,rgba(8,13,26,0.98),rgba(12,18,37,0.95));border-bottom:1px solid var(--glass-b);padding:12px 0;position:sticky;top:0;z-index:1000;backdrop-filter:blur(24px);}
+header{background:var(--bg);border-bottom:1px solid var(--glass-b);padding:12px 0;position:sticky;top:0;z-index:1000;backdrop-filter:blur(24px);}
 header .container{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
 .logo{display:flex;align-items:center;gap:10px;}
 .logo-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--accent),var(--green));border-radius:8px;display:flex;align-items:center;justify-content:center;}
@@ -44,7 +44,7 @@ header .container{display:flex;justify-content:space-between;align-items:center;
 .tab:hover{color:var(--text);}
 .tab.active{color:white;background:rgba(56,189,248,0.15);box-shadow:0 0 12px rgba(56,189,248,0.1);}
 
-.scope-tag{font-size:0.58rem;color:var(--dim);background:rgba(100,116,139,0.12);padding:3px 8px;border-radius:5px;letter-spacing:0.3px;}
+.scope-tag{font-size:0.68rem;color:var(--dim);background:rgba(100,116,139,0.12);padding:3px 8px;border-radius:5px;letter-spacing:0.3px;}
 .updated{font-size:0.65rem;color:var(--dim);}
 
 /* Glass card */
@@ -54,7 +54,7 @@ header .container{display:flex;justify-content:space-between;align-items:center;
 /* KPI */
 .kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:8px;padding:14px 0;}
 .kpi{padding:13px 15px;}
-.kpi-l{font-size:0.62rem;color:var(--dim);text-transform:uppercase;letter-spacing:0.9px;font-weight:600;}
+.kpi-l{font-size:0.7rem;color:var(--dim);text-transform:uppercase;letter-spacing:0.9px;font-weight:600;}
 .kpi-v{font-size:1.4rem;font-weight:700;color:white;font-family:Menlo,Consolas,monospace;margin:2px 0;}
 .kpi-s{font-size:0.7rem;}
 .up{color:var(--green);}.dn{color:var(--red);}.ne{color:var(--yellow);}
@@ -74,8 +74,8 @@ header .container{display:flex;justify-content:space-between;align-items:center;
 .lg-d{width:10px;height:10px;border-radius:2px;}
 
 /* Popup */
-.leaflet-popup-content-wrapper{background:rgba(12,18,37,0.96)!important;color:var(--text)!important;border-radius:12px!important;border:1px solid var(--glass-b)!important;backdrop-filter:blur(20px)!important;box-shadow:0 12px 40px rgba(0,0,0,0.5)!important;}
-.leaflet-popup-tip{background:rgba(12,18,37,0.96)!important;}
+.leaflet-popup-content-wrapper{background:var(--bg2)!important;color:var(--text)!important;border-radius:12px!important;border:1px solid var(--glass-b)!important;backdrop-filter:blur(20px)!important;box-shadow:0 12px 40px rgba(0,0,0,0.3)!important;}
+.leaflet-popup-tip{background:var(--bg2)!important;}
 .pop-t{font-size:0.95rem;font-weight:600;color:white;margin-bottom:6px;}
 .pop-r{display:flex;justify-content:space-between;padding:3px 0;font-size:0.8rem;}
 .pop-l{color:var(--muted);}.pop-v{color:white;font-weight:600;font-family:Menlo,Consolas,monospace;}
@@ -92,7 +92,7 @@ tr:hover{background:rgba(56,189,248,0.04);}
 .t-hp{display:inline-block;padding:2px 6px;border-radius:4px;font-size:0.66rem;font-weight:600;background:rgba(56,189,248,0.1);color:var(--accent);}
 .t-hy{display:inline-block;padding:2px 6px;border-radius:4px;font-size:0.66rem;font-weight:600;background:rgba(74,222,128,0.1);color:var(--green);}
 .st-a{color:var(--green);font-weight:600;}.st-e{color:var(--yellow);font-weight:600;}.st-n{color:var(--dim);}
-.a2a-tag{font-size:0.58rem;color:var(--orange);font-style:italic;}
+.a2a-tag{font-size:0.68rem;color:var(--orange);font-style:italic;}
 
 /* News */
 .news-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(350px,1fr));gap:10px;}
@@ -104,7 +104,7 @@ tr:hover{background:rgba(56,189,248,0.04);}
 .n-tt{font-size:0.86rem;font-weight:600;color:white;margin-bottom:3px;}
 .n-ds{font-size:0.76rem;color:var(--muted);line-height:1.5;}
 .n-sr{margin-top:5px;}.n-sr a{font-size:0.68rem;}
-.imp{padding:2px 6px;border-radius:4px;font-size:0.58rem;font-weight:700;text-transform:uppercase;}
+.imp{padding:2px 6px;border-radius:4px;font-size:0.68rem;font-weight:700;text-transform:uppercase;}
 .imp-c{background:rgba(248,113,113,0.12);color:var(--red);}
 .imp-m{background:rgba(251,146,60,0.12);color:var(--orange);}
 .imp-i{background:rgba(56,189,248,0.12);color:var(--accent);}
@@ -173,7 +173,6 @@ footer{text-align:center;padding:20px 0;border-top:1px solid var(--glass-b);colo
       <button class="tab active" onclick="showP('dash',this)"><i data-lucide="layout-dashboard" style="width:14px;height:14px;"></i> Dashboard</button>
       <button class="tab" onclick="showP('countries',this)" id="tab-countries"><i data-lucide="globe" style="width:14px;height:14px;"></i> Countries</button>
       <a href="energy-prices.html" class="tab" style="text-decoration:none;"><i data-lucide="bolt" style="width:14px;height:14px;"></i> Electricity Prices</a>
-      <a href="compare.html" class="tab" style="text-decoration:none;"><i data-lucide="git-compare" style="width:14px;height:14px;"></i> Compare</a>
       <a href="about.html" class="tab" style="text-decoration:none;"><i data-lucide="info" style="width:14px;height:14px;"></i> About</a>
     </div>
     <div style="display:flex;align-items:center;gap:10px;">
@@ -321,7 +320,7 @@ function showP(id,btn){
 
 // === MAP ===
 let mapMode='subsidy';
-const map=L.map('map',{scrollWheelZoom:true,zoomControl:true}).setView([52,12],4);
+const map=L.map('map',{scrollWheelZoom:false,zoomControl:true}).setView([52,12],4);
 L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png?lang=en',{attribution:'© OSM © CARTO',maxZoom:10}).addTo(map);
 
 let geoLayer;

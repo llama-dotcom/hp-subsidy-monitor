@@ -6,137 +6,203 @@
 <title>Electricity Prices — HP Subsidy Monitor</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://unpkg.com/lucide@latest"></script>
+<script>
+(function(){const s=localStorage.getItem('hp-theme');if(s)document.documentElement.setAttribute('data-theme',s);})();
+</script>
 <style>
-:root,[data-theme="dark"]{--bg:#0f1629;--glass:rgba(25,36,60,0.5);--glass-b:rgba(90,110,150,0.22);--accent:#38bdf8;--green:#4ade80;--red:#f87171;--text:#e8ecf4;--muted:#a8b5c8;--dim:#7b8aa0;--radius:14px;}
-[data-theme="light"]{--bg:#f5f7fa;--glass:rgba(255,255,255,0.7);--glass-b:rgba(200,210,225,0.5);--accent:#0078d4;--green:#16a34a;--red:#dc2626;--text:#1e293b;--muted:#475569;--dim:#64748b;}
+:root,[data-theme="dark"]{--bg:#0f1629;--bg2:#141d33;--card:rgba(20,29,51,0.7);--glass:rgba(25,36,60,0.5);--glass-b:rgba(90,110,150,0.22);--accent:#38bdf8;--green:#4ade80;--red:#f87171;--yellow:#fbbf24;--text:#e8ecf4;--muted:#a8b5c8;--dim:#7b8aa0;--radius:14px;--chart-grid:rgba(51,65,85,0.2);}
+[data-theme="light"]{--bg:#f0f4f8;--bg2:#ffffff;--card:rgba(255,255,255,0.9);--glass:rgba(255,255,255,0.8);--glass-b:rgba(180,195,215,0.5);--accent:#0066b3;--green:#15803d;--red:#b91c1c;--yellow:#a16207;--text:#0f172a;--muted:#334155;--dim:#475569;--chart-grid:rgba(200,210,225,0.4);}
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;padding:40px 20px;}
-.container{max-width:1000px;margin:0 auto;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;}
 a{color:var(--accent);text-decoration:none;}
-h1{font-size:1.6rem;font-weight:700;color:white;margin-bottom:6px;}
-.sub{font-size:0.82rem;color:var(--dim);margin-bottom:24px;}
-.back{display:inline-block;margin-bottom:20px;font-size:0.82rem;color:var(--dim);}
-.gc{background:var(--glass);backdrop-filter:blur(16px);border:1px solid var(--glass-b);border-radius:var(--radius);padding:20px;margin-bottom:14px;}
-select{padding:8px 14px;border:1px solid var(--glass-b);border-radius:8px;background:var(--glass);color:var(--text);font-size:0.85rem;min-width:180px;margin-bottom:16px;}
-select:focus{outline:none;border-color:var(--accent);}
-.chart-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-.chart-box{padding:16px;}
-.chart-box h3{font-size:0.85rem;color:var(--muted);margin-bottom:10px;}
-.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
-.stat{text-align:center;padding:12px;}
-.stat-l{font-size:0.64rem;color:var(--dim);text-transform:uppercase;letter-spacing:0.8px;}
-.stat-v{font-size:1.3rem;font-weight:700;font-family:Menlo,Consolas,monospace;color:white;margin:2px 0;}
-footer{text-align:center;margin-top:40px;padding-top:20px;border-top:1px solid var(--glass-b);font-size:0.7rem;color:var(--dim);}
-@media(max-width:768px){.chart-row{grid-template-columns:1fr;}.stats-row{grid-template-columns:1fr;}}
+.container{max-width:1400px;margin:0 auto;padding:0 20px;}
+
+/* Header — same as dashboard */
+header{background:var(--bg);border-bottom:1px solid var(--glass-b);padding:12px 0;position:sticky;top:0;z-index:1000;backdrop-filter:blur(24px);}
+header .container{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+.logo{display:flex;align-items:center;gap:10px;}
+.logo-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--accent),var(--green));border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.logo h1{font-size:1.05rem;font-weight:700;color:var(--text);}
+.logo .sub{font-size:0.65rem;color:var(--dim);}
+.tabs{display:flex;gap:2px;background:rgba(30,41,59,0.3);border-radius:10px;padding:3px;}
+[data-theme="light"] .tabs{background:rgba(200,210,225,0.3);}
+.tab{padding:7px 18px;border-radius:8px;font-size:0.8rem;font-weight:500;color:var(--dim);cursor:pointer;border:none;background:none;transition:all 0.2s;display:flex;align-items:center;gap:6px;text-decoration:none;}
+.tab:hover{color:var(--text);}
+.tab.active{color:var(--text);background:rgba(56,189,248,0.15);}
+[data-theme="light"] .tab.active{background:rgba(0,102,179,0.1);}
+.scope-tag{font-size:0.68rem;color:var(--dim);background:rgba(100,116,139,0.12);padding:3px 8px;border-radius:5px;}
+.theme-btn{background:var(--glass);border:1px solid var(--glass-b);border-radius:8px;padding:5px 10px;cursor:pointer;color:var(--dim);font-size:0.75rem;display:flex;align-items:center;gap:4px;}
+.theme-btn:hover{border-color:var(--accent);color:var(--text);}
+.updated{font-size:0.65rem;color:var(--dim);}
+
+.gc{background:var(--glass);backdrop-filter:blur(16px);border:1px solid var(--glass-b);border-radius:var(--radius);transition:all 0.2s;}
+
+/* Layout */
+.main-grid{display:grid;grid-template-columns:3fr 1fr;gap:14px;padding:14px 0;}
+.side-cards{display:flex;flex-direction:column;gap:10px;}
+.stat-card{padding:16px;text-align:center;}
+.stat-l{font-size:0.7rem;color:var(--dim);text-transform:uppercase;letter-spacing:0.8px;font-weight:600;}
+.stat-v{font-size:1.4rem;font-weight:700;font-family:Menlo,Consolas,monospace;margin:4px 0;}
+.stat-sub{font-size:0.75rem;color:var(--dim);}
+.outlook-card{padding:14px;border-left:3px solid var(--accent);}
+.outlook-card p{font-size:0.8rem;color:var(--muted);line-height:1.6;}
+.outlook-card strong{color:var(--text);}
+
+/* News */
+.news-card{padding:12px 14px;border-left:3px solid var(--accent);margin-top:8px;}
+.n-title{font-size:0.82rem;font-weight:600;color:var(--text);margin-bottom:2px;}
+.n-desc{font-size:0.75rem;color:var(--muted);line-height:1.5;}
+.n-meta{font-size:0.68rem;color:var(--dim);margin-bottom:4px;}
+
+/* Table */
+table{width:100%;border-collapse:collapse;font-size:0.8rem;}
+th{padding:8px;text-align:left;color:var(--dim);font-size:0.68rem;text-transform:uppercase;border-bottom:1px solid var(--glass-b);cursor:pointer;font-weight:600;}
+th:hover{color:var(--accent);}
+td{padding:7px 8px;border-bottom:1px solid rgba(51,65,85,0.15);}
+tr:nth-child(even){background:var(--tbl-even,rgba(20,30,50,0.2));}
+tr:hover{background:rgba(56,189,248,0.04);}
+
+footer{text-align:center;padding:20px 0;border-top:1px solid var(--glass-b);color:var(--dim);font-size:0.72rem;}
+
+@media(max-width:768px){.main-grid{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
+
+<header>
+  <div class="container">
+    <div class="logo">
+      <div class="logo-icon"><i data-lucide="zap" style="width:17px;height:17px;color:#070b16;"></i></div>
+      <div><h1>HP Subsidy Monitor</h1><div class="sub">European Heat Pump Subsidy Dashboard</div></div>
+    </div>
+    <div class="tabs">
+      <a href="index.html" class="tab"><i data-lucide="layout-dashboard" style="width:14px;height:14px;"></i> Dashboard</a>
+      <a href="index.html#" class="tab" onclick="return false;"><i data-lucide="globe" style="width:14px;height:14px;"></i> Countries</a>
+      <a href="energy-prices.html" class="tab active"><i data-lucide="bolt" style="width:14px;height:14px;"></i> Electricity Prices</a>
+      <a href="about.html" class="tab"><i data-lucide="info" style="width:14px;height:14px;"></i> About</a>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span class="scope-tag">AW · LW · EW · Hybrids</span>
+      <button class="theme-btn" onclick="toggleTheme()"><i data-lucide="sun-moon" style="width:13px;height:13px;"></i> <span id="tl">Light</span></button>
+      <span class="updated">Apr 7, 2026</span>
+    </div>
+  </div>
+</header>
+
 <div class="container">
 
-<nav style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
-  <a href="index.html" style="padding:5px 12px;border-radius:6px;font-size:0.78rem;color:var(--dim);background:rgba(30,41,59,0.3);text-decoration:none;">Dashboard</a>
-  <a href="compare.html" style="padding:5px 12px;border-radius:6px;font-size:0.78rem;color:var(--dim);background:rgba(30,41,59,0.3);text-decoration:none;">Compare</a>
-  <a href="energy-prices.html" style="padding:5px 12px;border-radius:6px;font-size:0.78rem;color:white;background:rgba(56,189,248,0.15);text-decoration:none;">Prices</a>
-  <a href="about.html" style="padding:5px 12px;border-radius:6px;font-size:0.78rem;color:var(--dim);background:rgba(30,41,59,0.3);text-decoration:none;">About</a>
-  <button onclick="toggleTheme()" style="padding:5px 12px;border-radius:6px;font-size:0.72rem;color:var(--dim);background:var(--glass);border:1px solid var(--glass-b);cursor:pointer;">Toggle Theme</button>
-</nav>
-<h1><i data-lucide="bolt" style="width:22px;height:22px;color:var(--accent);display:inline;vertical-align:middle;"></i> Energy Prices</h1>
-<p class="sub">Residential electricity and gas prices across Europe. 5-year history (2020–2025). Source: Eurostat.</p>
-
-<label style="font-size:0.82rem;color:var(--muted);margin-right:8px;">Select country:</label>
-<select id="country-sel" onchange="updateCharts()"></select>
-
-<div class="stats-row" id="stats"></div>
-
-<div class="gc" style="padding:20px;">
-  <h3 style="font-size:0.88rem;color:var(--muted);margin-bottom:12px;">Electricity & Gas Price — 5 Year History (€/kWh)</h3>
-  <canvas id="combo-chart" height="140"></canvas>
+<div style="padding:14px 0 8px;">
+  <label style="font-size:0.85rem;color:var(--muted);margin-right:8px;">Select country:</label>
+  <select id="sel" onchange="update()" style="padding:8px 14px;border:1px solid var(--glass-b);border-radius:8px;background:var(--glass);color:var(--text);font-size:0.85rem;min-width:180px;"></select>
 </div>
 
-<div class="gc" style="margin-top:14px;">
-  <h3 style="font-size:0.85rem;color:var(--muted);margin-bottom:10px;">All Countries — Current Prices</h3>
-  <div style="overflow-x:auto;">
-    <table style="width:100%;border-collapse:collapse;font-size:0.78rem;" id="price-table">
-      <thead><tr style="border-bottom:1px solid var(--glass-b);">
-        <th style="padding:8px;text-align:left;color:var(--dim);font-size:0.66rem;text-transform:uppercase;cursor:pointer;" onclick="sortPT(0)">Country</th>
-        <th style="padding:8px;text-align:left;color:var(--dim);font-size:0.66rem;text-transform:uppercase;cursor:pointer;" onclick="sortPT(1)">Electricity</th>
-        <th style="padding:8px;text-align:left;color:var(--dim);font-size:0.66rem;text-transform:uppercase;cursor:pointer;" onclick="sortPT(2)">Gas</th>
-        <th style="padding:8px;text-align:left;color:var(--dim);font-size:0.66rem;text-transform:uppercase;cursor:pointer;" onclick="sortPT(3)">Ratio</th>
-      </tr></thead>
-      <tbody id="pt-body"></tbody>
-    </table>
+<div class="main-grid">
+  <!-- Chart (left) -->
+  <div class="gc" style="padding:18px;">
+    <h3 style="font-size:0.88rem;color:var(--muted);margin-bottom:10px;">Electricity & Gas — 5 Year History (€/kWh)</h3>
+    <canvas id="chart" height="130"></canvas>
+  </div>
+
+  <!-- Details (right) -->
+  <div class="side-cards">
+    <div class="gc stat-card"><div class="stat-l">Electricity (2025)</div><div class="stat-v" id="sv-e" style="color:var(--accent);">—</div><div class="stat-sub">per kWh</div></div>
+    <div class="gc stat-card"><div class="stat-l">Gas (2025)</div><div class="stat-v" id="sv-g" style="color:var(--green);">—</div><div class="stat-sub">per kWh</div></div>
+    <div class="gc stat-card"><div class="stat-l">Ratio Elec/Gas</div><div class="stat-v" id="sv-r">—</div><div class="stat-sub" id="sv-rsub"></div></div>
+    <div class="gc outlook-card" id="outlook-box"></div>
+    <div id="news-box"></div>
   </div>
 </div>
 
+<!-- All countries table -->
+<div class="gc" style="padding:16px;margin:14px 0;">
+  <h3 style="font-size:0.88rem;color:var(--muted);margin-bottom:10px;">All Countries — Current Prices</h3>
+  <div style="overflow-x:auto;">
+    <table><thead><tr>
+      <th onclick="sortPT(0)">Country</th>
+      <th onclick="sortPT(1)">Electricity</th>
+      <th onclick="sortPT(2)">Gas</th>
+      <th onclick="sortPT(3)">Ratio</th>
+    </tr></thead><tbody id="pt"></tbody></table>
+  </div>
+</div>
+
+</div>
+
 <footer>
-  <p>HP Subsidy Monitor · <a href="index.html">Dashboard</a> · <a href="about.html">About</a> · Source: Eurostat H1 2025, Ofgem, GlobalPetrolPrices</p>
+  <p>HP Subsidy Monitor · Source: Eurostat H1 2025, Ofgem, GlobalPetrolPrices</p>
   <p style="margin-top:4px;"><a href="/impressum.html">Impressum</a> · <a href="/datenschutz.html">Datenschutz</a></p>
 </footer>
-</div>
 
 <script>
 const P=[
-  {n:"Germany",f:"🇩🇪",e:0.384,ga:0.122,h:[{y:2020,e:0.301,g:0.061},{y:2021,e:0.319,g:0.064},{y:2022,e:0.346,g:0.114},{y:2023,e:0.417,g:0.123},{y:2024,e:0.394,g:0.122},{y:2025,e:0.384,g:0.122}]},
-  {n:"France",f:"🇫🇷",e:0.266,ga:0.130,h:[{y:2020,e:0.190,g:0.079},{y:2021,e:0.193,g:0.078},{y:2022,e:0.212,g:0.108},{y:2023,e:0.232,g:0.119},{y:2024,e:0.280,g:0.126},{y:2025,e:0.266,g:0.130}]},
-  {n:"Netherlands",f:"🇳🇱",e:0.290,ga:0.162,h:[{y:2020,e:0.127,g:0.101},{y:2021,e:0.119,g:0.107},{y:2022,e:0.201,g:0.174},{y:2023,e:0.370,g:0.171},{y:2024,e:0.310,g:0.158},{y:2025,e:0.290,g:0.162}]},
-  {n:"UK",f:"🇬🇧",e:0.285,ga:0.067,h:[{y:2020,e:0.208,g:0.045},{y:2021,e:0.228,g:0.048},{y:2022,e:0.340,g:0.103},{y:2023,e:0.340,g:0.103},{y:2024,e:0.281,g:0.069},{y:2025,e:0.285,g:0.067}]},
-  {n:"Italy",f:"🇮🇹",e:0.329,ga:0.124,h:[{y:2020,e:0.222,g:0.090},{y:2021,e:0.229,g:0.084},{y:2022,e:0.322,g:0.132},{y:2023,e:0.338,g:0.117},{y:2024,e:0.295,g:0.120},{y:2025,e:0.329,g:0.124}]},
-  {n:"Spain",f:"🇪🇸",e:0.230,ga:0.095,h:[{y:2020,e:0.210,g:0.075},{y:2021,e:0.225,g:0.075},{y:2022,e:0.280,g:0.110},{y:2023,e:0.260,g:0.100},{y:2024,e:0.240,g:0.098},{y:2025,e:0.230,g:0.095}]},
-  {n:"Poland",f:"🇵🇱",e:0.256,ga:0.050,h:[{y:2020,e:0.139,g:0.040},{y:2021,e:0.140,g:0.038},{y:2022,e:0.158,g:0.047},{y:2023,e:0.184,g:0.052},{y:2024,e:0.213,g:0.049},{y:2025,e:0.256,g:0.050}]},
-  {n:"Austria",f:"🇦🇹",e:0.280,ga:0.110,h:[{y:2020,e:0.210,g:0.068},{y:2021,e:0.215,g:0.070},{y:2022,e:0.270,g:0.120},{y:2023,e:0.330,g:0.130},{y:2024,e:0.300,g:0.115},{y:2025,e:0.280,g:0.110}]},
-  {n:"Belgium",f:"🇧🇪",e:0.330,ga:0.120,h:[{y:2020,e:0.280,g:0.055},{y:2021,e:0.285,g:0.057},{y:2022,e:0.350,g:0.110},{y:2023,e:0.380,g:0.130},{y:2024,e:0.345,g:0.125},{y:2025,e:0.330,g:0.120}]},
-  {n:"Sweden",f:"🇸🇪",e:0.096,ga:0.213,h:[{y:2020,e:0.199,g:0.098},{y:2021,e:0.209,g:0.128},{y:2022,e:0.238,g:0.191},{y:2023,e:0.154,g:0.178},{y:2024,e:0.110,g:0.176},{y:2025,e:0.096,g:0.213}]},
-  {n:"Denmark",f:"🇩🇰",e:0.290,ga:0.120,h:[{y:2020,e:0.280,g:0.090},{y:2021,e:0.290,g:0.095},{y:2022,e:0.350,g:0.140},{y:2023,e:0.310,g:0.125},{y:2024,e:0.295,g:0.122},{y:2025,e:0.290,g:0.120}]},
-  {n:"Finland",f:"🇫🇮",e:0.080,ga:null,h:[{y:2020,e:0.173,g:null},{y:2021,e:0.175,g:null},{y:2022,e:0.201,g:null},{y:2023,e:0.137,g:null},{y:2024,e:0.089,g:null},{y:2025,e:0.080,g:null}]},
-  {n:"Switzerland",f:"🇨🇭",e:0.270,ga:0.130,h:[{y:2020,e:0.210,g:0.100},{y:2021,e:0.215,g:0.105},{y:2022,e:0.250,g:0.140},{y:2023,e:0.280,g:0.140},{y:2024,e:0.275,g:0.135},{y:2025,e:0.270,g:0.130}]},
-  {n:"Czech Republic",f:"🇨🇿",e:0.350,ga:0.107,h:[{y:2020,e:0.205,g:0.050},{y:2021,e:0.210,g:0.052},{y:2022,e:0.283,g:0.112},{y:2023,e:0.352,g:0.131},{y:2024,e:0.340,g:0.120},{y:2025,e:0.350,g:0.107}]}
+  {n:"Germany",f:"🇩🇪",e:0.384,ga:0.122,outlook:"€6.5B government grid subsidy in 2026 may cut electricity prices ~16%.",news:[{d:"Mar 2026",t:"Grid fee subsidy approved",ds:"€6.5B federal subsidy for transmission costs in 2026."}],h:[{y:2020,e:0.301,g:0.061},{y:2021,e:0.319,g:0.064},{y:2022,e:0.346,g:0.114},{y:2023,e:0.417,g:0.123},{y:2024,e:0.394,g:0.122},{y:2025,e:0.384,g:0.122}]},
+  {n:"France",f:"🇫🇷",e:0.266,ga:0.130,outlook:"Regulated tariff (TRVE) increased in 2024. Further adjustments expected 2026.",news:[],h:[{y:2020,e:0.190,g:0.079},{y:2021,e:0.193,g:0.078},{y:2022,e:0.212,g:0.108},{y:2023,e:0.232,g:0.119},{y:2024,e:0.280,g:0.126},{y:2025,e:0.266,g:0.130}]},
+  {n:"Netherlands",f:"🇳🇱",e:0.290,ga:0.162,outlook:"Highest gas prices in EU. Grid congestion may push electricity costs.",news:[{d:"2026",t:"Grid congestion surcharges discussed",ds:"Network operators considering congestion pricing."}],h:[{y:2020,e:0.127,g:0.101},{y:2021,e:0.119,g:0.107},{y:2022,e:0.201,g:0.174},{y:2023,e:0.370,g:0.171},{y:2024,e:0.310,g:0.158},{y:2025,e:0.290,g:0.162}]},
+  {n:"UK",f:"🇬🇧",e:0.285,ga:0.067,outlook:"Highest elec/gas ratio (4.28x) in tracked countries. Makes HP economics challenging.",news:[{d:"Apr 2026",t:"Ofgem Q2 cap set",ds:"Energy price cap at £1,568/yr for typical household."}],h:[{y:2020,e:0.208,g:0.045},{y:2021,e:0.228,g:0.048},{y:2022,e:0.340,g:0.103},{y:2023,e:0.340,g:0.103},{y:2024,e:0.281,g:0.069},{y:2025,e:0.285,g:0.067}]},
+  {n:"Italy",f:"🇮🇹",e:0.329,ga:0.124,outlook:"Electricity prices recovering after 2024 dip. Gas stable.",news:[],h:[{y:2020,e:0.222,g:0.090},{y:2021,e:0.229,g:0.084},{y:2022,e:0.322,g:0.132},{y:2023,e:0.338,g:0.117},{y:2024,e:0.295,g:0.120},{y:2025,e:0.329,g:0.124}]},
+  {n:"Spain",f:"🇪🇸",e:0.230,ga:0.095,outlook:"Moderate prices. Solar growth helping to reduce wholesale costs.",news:[],h:[{y:2020,e:0.210,g:0.075},{y:2021,e:0.225,g:0.075},{y:2022,e:0.280,g:0.110},{y:2023,e:0.260,g:0.100},{y:2024,e:0.240,g:0.098},{y:2025,e:0.230,g:0.095}]},
+  {n:"Poland",f:"🇵🇱",e:0.256,ga:0.050,outlook:"Highest ratio in EU (5.12x). Very cheap gas makes HP economics difficult.",news:[{d:"2026",t:"Energy price shields ending",ds:"Government price caps to be phased out, may increase household costs."}],h:[{y:2020,e:0.139,g:0.040},{y:2021,e:0.140,g:0.038},{y:2022,e:0.158,g:0.047},{y:2023,e:0.184,g:0.052},{y:2024,e:0.213,g:0.049},{y:2025,e:0.256,g:0.050}]},
+  {n:"Austria",f:"🇦🇹",e:0.280,ga:0.110,outlook:"Prices normalizing after 2022-23 spike.",news:[],h:[{y:2020,e:0.210,g:0.068},{y:2021,e:0.215,g:0.070},{y:2022,e:0.270,g:0.120},{y:2023,e:0.330,g:0.130},{y:2024,e:0.300,g:0.115},{y:2025,e:0.280,g:0.110}]},
+  {n:"Belgium",f:"🇧🇪",e:0.330,ga:0.120,outlook:"Among highest electricity prices in EU.",news:[],h:[{y:2020,e:0.280,g:0.055},{y:2021,e:0.285,g:0.057},{y:2022,e:0.350,g:0.110},{y:2023,e:0.380,g:0.130},{y:2024,e:0.345,g:0.125},{y:2025,e:0.330,g:0.120}]},
+  {n:"Sweden",f:"🇸🇪",e:0.096,ga:0.213,outlook:"Cheapest electricity in EU. Gas barely used. Excellent HP economics.",news:[],h:[{y:2020,e:0.199,g:0.098},{y:2021,e:0.209,g:0.128},{y:2022,e:0.238,g:0.191},{y:2023,e:0.154,g:0.178},{y:2024,e:0.110,g:0.176},{y:2025,e:0.096,g:0.213}]},
+  {n:"Denmark",f:"🇩🇰",e:0.290,ga:0.120,outlook:"Wind energy expansion may reduce wholesale prices long-term.",news:[],h:[{y:2020,e:0.280,g:0.090},{y:2021,e:0.290,g:0.095},{y:2022,e:0.350,g:0.140},{y:2023,e:0.310,g:0.125},{y:2024,e:0.295,g:0.122},{y:2025,e:0.290,g:0.120}]},
+  {n:"Finland",f:"🇫🇮",e:0.080,ga:null,outlook:"Second cheapest electricity in EU. Gas not used residentially.",news:[],h:[{y:2020,e:0.173,g:null},{y:2021,e:0.175,g:null},{y:2022,e:0.201,g:null},{y:2023,e:0.137,g:null},{y:2024,e:0.089,g:null},{y:2025,e:0.080,g:null}]},
+  {n:"Switzerland",f:"🇨🇭",e:0.270,ga:0.130,outlook:"Stable prices. Canton-level variation.",news:[],h:[{y:2020,e:0.210,g:0.100},{y:2021,e:0.215,g:0.105},{y:2022,e:0.250,g:0.140},{y:2023,e:0.280,g:0.140},{y:2024,e:0.275,g:0.135},{y:2025,e:0.270,g:0.130}]},
+  {n:"Czech Republic",f:"🇨🇿",e:0.350,ga:0.107,outlook:"Highest electricity price in tracked countries.",news:[],h:[{y:2020,e:0.205,g:0.050},{y:2021,e:0.210,g:0.052},{y:2022,e:0.283,g:0.112},{y:2023,e:0.352,g:0.131},{y:2024,e:0.340,g:0.120},{y:2025,e:0.350,g:0.107}]}
 ];
 
-// Populate select
-const sel=document.getElementById('country-sel');
+const sel=document.getElementById('sel');
 P.forEach(c=>{const o=document.createElement('option');o.value=c.n;o.textContent=c.f+' '+c.n;sel.appendChild(o);});
 
-let comboChart;
-const chartOpts={responsive:true,plugins:{legend:{labels:{color:'#94a3b8',font:{size:12},usePointStyle:true}}},scales:{x:{grid:{color:'rgba(51,65,85,0.2)'},ticks:{color:'#64748b',font:{size:11}}},y:{grid:{color:'rgba(51,65,85,0.2)'},ticks:{color:'#64748b',font:{size:11},callback:v=>'€'+v.toFixed(2)},min:0}}};
-
-function updateCharts(){
+let chart;
+function update(){
   const c=P.find(p=>p.n===sel.value);if(!c)return;
-  const labels=c.h.map(h=>h.y.toString());
-  const elecData=c.h.map(h=>h.e);
-  const gasData=c.h.map(h=>h.g);
+  const labels=c.h.map(h=>h.y);
   const ratio=c.ga?c.e/c.ga:null;
 
-  document.getElementById('stats').innerHTML=`
-    <div class="gc stat"><div class="stat-l">Electricity (2025)</div><div class="stat-v" style="color:var(--accent);">€${c.e.toFixed(3)}</div><div style="font-size:0.7rem;color:var(--dim);">per kWh</div></div>
-    <div class="gc stat"><div class="stat-l">Gas (2025)</div><div class="stat-v" style="color:var(--green);">${c.ga?'€'+c.ga.toFixed(3):'N/A'}</div><div style="font-size:0.7rem;color:var(--dim);">per kWh</div></div>
-    <div class="gc stat"><div class="stat-l">Ratio (Elec/Gas)</div><div class="stat-v" style="color:${ratio&&ratio>3.5?'var(--red)':ratio&&ratio>2.5?'var(--yellow)':'var(--green)'}">${ratio?ratio.toFixed(2)+'x':'N/A'}</div><div style="font-size:0.7rem;color:var(--dim);">${ratio&&ratio<3?'Favorable for HP':'High ratio'}</div></div>`;
+  document.getElementById('sv-e').textContent='€'+c.e.toFixed(3);
+  document.getElementById('sv-g').textContent=c.ga?'€'+c.ga.toFixed(3):'N/A';
+  document.getElementById('sv-g').style.color=c.ga?'var(--green)':'var(--dim)';
+  document.getElementById('sv-r').textContent=ratio?ratio.toFixed(2)+'x':'N/A';
+  document.getElementById('sv-r').style.color=ratio&&ratio>3.5?'var(--red)':ratio&&ratio>2.5?'var(--yellow)':'var(--green)';
+  document.getElementById('sv-rsub').textContent=ratio?(ratio<3?'Favorable for HP':'High ratio — COP needs >'+ratio.toFixed(1)):'';
 
-  if(comboChart)comboChart.destroy();
-  const datasets=[{label:'Electricity',data:elecData,borderColor:'#38bdf8',backgroundColor:'rgba(56,189,248,0.08)',fill:true,tension:0.3,borderWidth:2.5,pointRadius:4,pointBackgroundColor:'#38bdf8'}];
-  if(gasData[0]!==null)datasets.push({label:'Gas',data:gasData,borderColor:'#fb923c',backgroundColor:'rgba(251,146,60,0.08)',fill:true,tension:0.3,borderWidth:2.5,pointRadius:4,pointBackgroundColor:'#fb923c'});
-  comboChart=new Chart(document.getElementById('combo-chart'),{type:'line',data:{labels,datasets},options:chartOpts});
+  document.getElementById('outlook-box').innerHTML=`<p><strong>Outlook:</strong> ${c.outlook}</p>`;
+
+  let nh='';
+  if(c.news.length){c.news.forEach(n=>{nh+=`<div class="gc news-card"><div class="n-meta">${n.d}</div><div class="n-title">${n.t}</div><div class="n-desc">${n.ds}</div></div>`;});}
+  document.getElementById('news-box').innerHTML=nh;
+
+  if(chart)chart.destroy();
+  const ds=[{label:'Electricity (€/kWh)',data:c.h.map(h=>h.e),borderColor:'var(--accent)',backgroundColor:'rgba(56,189,248,0.08)',fill:true,tension:0.3,borderWidth:2.5,pointRadius:4}];
+  if(c.h[0].g!==null)ds.push({label:'Gas (€/kWh)',data:c.h.map(h=>h.g),borderColor:'var(--orange)',backgroundColor:'rgba(251,146,60,0.08)',fill:true,tension:0.3,borderWidth:2.5,pointRadius:4});
+
+  chart=new Chart(document.getElementById('chart'),{type:'line',data:{labels,datasets:ds},options:{
+    responsive:true,
+    plugins:{legend:{labels:{color:'var(--muted)',font:{size:12},usePointStyle:true}}},
+    scales:{x:{grid:{color:'var(--chart-grid)'},ticks:{color:'var(--dim)',font:{size:11}}},y:{grid:{color:'var(--chart-grid)'},ticks:{color:'var(--dim)',font:{size:11},callback:v=>'€'+v.toFixed(2)},min:0}}
+  }});
 }
 
-// Price table
+// Table
 function renderPT(){
   const all=[...P].sort((a,b)=>b.e-a.e);
-  document.getElementById('pt-body').innerHTML=all.map(c=>{
+  document.getElementById('pt').innerHTML=all.map(c=>{
     const r=c.ga?c.e/c.ga:null;
     const rc=r?r>3.5?'color:var(--red)':r>2.5?'color:var(--yellow)':'color:var(--green)':'';
-    return`<tr style="border-bottom:1px solid rgba(51,65,85,0.2);cursor:pointer;" onclick="document.getElementById('country-sel').value='${c.n}';updateCharts();window.scrollTo({top:0,behavior:'smooth'});">
-      <td style="padding:6px 8px;font-weight:500;">${c.f} ${c.n}</td>
-      <td style="padding:6px 8px;font-family:Menlo,Consolas,monospace;">€${c.e.toFixed(3)}</td>
-      <td style="padding:6px 8px;font-family:Menlo,Consolas,monospace;">${c.ga?'€'+c.ga.toFixed(3):'N/A'}</td>
-      <td style="padding:6px 8px;font-family:Menlo,Consolas,monospace;${rc}">${r?r.toFixed(2)+'x':'N/A'}</td>
+    return`<tr style="cursor:pointer;" onclick="sel.value='${c.n}';update();window.scrollTo({top:0,behavior:'smooth'});">
+      <td style="font-weight:500;">${c.f} ${c.n}</td>
+      <td style="font-family:Menlo,Consolas,monospace;">€${c.e.toFixed(3)}</td>
+      <td style="font-family:Menlo,Consolas,monospace;">${c.ga?'€'+c.ga.toFixed(3):'N/A'}</td>
+      <td style="font-family:Menlo,Consolas,monospace;${rc}">${r?r.toFixed(2)+'x':'N/A'}</td>
     </tr>`;
   }).join('');
 }
 renderPT();
 
-// Sort
 let ptSc=-1,ptSa=true;
 function sortPT(col){
-  const tb=document.getElementById('pt-body');const rows=[...tb.querySelectorAll('tr')];
+  const tb=document.getElementById('pt');const rows=[...tb.querySelectorAll('tr')];
   if(ptSc===col)ptSa=!ptSa;else{ptSc=col;ptSa=true;}
   rows.sort((a,b)=>{let av=a.cells[col].textContent.trim(),bv=b.cells[col].textContent.trim();
     if(col>0){av=parseFloat(av.replace(/[^0-9.]/g,'')||0);bv=parseFloat(bv.replace(/[^0-9.]/g,'')||0);return ptSa?av-bv:bv-av;}
@@ -144,9 +210,17 @@ function sortPT(col){
   rows.forEach(r=>tb.appendChild(r));
 }
 
-updateCharts();
-(function(){const s=localStorage.getItem('hp-theme');if(s)document.documentElement.setAttribute('data-theme',s);})();
-function toggleTheme(){const c=document.documentElement.getAttribute('data-theme')||'dark';const n=c==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',n);localStorage.setItem('hp-theme',n);updateCharts();}
+function toggleTheme(){
+  const c=document.documentElement.getAttribute('data-theme')||'dark';
+  const n=c==='dark'?'light':'dark';
+  document.documentElement.setAttribute('data-theme',n);
+  localStorage.setItem('hp-theme',n);
+  document.getElementById('tl').textContent=n==='dark'?'Light':'Dark';
+  update();
+}
+(function(){const s=localStorage.getItem('hp-theme');if(s){document.documentElement.setAttribute('data-theme',s);const l=document.getElementById('tl');if(l)l.textContent=s==='dark'?'Light':'Dark';}})();
+
+update();
 lucide.createIcons();
 </script>
 </body>
