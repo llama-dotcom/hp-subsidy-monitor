@@ -85,6 +85,8 @@ header .container{display:flex;justify-content:space-between;align-items:center;
 .tbl-w{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--glass-b);}
 table{width:100%;border-collapse:collapse;font-size:0.78rem;}
 thead{background:rgba(12,18,37,0.9);}
+[data-theme="light"] thead{background:rgba(60,50,40,0.85);}
+[data-theme="light"] th{color:#f5f0e8;}
 th{padding:10px 12px;text-align:left;color:var(--dim);font-size:0.64rem;text-transform:uppercase;letter-spacing:0.6px;border-bottom:1px solid var(--border);cursor:pointer;white-space:nowrap;font-weight:600;}
 th:hover{color:var(--accent);}
 td{padding:8px 12px;border-bottom:1px solid rgba(51,65,85,0.2);}
@@ -193,6 +195,9 @@ footer{text-align:center;padding:20px 0;border-top:1px solid var(--glass-b);colo
 
 <div class="container">
 
+<!-- DASHBOARD TAB -->
+<div id="p-dash" class="panel active">
+
 <!-- KPI -->
 <div class="kpi-row">
   <div class="gc kpi"><div class="kpi-l">Countries</div><div class="kpi-v">29</div><div class="kpi-s ne">40+ subsidy programs</div></div>
@@ -202,9 +207,6 @@ footer{text-align:center;padding:20px 0;border-top:1px solid var(--glass-b);colo
   <div class="gc kpi"><div class="kpi-l">HP Penetration</div><div class="kpi-v">Norway</div><div class="kpi-s ne">~63% of households</div></div>
   <div class="gc kpi"><div class="kpi-l">EU Trend 2025</div><div class="kpi-v">+11%</div><div class="kpi-s up">Recovery year</div></div>
 </div>
-
-<!-- DASHBOARD TAB -->
-<div id="p-dash" class="panel active">
 
 <!-- Map -->
 <section style="padding:8px 0 14px;">
@@ -417,10 +419,10 @@ function addLabels(){
   labelMarkers.forEach(m=>map.removeLayer(m));
   labelMarkers=[];
   const isDk=(document.documentElement.getAttribute('data-theme')||'dark')==='dark';
-  const style=isDk?'color:#fff;text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000;':'color:#1a1510;text-shadow:-1px -1px 0 #f5f0e8,1px -1px 0 #f5f0e8,-1px 1px 0 #f5f0e8,1px 1px 0 #f5f0e8;';
+  const style=isDk?'color:#f0ead8;text-shadow:-1px -1px 0 #2a2520,1px -1px 0 #2a2520,-1px 1px 0 #2a2520,1px 1px 0 #2a2520;':'color:#3a3025;text-shadow:-1px -1px 0 #f0ead8,1px -1px 0 #f0ead8,-1px 1px 0 #f0ead8,1px 1px 0 #f0ead8;';
   C.forEach(c=>{
     if(!c.la||!c.lo)return;
-    const icon=L.divIcon({className:'',html:`<div style="font-size:10px;font-weight:700;white-space:nowrap;pointer-events:none;${style}">${c.n.toUpperCase()}</div>`,iconSize:[0,0],iconAnchor:[0,0]});
+    const icon=L.divIcon({className:'',html:`<div style="font-size:8px;font-weight:700;white-space:nowrap;pointer-events:none;letter-spacing:0.5px;${style}">${c.n.toUpperCase()}</div>`,iconSize:[0,0],iconAnchor:[0,0]});
     const m=L.marker([c.la,c.lo],{icon,interactive:false,pane:'tooltipPane'}).addTo(map);
     labelMarkers.push(m);
   });
