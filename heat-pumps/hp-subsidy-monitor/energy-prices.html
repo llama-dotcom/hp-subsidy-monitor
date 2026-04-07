@@ -22,6 +22,7 @@ header{background:var(--bg);border-bottom:1px solid var(--glass-b);padding:12px 
 header .container{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
 .logo{display:flex;align-items:center;gap:10px;}
 .logo-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--accent),var(--green));border-radius:8px;display:flex;align-items:center;justify-content:center;}
+[data-theme="light"] .logo-icon{background:linear-gradient(135deg,#c9a84c,#e8dcc8);}
 .logo h1{font-size:1.05rem;font-weight:700;color:var(--text);}
 .logo .sub{font-size:0.65rem;color:var(--dim);}
 .tabs{display:flex;gap:2px;background:rgba(30,41,59,0.3);border-radius:10px;padding:3px;}
@@ -148,7 +149,10 @@ const P=[
   {n:"Denmark",f:"🇩🇰",e:0.290,ga:0.120,outlook:"Wind energy expansion may reduce wholesale prices long-term.",news:[],h:[{y:2020,e:0.280,g:0.090},{y:2021,e:0.290,g:0.095},{y:2022,e:0.350,g:0.140},{y:2023,e:0.310,g:0.125},{y:2024,e:0.295,g:0.122},{y:2025,e:0.290,g:0.120}]},
   {n:"Finland",f:"🇫🇮",e:0.080,ga:null,outlook:"Second cheapest electricity in EU. Gas not used residentially.",news:[],h:[{y:2020,e:0.173,g:null},{y:2021,e:0.175,g:null},{y:2022,e:0.201,g:null},{y:2023,e:0.137,g:null},{y:2024,e:0.089,g:null},{y:2025,e:0.080,g:null}]},
   {n:"Switzerland",f:"🇨🇭",e:0.270,ga:0.130,outlook:"Stable prices. Canton-level variation.",news:[],h:[{y:2020,e:0.210,g:0.100},{y:2021,e:0.215,g:0.105},{y:2022,e:0.250,g:0.140},{y:2023,e:0.280,g:0.140},{y:2024,e:0.275,g:0.135},{y:2025,e:0.270,g:0.130}]},
-  {n:"Czech Republic",f:"🇨🇿",e:0.350,ga:0.107,outlook:"Highest electricity price in tracked countries.",news:[],h:[{y:2020,e:0.205,g:0.050},{y:2021,e:0.210,g:0.052},{y:2022,e:0.283,g:0.112},{y:2023,e:0.352,g:0.131},{y:2024,e:0.340,g:0.120},{y:2025,e:0.350,g:0.107}]}
+  {n:"Czech Republic",f:"🇨🇿",e:0.350,ga:0.107,outlook:"Highest electricity price in tracked countries.",news:[],h:[{y:2020,e:0.205,g:0.050},{y:2021,e:0.210,g:0.052},{y:2022,e:0.283,g:0.112},{y:2023,e:0.352,g:0.131},{y:2024,e:0.340,g:0.120},{y:2025,e:0.350,g:0.107}]},
+  {n:"Norway",f:"🇳🇴",e:0.124,ga:null,outlook:"Cheapest electricity in tracked. Gas not used residentially.",news:[],h:[{y:2020,e:0.068,g:null},{y:2021,e:0.105,g:null},{y:2022,e:0.205,g:null},{y:2023,e:0.145,g:null},{y:2024,e:0.122,g:null},{y:2025,e:0.124,g:null}]},
+  {n:"Estonia",f:"🇪🇪",e:0.195,ga:0.060,outlook:"Prices normalized after 2022 spike.",news:[],h:[{y:2020,e:0.130,g:0.040},{y:2021,e:0.140,g:0.042},{y:2022,e:0.220,g:0.080},{y:2023,e:0.210,g:0.070},{y:2024,e:0.200,g:0.062},{y:2025,e:0.195,g:0.060}]},
+  {n:"Lithuania",f:"🇱🇹",e:0.225,ga:0.060,outlook:"Baltic prices stabilizing.",news:[],h:[{y:2020,e:0.135,g:0.040},{y:2021,e:0.145,g:0.042},{y:2022,e:0.250,g:0.090},{y:2023,e:0.240,g:0.075},{y:2024,e:0.230,g:0.065},{y:2025,e:0.225,g:0.060}]}
 ];
 
 const sel=document.getElementById('sel');

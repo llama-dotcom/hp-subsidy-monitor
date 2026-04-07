@@ -35,6 +35,7 @@ header{background:var(--bg);border-bottom:1px solid var(--glass-b);padding:12px 
 header .container{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
 .logo{display:flex;align-items:center;gap:10px;}
 .logo-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--accent),var(--green));border-radius:8px;display:flex;align-items:center;justify-content:center;}
+[data-theme="light"] .logo-icon{background:linear-gradient(135deg,#c9a84c,#e8dcc8);}
 .logo h1{font-size:1.05rem;font-weight:700;color:var(--text);}
 .logo .sub{font-size:0.65rem;color:var(--dim);}
 
@@ -200,7 +201,7 @@ footer{text-align:center;padding:20px 0;border-top:1px solid var(--glass-b);colo
 
 <!-- KPI -->
 <div class="kpi-row">
-  <div class="gc kpi"><div class="kpi-l">Countries</div><div class="kpi-v">29</div><div class="kpi-s ne">40+ subsidy programs</div></div>
+  <div class="gc kpi"><div class="kpi-l">Countries</div><div class="kpi-v">32</div><div class="kpi-s ne">40+ subsidy programs</div></div>
   <div class="gc kpi"><div class="kpi-l">Highest Subsidy</div><div class="kpi-v">€24,000</div><div class="kpi-s up">Luxembourg</div></div>
   <div class="gc kpi"><div class="kpi-l">Largest Market</div><div class="kpi-v">Germany</div><div class="kpi-s up">299k units (2025)</div></div>
   <div class="gc kpi"><div class="kpi-l">Fastest Growing</div><div class="kpi-v">Denmark</div><div class="kpi-s up">+65% in 2025</div></div>
@@ -310,7 +311,10 @@ const C=[
   {n:"Serbia-Montenegro",f:"🇷🇸",s:0,yr:0,ms:1700,sp:"Municipal programs",sl:"",e:0.085,ga:0.042,r:2.02,st:"active",det:"€850–€1,700. Market $8M in 2024.",ol:"Not covered by EHPA.",pen:"N/A",la:44.0,lo:21.0,a2a:true,src:"N/A"},
   {n:"Ukraine",f:"🇺🇦",s:0,yr:0,ms:3000,sp:"IQ Energy (EBRD)",sl:"https://ebrdgeff.com/",e:0.060,ga:0.035,r:1.71,st:"active",det:"20–35% reimbursement. No official stats exist.",ol:"War-limited. Imports dominated.",pen:"N/A",la:48.4,lo:31.2,a2a:true,src:"N/A"},
   {n:"Bosnia-Herzegovina",f:"🇧🇦",s:0,yr:0,ms:1000,sp:"Limited programs",sl:"",e:0.095,ga:0.040,r:2.38,st:"active",det:"Small municipal grants.",ol:"Not covered by EHPA.",pen:"N/A",la:43.9,lo:17.7,a2a:true,src:"N/A"},
-  {n:"Luxembourg",f:"🇱🇺",s:1,yr:2024,ms:24000,sp:"Klimabonus Wunnen",sl:"https://guichet.public.lu/",e:0.220,ga:0.080,r:2.75,st:"active",det:"€3k–€24k. Most generous.",ol:"Tiny market, top subsidies.",pen:"N/A",la:49.8,lo:6.1,a2a:true,src:"EHPA est."}
+  {n:"Luxembourg",f:"🇱🇺",s:1,yr:2024,ms:24000,sp:"Klimabonus Wunnen",sl:"https://guichet.public.lu/",e:0.220,ga:0.080,r:2.75,st:"active",det:"€3k–€24k. Most generous.",ol:"Tiny market, top subsidies.",pen:"N/A",la:49.8,lo:6.1,a2a:true,src:"EHPA est."},
+  {n:"Norway",f:"🇳🇴",s:11,yr:2024,ms:3500,sp:"Enova",sl:"https://www.enova.no/",e:0.124,ga:null,r:null,st:"active",det:"25% of costs, max ~€3,500. Air-to-air not supported.",ol:"World's highest penetration. Replacement market.",pen:"~63%",la:64.5,lo:11.0,a2a:false,src:"NOVAP"},
+  {n:"Estonia",f:"🇪🇪",s:9,yr:2024,ms:10000,sp:"KredEx",sl:"https://kredex.ee/en",e:0.195,ga:0.060,r:3.25,st:"active",det:"Up to €10,000. Limited budget (€6M).",ol:"Good subsidy, small budget.",pen:"N/A",la:58.6,lo:25.0,a2a:true,src:"EHPA est."},
+  {n:"Lithuania",f:"🇱🇹",s:8,yr:2024,ms:4280,sp:"LEA HP Support",sl:"https://www.ena.lt/",e:0.225,ga:0.060,r:3.75,st:"active",det:"Up to ~€4,280 through 2028.",ol:"Steady growth potential.",pen:"N/A",la:55.2,lo:23.9,a2a:true,src:"EHPA est."}
 ];
 
 const NEWS=[
@@ -328,7 +332,7 @@ const NEWS=[
 ];
 NEWS.sort((a,b)=>b.ms-a.ms);
 
-const ISO={250:"France",276:"Germany",380:"Italy",528:"Netherlands",616:"Poland",752:"Sweden",246:"Finland",826:"UK",203:"Czech Republic",56:"Belgium",208:"Denmark",40:"Austria",756:"Switzerland",442:"Luxembourg",703:"Slovakia",428:"Latvia",100:"Bulgaria",191:"Croatia",348:"Hungary",642:"Romania",688:"Serbia-Montenegro",804:"Ukraine",792:"Turkey",620:"Portugal",724:"Spain",300:"Greece",372:"Ireland",705:"Slovenia",70:"Bosnia-Herzegovina"};
+const ISO={250:"France",276:"Germany",380:"Italy",528:"Netherlands",616:"Poland",752:"Sweden",246:"Finland",826:"UK",203:"Czech Republic",56:"Belgium",208:"Denmark",40:"Austria",756:"Switzerland",442:"Luxembourg",703:"Slovakia",428:"Latvia",100:"Bulgaria",191:"Croatia",348:"Hungary",642:"Romania",688:"Serbia-Montenegro",804:"Ukraine",792:"Turkey",620:"Portugal",724:"Spain",300:"Greece",372:"Ireland",705:"Slovenia",70:"Bosnia-Herzegovina",578:"Norway",233:"Estonia",440:"Lithuania"};
 
 function gc(n){return C.find(c=>c.n===n);}
 
@@ -422,7 +426,7 @@ function addLabels(){
   const style=isDk?'color:#f0ead8;text-shadow:-1px -1px 0 #2a2520,1px -1px 0 #2a2520,-1px 1px 0 #2a2520,1px 1px 0 #2a2520;':'color:#3a3025;text-shadow:-1px -1px 0 #f0ead8,1px -1px 0 #f0ead8,-1px 1px 0 #f0ead8,1px 1px 0 #f0ead8;';
   C.forEach(c=>{
     if(!c.la||!c.lo)return;
-    const icon=L.divIcon({className:'',html:`<div style="font-size:8px;font-weight:700;white-space:nowrap;pointer-events:none;letter-spacing:0.5px;${style}">${c.n.toUpperCase()}</div>`,iconSize:[0,0],iconAnchor:[0,0]});
+    const icon=L.divIcon({className:'',html:`<div style="font-size:9px;font-weight:700;white-space:nowrap;pointer-events:none;letter-spacing:0.5px;${style}">${c.n.toUpperCase()}</div>`,iconSize:[0,0],iconAnchor:[0,0]});
     const m=L.marker([c.la,c.lo],{icon,interactive:false,pane:'tooltipPane'}).addTo(map);
     labelMarkers.push(m);
   });
@@ -494,6 +498,11 @@ function openM(nm){
   const rs=c.r?`${c.r.toFixed(2)}x`:'N/A';
   const cn=NEWS.filter(n=>n.c===nm);
   let h=`<h2>${c.f} ${c.n}</h2>`;
+  h+=`<div style="display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap;">
+    <div class="gc" style="padding:12px 16px;flex:1;min-width:120px;text-align:center;"><div style="font-size:0.7rem;color:var(--dim);text-transform:uppercase;">Max Subsidy</div><div style="font-size:1.3rem;font-weight:700;color:var(--green);font-family:Menlo,Consolas,monospace;">€${c.ms.toLocaleString()}</div></div>
+    <div class="gc" style="padding:12px 16px;flex:1;min-width:120px;text-align:center;"><div style="font-size:0.7rem;color:var(--dim);text-transform:uppercase;">Market (${c.yr||'N/A'})</div><div style="font-size:1.3rem;font-weight:700;color:var(--text);font-family:Menlo,Consolas,monospace;">${c.s>0?c.s+'k':'N/A'}</div></div>
+    <div class="gc" style="padding:12px 16px;flex:1;min-width:120px;text-align:center;"><div style="font-size:0.7rem;color:var(--dim);text-transform:uppercase;">Electricity</div><div style="font-size:1.3rem;font-weight:700;color:var(--accent);font-family:Menlo,Consolas,monospace;">€${c.e.toFixed(3)}</div></div>
+  </div>`;
   h+=`<div class="m-s"><h3><i data-lucide="coins" style="width:14px;height:14px;"></i> Current Subsidies (${c.nsub||1})</h3>`;
   if(c.subs){c.subs.split(' · ').forEach(s=>{h+=`<div class="m-cd"><div class="nm">${s}</div></div>`;});}
   else{h+=`<div class="m-cd"><div class="nm">${c.sp}</div><div class="am">Max: €${c.ms.toLocaleString()}</div><div class="dt">${c.det}</div></div>`;}
