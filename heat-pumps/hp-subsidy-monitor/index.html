@@ -360,8 +360,12 @@ function updateLegend(){
 
 function styleF(f){
   const nm=ISO[parseInt(f.id)];const c=nm?gc(nm):null;
-  const col=c?(mapMode==='subsidy'?subColor(c.ms):elecColor(c.e)):'#111827';
-  return{fillColor:col,weight:c?1.2:0.3,color:c?'#475569':'#1e293b',fillOpacity:c?0.8:0.25};
+  const isDk=(document.documentElement.getAttribute('data-theme')||'dark')==='dark';
+  const noData=isDk?'#111827':'#d6cfc4';
+  const noBorder=isDk?'#1e293b':'#c4bdb2';
+  const trBorder=isDk?'#475569':'#a09888';
+  const col=c?(mapMode==='subsidy'?subColor(c.ms):elecColor(c.e)):noData;
+  return{fillColor:col,weight:c?1.2:0.3,color:c?trBorder:noBorder,fillOpacity:c?0.8:0.25};
 }
 
 function setMap(mode,btn){
@@ -520,6 +524,7 @@ function toggleTheme(){
   document.documentElement.setAttribute('data-theme',next);
   localStorage.setItem('hp-theme',next);
   document.getElementById('theme-label').textContent=next==='dark'?'Light':'Dark';
+  if(typeof geoLayer!=='undefined'&&geoLayer)geoLayer.setStyle(styleF);
 }
 (function(){
   const saved=localStorage.getItem('hp-theme');
