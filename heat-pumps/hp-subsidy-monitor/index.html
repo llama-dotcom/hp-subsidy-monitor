@@ -342,7 +342,14 @@ function showP(id,btn){
 // === MAP ===
 let mapMode='subsidy';
 const map=L.map('map',{scrollWheelZoom:false,zoomControl:true}).setView([52,12],4);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png?lang=en',{attribution:'© OSM © CARTO',maxZoom:10}).addTo(map);
+let tileLayer;
+function setTiles(){
+  if(tileLayer)map.removeLayer(tileLayer);
+  const isDk=(document.documentElement.getAttribute('data-theme')||'dark')==='dark';
+  const url=isDk?'https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png?lang=en':'https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png?lang=en';
+  tileLayer=L.tileLayer(url,{attribution:'© OSM © CARTO',maxZoom:10}).addTo(map);
+}
+setTiles();
 
 let geoLayer;
 
@@ -525,6 +532,7 @@ function toggleTheme(){
   localStorage.setItem('hp-theme',next);
   document.getElementById('theme-label').textContent=next==='dark'?'Light':'Dark';
   if(typeof geoLayer!=='undefined'&&geoLayer)geoLayer.setStyle(styleF);
+  if(typeof setTiles==='function')setTiles();
 }
 (function(){
   const saved=localStorage.getItem('hp-theme');

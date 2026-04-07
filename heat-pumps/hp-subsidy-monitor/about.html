@@ -5,67 +5,87 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>About — HP Subsidy Monitor</title>
 <script src="https://unpkg.com/lucide@latest"></script>
+<script>(function(){const s=localStorage.getItem('hp-theme');if(s)document.documentElement.setAttribute('data-theme',s);})();</script>
 <style>
-:root,[data-theme="dark"]{--bg:#0f1629;--card:rgba(20,29,51,0.7);--glass:rgba(25,36,60,0.5);--glass-b:rgba(90,110,150,0.22);--accent:#38bdf8;--green:#4ade80;--text:#e8ecf4;--muted:#a8b5c8;--dim:#7b8aa0;--radius:14px;}
-[data-theme="light"]{--bg:#f5f0e8;--card:rgba(250,247,242,0.9);--glass:rgba(250,247,240,0.8);--glass-b:rgba(190,180,165,0.4);--accent:#0066b3;--green:#15803d;--text:#1a1510;--muted:#4a4035;--dim:#6b5f52;}
+:root,[data-theme="dark"]{
+  --bg:#0f1629;--bg2:#141d33;--card:rgba(20,29,51,0.7);
+  --glass:rgba(25,36,60,0.5);--glass-b:rgba(90,110,150,0.22);
+  --accent:#38bdf8;--green:#4ade80;--text:#e8ecf4;--muted:#a8b5c8;--dim:#7b8aa0;--radius:14px;
+}
+[data-theme="light"]{
+  --bg:#f5f0e8;--bg2:#faf7f2;--card:rgba(250,247,242,0.9);
+  --glass:rgba(250,247,240,0.8);--glass-b:rgba(190,180,165,0.4);
+  --accent:#0066b3;--green:#15803d;--text:#1a1510;--muted:#4a4035;--dim:#6b5f52;
+}
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;}
+a{color:var(--accent);text-decoration:none;}a:hover{opacity:0.8;}
+
+/* EXACT SAME header CSS as index.html */
 header{background:var(--bg);border-bottom:1px solid var(--glass-b);padding:12px 0;position:sticky;top:0;z-index:1000;backdrop-filter:blur(24px);}
-header .inner{max-width:1400px;margin:0 auto;padding:0 20px;display:flex;justify-content:space-between;align-items:center;gap:10px;}
-.container{max-width:800px;margin:0 auto;padding:0 20px;}
+header .container{max-width:1400px;margin:0 auto;padding:0 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
 .logo{display:flex;align-items:center;gap:10px;}
-.logo-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--accent),#4ade80);border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.logo-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--accent),var(--green));border-radius:8px;display:flex;align-items:center;justify-content:center;}
 .logo h1{font-size:1.05rem;font-weight:700;color:var(--text);}
 .logo .sub{font-size:0.65rem;color:var(--dim);}
 .tabs{display:flex;gap:2px;background:rgba(30,41,59,0.3);border-radius:10px;padding:3px;}
 [data-theme="light"] .tabs{background:rgba(190,180,165,0.25);}
-.tab{padding:7px 14px;border-radius:8px;font-size:0.78rem;font-weight:500;color:var(--dim);text-decoration:none;display:flex;align-items:center;gap:5px;}
+.tab{padding:7px 18px;border-radius:8px;font-size:0.8rem;font-weight:500;color:var(--dim);cursor:pointer;border:none;background:none;transition:all 0.2s;display:flex;align-items:center;gap:6px;text-decoration:none;}
 .tab:hover{color:var(--text);}
-.tab.active{color:var(--text);background:rgba(56,189,248,0.15);}
-.theme-btn{background:var(--glass);border:1px solid var(--glass-b);border-radius:8px;padding:5px 10px;cursor:pointer;color:var(--dim);font-size:0.72rem;}
-.theme-btn:hover{border-color:var(--accent);}
-.container{max-width:800px;margin:0 auto;}
-a{color:var(--accent);text-decoration:none;}a:hover{text-decoration:underline;}
-h1{font-size:1.8rem;font-weight:700;color:var(--text);margin-bottom:8px;}
-.sub{font-size:0.85rem;color:var(--dim);margin-bottom:32px;}
-h2{font-size:1.1rem;font-weight:600;color:var(--text);margin-top:32px;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.tab.active{color:var(--text);background:rgba(56,189,248,0.15);box-shadow:0 0 12px rgba(56,189,248,0.1);}
+.scope-tag{font-size:0.68rem;color:var(--dim);background:rgba(100,116,139,0.12);padding:3px 8px;border-radius:5px;letter-spacing:0.3px;}
+.theme-btn{background:var(--glass);border:1px solid var(--glass-b);border-radius:8px;padding:5px 10px;cursor:pointer;color:var(--dim);font-size:0.75rem;display:flex;align-items:center;gap:4px;transition:all 0.2s;}
+.theme-btn:hover{border-color:var(--accent);color:var(--text);}
+.updated{font-size:0.65rem;color:var(--dim);}
+
+/* Content */
+.content{max-width:800px;margin:0 auto;padding:20px 20px 40px;}
+h1.page-title{font-size:1.8rem;font-weight:700;margin-bottom:8px;}
+.page-sub{font-size:0.85rem;color:var(--dim);margin-bottom:32px;}
+h2{font-size:1.1rem;font-weight:600;margin-top:32px;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
 .gc{background:var(--glass);backdrop-filter:blur(16px);border:1px solid var(--glass-b);border-radius:var(--radius);padding:20px;margin-bottom:14px;}
 p,li{font-size:0.85rem;color:var(--muted);line-height:1.7;margin-bottom:8px;}
-ul{margin-left:18px;}
-li{margin-bottom:4px;}
+ul{margin-left:18px;}li{margin-bottom:4px;}
 strong{color:var(--text);}
-.tag{display:inline-block;padding:2px 8px;border-radius:5px;font-size:0.68rem;font-weight:600;}
-.t-daily{background:rgba(74,222,128,0.12);color:var(--green);}
-.t-monthly{background:rgba(56,189,248,0.12);color:var(--accent);}
-.t-manual{background:rgba(148,163,184,0.15);color:var(--dim);}
+.tag{display:inline-block;padding:2px 8px;border-radius:5px;font-size:0.7rem;font-weight:600;}
+.t-d{background:rgba(74,222,128,0.12);color:var(--green);}
+.t-m{background:rgba(56,189,248,0.12);color:var(--accent);}
+.t-o{background:rgba(148,163,184,0.15);color:var(--dim);}
 table{width:100%;border-collapse:collapse;font-size:0.82rem;margin:10px 0;}
 th{text-align:left;padding:8px;color:var(--dim);font-size:0.7rem;text-transform:uppercase;border-bottom:1px solid var(--glass-b);}
 td{padding:8px;border-bottom:1px solid rgba(51,65,85,0.2);}
-.back{display:inline-block;margin-bottom:20px;font-size:0.82rem;color:var(--dim);}
-footer{text-align:center;margin-top:40px;padding-top:20px;border-top:1px solid var(--glass-b);font-size:0.7rem;color:var(--dim);}
+.src-list{font-size:0.82rem;line-height:2.1;}
+footer{text-align:center;margin-top:40px;padding-top:20px;border-top:1px solid var(--glass-b);font-size:0.72rem;color:var(--dim);}
+@media(max-width:900px){header .container{flex-direction:column;align-items:flex-start;}.tabs{width:100%;justify-content:center;}}
 </style>
 </head>
 <body>
+
+<!-- EXACT SAME header HTML as index.html -->
 <header>
-  <div class="inner">
-    <div class="logo"><div class="logo-icon"><i data-lucide="zap" style="width:17px;height:17px;color:#070b16;"></i></div><div><h1 style="font-size:1.05rem;margin:0;">HP Subsidy Monitor</h1><div class="sub" style="font-size:0.65rem;">European Heat Pump Subsidy Dashboard</div></div></div>
+  <div class="container">
+    <div class="logo">
+      <div class="logo-icon"><i data-lucide="zap" style="width:17px;height:17px;color:#070b16;"></i></div>
+      <div><h1>HP Subsidy Monitor</h1><div class="sub">European Heat Pump Subsidy Dashboard</div></div>
+    </div>
     <div class="tabs">
-      <a href="index.html" class="tab"><i data-lucide="layout-dashboard" style="width:14px;height:14px;"></i> Dashboard</a>
-      <a href="index.html" class="tab"><i data-lucide="globe" style="width:14px;height:14px;"></i> Countries</a>
-      <a href="energy-prices.html" class="tab"><i data-lucide="bolt" style="width:14px;height:14px;"></i> Electricity Prices</a>
-      <a href="about.html" class="tab active"><i data-lucide="info" style="width:14px;height:14px;"></i> About</a>
+      <a href="index.html" class="tab" style="text-decoration:none;"><i data-lucide="layout-dashboard" style="width:14px;height:14px;"></i> Dashboard</a>
+      <a href="index.html" class="tab" style="text-decoration:none;"><i data-lucide="globe" style="width:14px;height:14px;"></i> Countries</a>
+      <a href="energy-prices.html" class="tab" style="text-decoration:none;"><i data-lucide="bolt" style="width:14px;height:14px;"></i> Electricity Prices</a>
+      <a href="about.html" class="tab active" style="text-decoration:none;"><i data-lucide="info" style="width:14px;height:14px;"></i> About</a>
     </div>
     <div style="display:flex;align-items:center;gap:10px;">
-      <span class="scope-tag" style="font-size:0.68rem;color:var(--dim);background:rgba(100,116,139,0.12);padding:3px 8px;border-radius:5px;">AW · LW · EW · Hybrids</span>
-      <button class="theme-btn" onclick="toggleTheme()"><i data-lucide="sun-moon" style="width:13px;height:13px;"></i> <span id="tl">Light</span></button>
-      <span style="font-size:0.65rem;color:var(--dim);">Apr 7, 2026</span>
+      <span class="scope-tag">AW · LW · EW · Hybrids</span>
+      <button class="theme-btn" onclick="toggleTheme()"><i data-lucide="sun-moon" style="width:13px;height:13px;"></i> <span id="theme-label">Light</span></button>
+      <span class="updated">Apr 7, 2026</span>
     </div>
   </div>
 </header>
-<div class="container" style="padding-top:20px;">
 
-<h1>About HP Subsidy Monitor</h1>
-<p class="sub">A comprehensive dashboard tracking heat pump subsidies, energy prices, and market data across 29 European countries.</p>
+<div class="content">
+
+<h1 class="page-title">About HP Subsidy Monitor</h1>
+<p class="page-sub">A comprehensive dashboard tracking heat pump subsidies, energy prices, and market data across 29 European countries.</p>
 
 <h2><i data-lucide="target" style="width:18px;height:18px;color:var(--accent);"></i> Purpose</h2>
 <div class="gc">
@@ -81,20 +101,20 @@ footer{text-align:center;margin-top:40px;padding-top:20px;border-top:1px solid v
     <li><strong>EW</strong> — Exhaust Air heat pumps (with water distribution)</li>
     <li><strong>Hybrids</strong> — Heat pump + gas boiler systems (add-on and integrated)</li>
   </ul>
-  <p style="margin-top:10px;"><strong>Excluded:</strong> Air-to-Air reversible heat pumps (split systems, VRF). Where market data includes A2A units, this is clearly marked as "incl. A2A".</p>
+  <p style="margin-top:10px;"><strong>Excluded:</strong> Air-to-Air reversible heat pumps (split systems, VRF). Where market data includes A2A units, this is clearly marked.</p>
 </div>
 
-<h2><i data-lucide="database" style="width:18px;height:18px;color:var(--accent);"></i> Data Clusters & Update Frequency</h2>
+<h2><i data-lucide="database" style="width:18px;height:18px;color:var(--accent);"></i> Data Update Frequency</h2>
 <div class="gc">
   <table>
-    <thead><tr><th>Data Cluster</th><th>Frequency</th><th>Method</th><th>Source</th></tr></thead>
+    <thead><tr><th>Data</th><th>Frequency</th><th>Method</th><th>Source</th></tr></thead>
     <tbody>
-      <tr><td><strong>News & Signals</strong></td><td><span class="tag t-daily">Daily</span></td><td>AI-powered news scanning (Groq/Llama)</td><td>Google News RSS, government portals</td></tr>
-      <tr><td><strong>Subsidy change detection</strong></td><td><span class="tag t-daily">Daily</span></td><td>Automated URL monitoring</td><td>Government subsidy portals</td></tr>
-      <tr><td><strong>Energy prices</strong></td><td><span class="tag t-monthly">Monthly</span></td><td>API pull</td><td>Eurostat, Ofgem, national statistics</td></tr>
-      <tr><td><strong>Subsidy amounts</strong></td><td><span class="tag t-monthly">Monthly</span></td><td>Automated + manual verification</td><td>National government portals</td></tr>
-      <tr><td><strong>Market data (units)</strong></td><td><span class="tag t-manual">On demand</span></td><td>Manual update when published</td><td>EHPA, BWP, Uniclima, national associations</td></tr>
-      <tr><td><strong>HP penetration</strong></td><td><span class="tag t-manual">On demand</span></td><td>Manual calculation</td><td>EHPA installed base + Eurostat households</td></tr>
+      <tr><td><strong>News & Signals</strong></td><td><span class="tag t-d">Daily</span></td><td>AI news scanning</td><td>Google News, gov portals</td></tr>
+      <tr><td><strong>Subsidy detection</strong></td><td><span class="tag t-d">Daily</span></td><td>URL monitoring</td><td>Government portals</td></tr>
+      <tr><td><strong>Energy prices</strong></td><td><span class="tag t-m">Monthly</span></td><td>API pull</td><td>Eurostat, Ofgem</td></tr>
+      <tr><td><strong>Subsidy amounts</strong></td><td><span class="tag t-m">Monthly</span></td><td>Auto + manual</td><td>Government portals</td></tr>
+      <tr><td><strong>Market data</strong></td><td><span class="tag t-o">On demand</span></td><td>Manual</td><td>EHPA, national assoc.</td></tr>
+      <tr><td><strong>HP penetration</strong></td><td><span class="tag t-o">On demand</span></td><td>Calculation</td><td>EHPA + Eurostat</td></tr>
     </tbody>
   </table>
 </div>
@@ -102,28 +122,25 @@ footer{text-align:center;margin-top:40px;padding-top:20px;border-top:1px solid v
 <h2><i data-lucide="cpu" style="width:18px;height:18px;color:var(--accent);"></i> Technology Stack</h2>
 <div class="gc">
   <ul>
-    <li><strong>Frontend:</strong> HTML, CSS, JavaScript (vanilla) — no frameworks</li>
-    <li><strong>Maps:</strong> Leaflet.js + CARTO tile layer + world-atlas TopoJSON</li>
-    <li><strong>Charts:</strong> Chart.js (Energy Prices page)</li>
-    <li><strong>Icons:</strong> Lucide Icons</li>
+    <li><strong>Frontend:</strong> HTML, CSS, JavaScript</li>
+    <li><strong>Maps:</strong> Leaflet.js + CARTO tiles + world-atlas TopoJSON</li>
+    <li><strong>Charts:</strong> Chart.js</li>
     <li><strong>Hosting:</strong> Vercel (auto-deploy from GitHub)</li>
-    <li><strong>Database:</strong> Supabase (planned for automated updates)</li>
-    <li><strong>AI News Analysis:</strong> Groq API + Llama 3.3 70B (planned)</li>
-    <li><strong>Domain:</strong> insight-map.com (Namecheap)</li>
+    <li><strong>Domain:</strong> insight-map.com</li>
   </ul>
 </div>
 
 <h2><i data-lucide="flask-conical" style="width:18px;height:18px;color:var(--accent);"></i> Methodology</h2>
 <div class="gc">
-  <p><strong>Market data:</strong> Where national associations provide hydronic-only breakdowns, those figures are used (BWP for Germany, Uniclima for France, SULPU for Finland, VWP for Netherlands, HPA for UK, PORT PC for Poland, WPA for Austria, VPI for Denmark, FWS for Switzerland). Where only total figures are available (including A2A), this is marked accordingly.</p>
-  <p><strong>HP Penetration:</strong> Calculated as: installed heat pump base ÷ total number of households × 1,000. Source for installed base: EHPA or national statistics. Source for households: Eurostat. Where installed base is unavailable, shown as "N/A".</p>
-  <p><strong>Energy prices:</strong> Residential electricity and gas prices. EU countries: Eurostat (half-yearly publication). UK: Ofgem price cap. Non-EU: GlobalPetrolPrices or national statistics.</p>
-  <p><strong>Subsidies:</strong> Verified against official government portals. Maximum available subsidy amount shown (may require meeting all conditions). Programs marked as "active", "expiring", or "announced".</p>
+  <p><strong>Market data:</strong> National associations with hydronic-only data are preferred (BWP, Uniclima, SULPU, VWP, HPA, PORT PC, WPA, VPI, FWS). Where only total figures exist (incl. A2A), this is marked.</p>
+  <p><strong>HP Penetration:</strong> installed base ÷ total households × 100%.</p>
+  <p><strong>Energy prices:</strong> Eurostat (H1 2025) for EU. Ofgem for UK. GlobalPetrolPrices for non-EU.</p>
+  <p><strong>Subsidies:</strong> Verified against official government portals. Max available amount shown.</p>
 </div>
 
 <h2><i data-lucide="link" style="width:18px;height:18px;color:var(--accent);"></i> Energy Price Sources</h2>
 <div class="gc">
-  <div style="font-size:0.82rem;line-height:2.1;">
+  <div class="src-list">
     🇪🇺 <a href="https://ec.europa.eu/eurostat/web/energy/database" target="_blank">Eurostat — EU Electricity & Gas Prices H1 2025</a><br>
     🇬🇧 <a href="https://www.ofgem.gov.uk/" target="_blank">Ofgem — UK Energy Price Cap</a><br>
     ‣ <a href="https://www.globalpetrolprices.com/" target="_blank">GlobalPetrolPrices — Non-EU countries</a>
@@ -132,15 +149,15 @@ footer{text-align:center;margin-top:40px;padding-top:20px;border-top:1px solid v
 
 <h2><i data-lucide="bar-chart-3" style="width:18px;height:18px;color:var(--accent);"></i> Market Data Sources</h2>
 <div class="gc">
-  <div style="font-size:0.82rem;line-height:2.1;">
+  <div class="src-list">
     ‣ <a href="https://www.ehpa.org/market-data/" target="_blank">EHPA — European HP Market Report 2025</a><br>
     ‣ <a href="https://www.iea.org/energy-system/buildings/heat-pumps" target="_blank">IEA — Heat Pump Tracker</a><br>
     🇩🇪 <a href="https://www.waermepumpe.de/presse/" target="_blank">BWP — German HP Association (hydronic only)</a><br>
     🇫🇷 <a href="https://www.uniclima.fr/" target="_blank">Uniclima — French HP data (A2W only)</a><br>
-    🇫🇮 <a href="https://www.sulpu.fi/en/" target="_blank">SULPU — Finnish HP Association (by type)</a><br>
-    🇳🇱 <a href="https://warmte-pompen.nl/" target="_blank">VWP — Dutch HP Association (excl. A2A)</a><br>
-    🇬🇧 <a href="https://www.mcscertified.com/" target="_blank">MCS/HPA — UK Certified Installations</a><br>
-    🇵🇱 <a href="https://portpc.pl/" target="_blank">PORT PC — Polish HP Association (A2W)</a><br>
+    🇫🇮 <a href="https://www.sulpu.fi/en/" target="_blank">SULPU — Finnish HP Association</a><br>
+    🇳🇱 <a href="https://warmte-pompen.nl/" target="_blank">VWP — Dutch HP Association</a><br>
+    🇬🇧 <a href="https://www.mcscertified.com/" target="_blank">MCS/HPA — UK Installations</a><br>
+    🇵🇱 <a href="https://portpc.pl/" target="_blank">PORT PC — Polish HP Association</a><br>
     🇦🇹 <a href="https://www.waermepumpe-austria.at/" target="_blank">WPA — Austrian HP Association</a><br>
     🇩🇰 <a href="https://varmepumpeindustrien.dk/" target="_blank">VPI — Danish HP Industry</a><br>
     🇨🇭 <a href="https://www.fws.ch/statistiken/" target="_blank">FWS — Swiss HP Association</a><br>
@@ -150,7 +167,7 @@ footer{text-align:center;margin-top:40px;padding-top:20px;border-top:1px solid v
 
 <h2><i data-lucide="shield-check" style="width:18px;height:18px;color:var(--accent);"></i> Subsidy Sources</h2>
 <div class="gc">
-  <div style="font-size:0.82rem;line-height:2.1;">
+  <div class="src-list">
     🇩🇪 <a href="https://www.kfw.de" target="_blank">Germany — BEG/KfW 458</a><br>
     🇫🇷 <a href="https://www.service-public.gouv.fr/particuliers/vosdroits/F35083" target="_blank">France — MaPrimeRénov'</a><br>
     🇳🇱 <a href="https://www.rvo.nl/subsidies-financiering/isde" target="_blank">Netherlands — ISDE</a><br>
@@ -161,20 +178,29 @@ footer{text-align:center;margin-top:40px;padding-top:20px;border-top:1px solid v
     🇦🇹 <a href="https://www.sanierungsoffensive.gv.at/" target="_blank">Austria — Sanierungsoffensive</a><br>
     🇨🇭 <a href="https://www.dasgebaeudeprogramm.ch/" target="_blank">Switzerland — Gebäudeprogramm</a><br>
     🇱🇺 <a href="https://guichet.public.lu/" target="_blank">Luxembourg — Klimabonus</a><br>
-    ‣ <a href="https://ehpa.org/wp-content/uploads/2025/11/Subsidies-for-residential-heat-pumps-in-Europe-1.pdf" target="_blank">EHPA — Subsidies Overview 2025 (PDF)</a><br>
-    <span style="font-size:0.78rem;color:var(--dim);">All country subsidy source links available in the Dashboard subsidy table.</span>
+    ‣ <a href="https://ehpa.org/wp-content/uploads/2025/11/Subsidies-for-residential-heat-pumps-in-Europe-1.pdf" target="_blank">EHPA — Subsidies Overview 2025 (PDF)</a>
   </div>
 </div>
 
+</div>
 
 <footer>
   <p>HP Subsidy Monitor · <a href="index.html">Dashboard</a> · <a href="/impressum.html">Impressum</a> · <a href="/datenschutz.html">Datenschutz</a></p>
 </footer>
 
-</div>
 <script>
-(function(){const s=localStorage.getItem('hp-theme');if(s){document.documentElement.setAttribute('data-theme',s);const l=document.getElementById('tl');if(l)l.textContent=s==='dark'?'Light':'Dark';}})();
-function toggleTheme(){const c=document.documentElement.getAttribute('data-theme')||'dark';const n=c==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',n);localStorage.setItem('hp-theme',n);const l=document.getElementById('tl');if(l)l.textContent=n==='dark'?'Light':'Dark';}
+function toggleTheme(){
+  const c=document.documentElement.getAttribute('data-theme')||'dark';
+  const n=c==='dark'?'light':'dark';
+  document.documentElement.setAttribute('data-theme',n);
+  localStorage.setItem('hp-theme',n);
+  document.getElementById('theme-label').textContent=n==='dark'?'Light':'Dark';
+}
+(function(){
+  const s=localStorage.getItem('hp-theme');
+  if(s){document.documentElement.setAttribute('data-theme',s);
+    const l=document.getElementById('theme-label');if(l)l.textContent=s==='dark'?'Light':'Dark';}
+})();
 lucide.createIcons();
 </script>
 </body>
