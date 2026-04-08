@@ -281,7 +281,15 @@ footer{text-align:center;padding:20px 0;border-top:1px solid var(--glass-b);colo
 </footer>
 
 <script>
-// === DATA (placeholder — will be updated with agent results) ===
+// === SUPABASE CONFIG ===
+const SB_URL='https://eyjlrfoaefleugamcvuo.supabase.co';
+const SB_KEY='sb_publishable_aTjldMpez0BhB1L5ubPuNA_KaOGXG1q';
+async function sbGet(table,query=''){
+  const r=await fetch(`${SB_URL}/rest/v1/${table}?${query}`,{headers:{'apikey':SB_KEY}});
+  return r.json();
+}
+
+// === DATA — loaded from Supabase, with fallback ===
 const C=[
   {n:"Germany",f:"🇩🇪",s:299,yr:2025,ms:23500,sp:"BEG/KfW 458",sl:"https://www.kfw.de",e:0.384,ga:0.122,r:3.14,st:"active",det:"30–70% grant. Speed+income+efficiency bonuses.",ol:"Subsidies confirmed through 2029.",pen:"~8%",la:51.2,lo:10.4,a2a:false,src:"BWP",nsub:2,subs:"BEG Grant (30-70%) · KfW Ergänzungskredit (low-interest loan)"},
   {n:"France",f:"🇫🇷",s:179,yr:2025,ms:11000,sp:"MaPrimeRénov'",sl:"https://www.service-public.gouv.fr/particuliers/vosdroits/F35083",e:0.266,ga:0.130,r:2.05,st:"active",det:"€2,500–€11,000 grant + CEE rebate.",ol:"Stable framework. A2W down -1.8% vs 2024.",pen:"N/A",la:46.6,lo:2.3,a2a:false,src:"Uniclima",nsub:3,subs:"MaPrimeRénov' single (€2.5-11k) · MaPrimeRénov' comprehensive (up to €63k) · CEE Coup de pouce (€2.5-4k)"},
@@ -565,6 +573,57 @@ function toggleTheme(){
   if(saved){document.documentElement.setAttribute('data-theme',saved);
     const lbl=document.getElementById('theme-label');if(lbl)lbl.textContent=saved==='dark'?'Light':'Dark';}
 })();
+
+// === LOAD FROM SUPABASE ===
+async function loadFromDB(){
+  try{
+    const [dbCountries,dbNews,dbSubsidies]=await Promise.all([
+      sbGet('countries','order=sort_weight.desc'),
+      sbGet('news','order=created_at.desc&limit=30'),
+      sbGet('subsidies','order=country_id')
+    ]);
+    if(dbCountries&&dbCountries.length>0){
+      // Map DB format to C format
+      C.length=0;
+      dbCountries.forEach(c=>{
+        const countrySubs=dbSubsidies.filter(s=>s.country_id===c.id);
+        const subsStr=countrySubs.map(s=>s.program_name+(s.max_amount?' (€'+s.max_amount.toLocaleString()+')':'')).join(' · ');
+        C.push({
+          n:c.name,f:c.flag,s:c.market_size||0,yr:c.market_year||0,ms:c.max_subsidy||0,
+          sp:c.subsidy_program||'',sl:c.subsidy_link||'',e:c.electricity_price||0,
+          ga:c.gas_price,r:c.price_ratio,st:c.status||'active',det:c.detail||'',
+          ol:c.outlook||'',pen:c.hp_penetration||'N/A',la:c.lat,lo:c.lng,
+          a2a:c.includes_a2a||false,src:c.data_source||'',
+          sortWeight:c.sort_weight||c.market_size||0,
+          nsub:countrySubs.length||1,
+          subs:subsStr||undefined
+        });
+      });
+      // Map DB news to NEWS format
+      NEWS.length=0;
+      dbNews.forEach(n=>{
+        const country=dbCountries.find(c=>c.id===n.country_id);
+        NEWS.push({
+          c:country?country.name:n.country_id,
+          ms:country?(country.sort_weight||country.market_size||0):0,
+          d:n.date||'',t:n.title||'',ds:n.description||'',i:n.impact||'info',
+          src:n.source_name?[{n:n.source_name,u:n.source_url||''}]:[]
+        });
+      });
+      const nw={'Spain':59};
+      NEWS.sort((a,b)=>(nw[b.c]||b.ms)-(nw[a.c]||a.ms));
+      // Re-render everything
+      renderT();
+      document.getElementById('news').innerHTML=NEWS.map(n=>{
+        const ic=n.i==='critical'?'n-hi':n.i==='medium'?'n-me':'n-lo';
+        const bc=n.i==='critical'?'imp-c':n.i==='medium'?'imp-m':'imp-i';
+        return`<div class="gc n-card ${ic}"><div class="n-mt"><span>${n.c} · ${n.d}</span><span class="imp ${bc}">${n.i}</span></div><div class="n-tt">${n.t}</div><div class="n-ds">${n.ds}</div><div class="n-sr">${n.src.map(s=>`<a href="${s.u}" target="_blank" style="color:var(--accent);font-size:0.72rem;">${s.n} →</a>`).join(' · ')}</div></div>`;
+      }).join('');
+      console.log('✅ Loaded from Supabase:',C.length,'countries,',NEWS.length,'news');
+    }
+  }catch(e){console.log('⚠ Supabase unavailable, using fallback data',e);}
+}
+loadFromDB();
 
 lucide.createIcons();
 </script>
