@@ -9,21 +9,22 @@
 :root,[data-theme="dark"]{--bg:#0f1629;--glass:rgba(25,36,60,0.5);--glass-b:rgba(90,110,150,0.22);--accent:#38bdf8;--text:#e8ecf4;--muted:#a8b5c8;--dim:#7b8aa0;--radius:14px;}
 [data-theme="light"]{--bg:#f5f0e8;--glass:rgba(250,247,240,0.8);--glass-b:rgba(190,180,165,0.4);--accent:#0066b3;--text:#1a1510;--muted:#4a4035;--dim:#6b5f52;}
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;padding:48px 24px;}
-.container{max-width:700px;margin:0 auto;}
-h1{font-size:28px;font-weight:700;margin-bottom:8px;}
-h2{font-size:18px;font-weight:600;margin-top:32px;margin-bottom:12px;}
-h3{font-size:15px;font-weight:600;margin-top:20px;margin-bottom:8px;}
-p,li{margin-bottom:8px;font-size:15px;color:var(--muted);}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--muted);line-height:1.8;padding:48px 24px;}
+.container{max-width:680px;margin:0 auto;}
+h1{font-size:1.5rem;font-weight:700;color:var(--text);margin-bottom:6px;}
+h2{font-size:0.95rem;font-weight:600;color:var(--text);margin-top:24px;margin-bottom:10px;letter-spacing:0.3px;}
+h3{font-size:0.88rem;font-weight:600;color:var(--text);margin-top:16px;margin-bottom:8px;}
+p,li{margin-bottom:8px;font-size:0.85rem;color:var(--muted);line-height:1.8;}
 ul{margin-left:20px;margin-bottom:12px;}
 strong{color:var(--text);}
 a{color:var(--accent);text-decoration:none;}
-.back{display:inline-block;margin-bottom:24px;font-size:14px;color:var(--dim);}
-.subtitle{color:var(--dim);font-size:14px;margin-bottom:32px;}
-.service-box{background:var(--glass);border:1px solid var(--glass-b);border-radius:8px;padding:14px 18px;margin-bottom:10px;}
-.service-name{font-weight:600;color:var(--text);}
-.service-detail{font-size:14px;color:var(--muted);margin-top:4px;}
-footer{margin-top:48px;padding-top:24px;border-top:1px solid var(--glass-b);font-size:13px;color:var(--dim);}
+.back{display:inline-block;margin-bottom:20px;font-size:0.82rem;color:var(--dim);}
+.subtitle{color:var(--dim);font-size:0.82rem;margin-bottom:28px;}
+.gc{background:var(--glass);backdrop-filter:blur(16px);border:1px solid var(--glass-b);border-radius:12px;padding:20px;margin-bottom:16px;}
+.service-box{background:var(--glass);border:1px solid var(--glass-b);border-radius:8px;padding:12px 16px;margin-bottom:8px;}
+.service-name{font-weight:600;color:var(--text);font-size:0.85rem;}
+.service-detail{font-size:0.8rem;color:var(--muted);margin-top:4px;}
+footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--glass-b);font-size:0.75rem;color:var(--dim);}
 </style>
 </head>
 <body>
@@ -32,19 +33,27 @@ footer{margin-top:48px;padding-top:24px;border-top:1px solid var(--glass-b);font
 <h1>Datenschutzerklärung</h1>
 <p class="subtitle">Stand: April 2026</p>
 
+<div class="gc">
 <h2>1. Verantwortlicher</h2>
 <p>Aleksandra Bulanova<br>Bahnhofstr. 19<br>73728 Esslingen<br>E-Mail: <a href="mailto:bulanovaaaleksandra@gmail.com">bulanovaaaleksandra@gmail.com</a></p>
+</div>
 
+<div class="gc">
 <h2>2. Allgemeines zur Datenverarbeitung</h2>
 <p>Diese Website erhebt und speichert <strong>keine personenbezogenen Daten</strong> der Besucher. Es werden keine Cookies gesetzt, keine Analyse-Tools eingesetzt und keine Nutzerprofile erstellt.</p>
 <p>Es gibt <strong>kein Kontaktformular, keine Registrierung und keine Kommentarfunktion</strong>.</p>
+</div>
 
+<div class="gc">
 <h2>3. Hosting</h2>
 <div class="service-box">
   <div class="service-name">Vercel Inc.</div>
   <div class="service-detail">340 S Lemon Ave #4133, Walnut, CA 91789, USA<br>Beim Aufruf werden technische Daten (IP-Adresse, Browsertyp, Zeitpunkt) in Server-Logfiles erfasst.<br>Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO.<br><a href="https://vercel.com/legal/privacy-policy" target="_blank">vercel.com/legal/privacy-policy</a></div>
 </div>
 
+</div>
+
+<div class="gc">
 <h2>4. Externe Ressourcen</h2>
 <p>Zur Darstellung werden JavaScript-Bibliotheken und Kartendaten von externen Servern geladen. Dabei wird Ihre IP-Adresse übermittelt.</p>
 
@@ -61,6 +70,9 @@ footer{margin-top:48px;padding-top:24px;border-top:1px solid var(--glass-b);font
   <div class="service-detail">Prospect One, Kroatien (EU) · <a href="https://www.jsdelivr.com/terms/privacy-policy-jsdelivr-net" target="_blank">jsdelivr.com/privacy</a></div>
 </div>
 
+</div>
+
+<div class="gc">
 <h2>5. Cookies</h2>
 <p>Diese Website verwendet <strong>keine Cookies</strong>. Die Speicherung der Farbschema-Präferenz (hell/dunkel) erfolgt ausschließlich im localStorage des Browsers.</p>
 
@@ -73,12 +85,19 @@ footer{margin-top:48px;padding-top:24px;border-top:1px solid var(--glass-b);font
 <h2>8. SSL-/TLS-Verschlüsselung</h2>
 <p>Diese Website nutzt HTTPS-Verschlüsselung.</p>
 
+</div>
+
+<div class="gc">
 <h2>9. Ihre Rechte</h2>
 <p>Gemäß DSGVO haben Sie Recht auf Auskunft (Art. 15), Berichtigung (Art. 16), Löschung (Art. 17), Einschränkung (Art. 18), Widerspruch (Art. 21) und Beschwerde bei einer Aufsichtsbehörde.</p>
 <p>Zuständig: <a href="https://www.baden-wuerttemberg.datenschutz.de" target="_blank">LfDI Baden-Württemberg</a></p>
 
+</div>
+
+<div class="gc">
 <h2>10. Änderungen</h2>
 <p>Diese Datenschutzerklärung wird bei Bedarf aktualisiert.</p>
+</div>
 
 <footer><p>Stand: April 2026</p><p><a href="/impressum.html">Impressum</a></p></footer>
 </div>
