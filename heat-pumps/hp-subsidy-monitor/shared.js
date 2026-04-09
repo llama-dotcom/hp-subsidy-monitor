@@ -6,11 +6,12 @@
 // Inject header
 function initHeader(activePage){
   const pages=[
-    {id:'dashboard',label:'Dashboard',icon:'layout-dashboard',href:'index.html'},
-    {id:'countries',label:'Countries',icon:'globe',href:'index.html'},
+    {id:'dashboard',label:'Dashboard',icon:'layout-dashboard',href:'index.html',tabAction:"showP('dash',this)"},
+    {id:'countries',label:'Countries',icon:'globe',href:'index.html',tabAction:"showP('countries',this)"},
     {id:'prices',label:'Electricity Prices',icon:'bolt',href:'energy-prices.html'},
     {id:'about',label:'About',icon:'info',href:'about.html'}
   ];
+  const isIndex=activePage==='dashboard'||activePage==='countries';
 
   const isDk=(document.documentElement.getAttribute('data-theme')||'dark')==='dark';
   const themeLbl=isDk?'Light mode':'Dark mode';
@@ -23,7 +24,11 @@ function initHeader(activePage){
         <div><div class="hdr-title">HP Subsidy Monitor</div><div class="hdr-sub">European Heat Pump Subsidy Dashboard</div></div>
       </div>
       <div class="hdr-tabs">
-        ${pages.map(p=>`<a href="${p.href}" class="hdr-tab${p.id===activePage?' active':''}">${p.label}</a>`).join('')}
+        ${pages.map(p=>{
+          const cls='hdr-tab'+(p.id===activePage?' active':'');
+          if(isIndex&&p.tabAction) return`<button class="${cls}" onclick="${p.tabAction}">${p.label}</button>`;
+          return`<a href="${p.href}" class="${cls}">${p.label}</a>`;
+        }).join('')}
       </div>
       <div class="hdr-right">
         <span class="hdr-scope">AW · LW · EW · Hybrids</span>

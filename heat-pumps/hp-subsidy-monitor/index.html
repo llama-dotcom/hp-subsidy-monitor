@@ -8,6 +8,7 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
 <script src="https://unpkg.com/lucide@latest"></script>
+<script src="shared.js"></script>
 <style>
 :root,[data-theme="dark"]{
   --bg:#0f1629;--bg2:#141d33;--card:rgba(20,29,51,0.7);
@@ -32,24 +33,7 @@ a{color:var(--accent);text-decoration:none;}a:hover{opacity:0.8;}
 .refresh-btn:hover{opacity:0.85;transform:translateY(-1px);}
 .container{max-width:1400px;margin:0 auto;padding:0 20px;}
 
-/* Header */
-header{background:var(--bg);border-bottom:1px solid var(--glass-b);padding:12px 0;position:sticky;top:0;z-index:1000;backdrop-filter:blur(24px);}
-header .container{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
-.logo{display:flex;align-items:center;gap:10px;}
-.logo-icon{width:32px;height:32px;background:linear-gradient(135deg,#c9a84c,#e8dcc8);border-radius:8px;display:flex;align-items:center;justify-content:center;}
-.logo-icon i{color:#2a2015 !important;}
-.logo h1{font-size:1.05rem;font-weight:700;color:var(--text);}
-.logo .sub{font-size:0.65rem;color:var(--dim);}
-
-/* Tabs */
-.tabs{display:flex;gap:2px;background:rgba(30,41,59,0.3);border-radius:10px;padding:3px;}
-.tab{padding:7px 18px;border-radius:8px;font-size:0.8rem;font-weight:500;color:var(--dim);cursor:pointer;border:none;background:none;transition:all 0.2s;display:flex;align-items:center;gap:6px;}
-[data-theme="light"] .tabs{background:rgba(190,180,165,0.25);}
-.tab:hover{color:var(--text);}
-.tab.active{color:var(--text);background:rgba(56,189,248,0.15);box-shadow:0 0 12px rgba(56,189,248,0.1);}
-
-.scope-tag{font-size:0.68rem;color:var(--dim);background:rgba(100,116,139,0.12);padding:3px 8px;border-radius:5px;letter-spacing:0.3px;}
-.updated{font-size:0.65rem;color:var(--dim);}
+/* Header injected by shared.js */
 
 /* Glass card */
 .gc{background:var(--glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--glass-b);border-radius:var(--radius);transition:all 0.25s;}
@@ -180,26 +164,7 @@ footer{text-align:center;padding:20px 0;border-top:1px solid var(--glass-b);colo
 </head>
 <body>
 
-<header>
-  <div class="container">
-    <div class="logo">
-      <div class="logo-icon"><i data-lucide="zap" style="width:17px;height:17px;color:#070b16;"></i></div>
-      <div><h1>HP Subsidy Monitor</h1><div class="sub">European Heat Pump Subsidy Dashboard</div></div>
-    </div>
-    <div class="tabs">
-      <button class="tab active" onclick="showP('dash',this)"><i data-lucide="layout-dashboard" style="width:14px;height:14px;"></i> Dashboard</button>
-      <button class="tab" onclick="showP('countries',this)" id="tab-countries"><i data-lucide="globe" style="width:14px;height:14px;"></i> Countries</button>
-      <a href="energy-prices.html" class="tab" style="text-decoration:none;"><i data-lucide="bolt" style="width:14px;height:14px;"></i> Electricity Prices</a>
-      <a href="about.html" class="tab" style="text-decoration:none;"><i data-lucide="info" style="width:14px;height:14px;"></i> About</a>
-    </div>
-    <div style="display:flex;align-items:center;gap:10px;">
-      <span class="scope-tag">AW · LW · EW · Hybrids</span>
-      <button class="refresh-btn" onclick="refreshData()" id="refresh-btn"><i data-lucide="refresh-cw" style="width:13px;height:13px;"></i> Refresh</button>
-      <button class="theme-btn" onclick="toggleTheme()"><i data-lucide="sun-moon" style="width:13px;height:13px;"></i> <span id="theme-label">Light</span></button>
-      <span class="updated" id="last-updated">Apr 8, 2026</span>
-    </div>
-  </div>
-</header>
+<script>initHeader('dashboard');</script>
 
 <div class="container">
 
@@ -554,22 +519,12 @@ function runCompare(){
   document.getElementById('cmp-result').innerHTML=h;
 }
 
-// === THEME ===
-function toggleTheme(){
-  const curr=document.documentElement.getAttribute('data-theme')||'dark';
-  const next=curr==='dark'?'light':'dark';
-  document.documentElement.setAttribute('data-theme',next);
-  localStorage.setItem('hp-theme',next);
-  document.getElementById('theme-label').textContent=next==='dark'?'Light':'Dark';
+// Theme handled by shared.js. Map-specific updates:
+function onThemeChange(n){
   if(typeof geoLayer!=='undefined'&&geoLayer)geoLayer.setStyle(styleF);
   if(typeof setTiles==='function')setTiles();
   if(typeof addLabels==='function')addLabels();
 }
-(function(){
-  const saved=localStorage.getItem('hp-theme');
-  if(saved){document.documentElement.setAttribute('data-theme',saved);
-    const lbl=document.getElementById('theme-label');if(lbl)lbl.textContent=saved==='dark'?'Light':'Dark';}
-})();
 
 // === REFRESH ===
 async function refreshData(){
