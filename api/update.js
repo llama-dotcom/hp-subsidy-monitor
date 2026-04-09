@@ -26,14 +26,34 @@ module.exports = async function handler(req, res) {
     // === DAILY: News from Google News RSS ===
     for (const country of topCountries) {
       try {
-        // Local language searches for key countries
+        // Local language searches — PRIMARY source for each country
         const localQueries = {
           'DE': {q:'Wärmepumpe Förderung Heizung 2026',hl:'de',gl:'DE',ceid:'DE:de'},
-          'FR': {q:'pompe à chaleur subvention 2026',hl:'fr',gl:'FR',ceid:'FR:fr'},
-          'ES': {q:'bomba de calor subvención 2026',hl:'es',gl:'ES',ceid:'ES:es'},
-          'IT': {q:'pompa di calore incentivi 2026',hl:'it',gl:'IT',ceid:'IT:it'},
-          'PL': {q:'pompa ciepła dotacja 2026',hl:'pl',gl:'PL',ceid:'PL:pl'},
-          'NL': {q:'warmtepomp subsidie 2026',hl:'nl',gl:'NL',ceid:'NL:nl'}
+          'FR': {q:'pompe à chaleur subvention prime 2026',hl:'fr',gl:'FR',ceid:'FR:fr'},
+          'NL': {q:'warmtepomp subsidie ISDE 2026',hl:'nl',gl:'NL',ceid:'NL:nl'},
+          'GB': {q:'heat pump grant boiler upgrade scheme UK 2026',hl:'en',gl:'GB',ceid:'GB:en'},
+          'IT': {q:'pompa di calore incentivi conto termico 2026',hl:'it',gl:'IT',ceid:'IT:it'},
+          'ES': {q:'bomba de calor subvención aerotermia 2026',hl:'es',gl:'ES',ceid:'ES:es'},
+          'PL': {q:'pompa ciepła dotacja czyste powietrze 2026',hl:'pl',gl:'PL',ceid:'PL:pl'},
+          'AT': {q:'Wärmepumpe Förderung Österreich 2026',hl:'de',gl:'AT',ceid:'AT:de'},
+          'CH': {q:'Wärmepumpe Förderung Schweiz Gebäudeprogramm 2026',hl:'de',gl:'CH',ceid:'CH:de'},
+          'SE': {q:'värmepump bidrag Sverige 2026',hl:'sv',gl:'SE',ceid:'SE:sv'},
+          'NO': {q:'varmepumpe tilskudd Enova 2026',hl:'no',gl:'NO',ceid:'NO:no'},
+          'DK': {q:'varmepumpe tilskud Danmark 2026',hl:'da',gl:'DK',ceid:'DK:da'},
+          'FI': {q:'lämpöpumppu tuki ARA 2026',hl:'fi',gl:'FI',ceid:'FI:fi'},
+          'CZ': {q:'tepelné čerpadlo dotace zelená úsporám 2026',hl:'cs',gl:'CZ',ceid:'CZ:cs'},
+          'GR': {q:'αντλία θερμότητας επιδότηση εξοικονομώ 2026',hl:'el',gl:'GR',ceid:'GR:el'},
+          'IE': {q:'heat pump grant SEAI Ireland 2026',hl:'en',gl:'IE',ceid:'IE:en'},
+          'RO': {q:'pompa de caldura casa verde subventie 2026',hl:'ro',gl:'RO',ceid:'RO:ro'},
+          'HU': {q:'hőszivattyú pályázat támogatás 2026',hl:'hu',gl:'HU',ceid:'HU:hu'},
+          'SI': {q:'toplotna črpalka subvencija eko sklad 2026',hl:'sl',gl:'SI',ceid:'SI:sl'},
+          'BG': {q:'термопомпа субсидия 2026',hl:'bg',gl:'BG',ceid:'BG:bg'},
+          'SK': {q:'tepelné čerpadlo dotácia zelená domácnostiam 2026',hl:'sk',gl:'SK',ceid:'SK:sk'},
+          'HR': {q:'dizalica topline subvencija energetska obnova 2026',hl:'hr',gl:'HR',ceid:'HR:hr'},
+          'LV': {q:'siltumsūknis atbalsts programma 2026',hl:'lv',gl:'LV',ceid:'LV:lv'},
+          'LT': {q:'šilumos siurblys parama 2026',hl:'lt',gl:'LT',ceid:'LT:lt'},
+          'EE': {q:'soojuspump toetus KredEx 2026',hl:'et',gl:'EE',ceid:'EE:et'},
+          'PT': {q:'bomba de calor subsidio energia 2026',hl:'pt',gl:'PT',ceid:'PT:pt'}
         };
         const enQuery = encodeURIComponent(`heat pump subsidy ${country.name} 2026`);
         const enRssUrl = `https://news.google.com/rss/search?q=${enQuery}&hl=en&gl=US&ceid=US:en`;
@@ -51,8 +71,10 @@ module.exports = async function handler(req, res) {
 
         let articles = [];
         // Fetch from both English and local language RSS
-        const rssUrls = [enRssUrl];
+        // Local language FIRST (better results), then EN as supplement
+        const rssUrls = [];
         if (localRssUrl) rssUrls.push(localRssUrl);
+        rssUrls.push(enRssUrl);
         if (extraRssUrl) rssUrls.push(extraRssUrl);
 
         for (const rssUrl of rssUrls) {
