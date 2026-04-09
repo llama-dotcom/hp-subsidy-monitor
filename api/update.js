@@ -28,7 +28,7 @@ module.exports = async function handler(req, res) {
       try {
         // Local language searches for key countries
         const localQueries = {
-          'DE': {q:'Wärmepumpe Förderung 2026',hl:'de',gl:'DE',ceid:'DE:de'},
+          'DE': {q:'Wärmepumpe Förderung Heizung 2026',hl:'de',gl:'DE',ceid:'DE:de'},
           'FR': {q:'pompe à chaleur subvention 2026',hl:'fr',gl:'FR',ceid:'FR:fr'},
           'ES': {q:'bomba de calor subvención 2026',hl:'es',gl:'ES',ceid:'ES:es'},
           'IT': {q:'pompa di calore incentivi 2026',hl:'it',gl:'IT',ceid:'IT:it'},
@@ -39,12 +39,21 @@ module.exports = async function handler(req, res) {
         const enRssUrl = `https://news.google.com/rss/search?q=${enQuery}&hl=en&gl=US&ceid=US:en`;
         const localCfg = localQueries[country.id];
         const localRssUrl = localCfg ? `https://news.google.com/rss/search?q=${encodeURIComponent(localCfg.q)}&hl=${localCfg.hl}&gl=${localCfg.gl}&ceid=${localCfg.ceid}` : null;
-        const maxArticles = ['DE','FR','GB'].includes(country.id) ? 8 : 5;
+        // Extra EN search for key countries with broader terms
+        const extraQueries = {
+          'DE': 'Germany heat pump heating policy BEG KfW Wärmepumpe',
+          'FR': 'France heat pump MaPrimeRenov pompe chaleur',
+          'GB': 'UK heat pump boiler upgrade scheme grant'
+        };
+        const extraQuery = extraQueries[country.id];
+        const extraRssUrl = extraQuery ? `https://news.google.com/rss/search?q=${encodeURIComponent(extraQuery)}&hl=en&gl=US&ceid=US:en` : null;
+        const maxArticles = ['DE','FR','GB'].includes(country.id) ? 10 : 5;
 
         let articles = [];
         // Fetch from both English and local language RSS
         const rssUrls = [enRssUrl];
         if (localRssUrl) rssUrls.push(localRssUrl);
+        if (extraRssUrl) rssUrls.push(extraRssUrl);
 
         for (const rssUrl of rssUrls) {
           try {
