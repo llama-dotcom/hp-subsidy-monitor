@@ -1,0 +1,7 @@
+{
+  "name": "hp-subsidy-monitor",
+  "private": true,
+  "dependencies": {
+    "groq-sdk": "^0.12.0"
+  }
+}
