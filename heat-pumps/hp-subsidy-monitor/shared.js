@@ -32,7 +32,7 @@ function initHeader(activePage){
       </div>
       <div class="hdr-right">
         <span class="hdr-scope">AW · LW · EW · Hybrids</span>
-        <button class="hdr-refresh" onclick="typeof refreshData==='function'?refreshData():location.reload()">Refresh</button>
+        <button class="hdr-refresh" id="refresh-btn" onclick="typeof refreshData==='function'?refreshData():location.reload()"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg> Refresh</button>
         <button class="hdr-theme" onclick="toggleTheme()"><span id="theme-label">${themeLbl}</span></button>
         <span class="hdr-date" id="last-updated">${new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</span>
       </div>
@@ -62,7 +62,7 @@ header{background:var(--bg);border-bottom:1px solid var(--glass-b);padding:12px 
 .hdr-sub{font-size:0.65rem;color:var(--dim);}
 .hdr-tabs{display:flex;gap:2px;background:rgba(30,41,59,0.3);border-radius:10px;padding:3px;}
 [data-theme="light"] .hdr-tabs{background:rgba(190,180,165,0.25);}
-.hdr-tab{padding:7px 18px;border-radius:8px;font-size:0.8rem;font-weight:500;color:var(--dim);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;}
+.hdr-tab{padding:7px 18px;border-radius:8px;font-size:0.8rem;font-weight:500;color:var(--dim);text-decoration:none;display:flex;align-items:center;gap:6px;transition:all 0.2s;border:none;cursor:pointer;background:none;font-family:inherit;}
 .hdr-tab:hover{color:var(--text);opacity:1;}
 .hdr-tab.active{color:var(--text);background:rgba(56,189,248,0.15);box-shadow:0 0 12px rgba(56,189,248,0.1);}
 .hdr-right{display:flex;align-items:center;gap:10px;}
