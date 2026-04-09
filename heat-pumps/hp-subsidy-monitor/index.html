@@ -138,7 +138,11 @@ tr:hover{background:rgba(56,189,248,0.04);}
 .cmp-sel{padding:7px 12px;border:1px solid var(--glass-b);border-radius:8px;background:var(--glass);color:var(--text);font-size:0.82rem;min-width:160px;}
 .cmp-sel:focus{outline:none;border-color:var(--accent);}
 .cmp-tbl{width:100%;border-collapse:collapse;font-size:0.82rem;margin-top:8px;}
-.cmp-tbl th{padding:8px;text-align:left;color:var(--dim);font-size:0.7rem;text-transform:uppercase;border-bottom:1px solid var(--glass-b);}
+.cmp-tbl th{padding:8px;text-align:left;font-size:0.7rem;text-transform:uppercase;border-bottom:1px solid var(--glass-b);letter-spacing:0.5px;}
+.cmp-tbl thead{background:rgba(60,50,40,0.85);}
+.cmp-tbl th{color:#f5f0e8;}
+[data-theme="dark"] .cmp-tbl thead{background:rgba(12,18,37,0.9);}
+[data-theme="dark"] .cmp-tbl th{color:#e8ecf4;}
 .cmp-tbl td{padding:8px;border-bottom:1px solid rgba(51,65,85,0.15);}
 .cmp-best{color:var(--green);font-weight:600;}
 
@@ -412,16 +416,6 @@ function setMap(mode,btn){
         const nm=ISO[parseInt(f.id)];const c=nm?gc(nm):null;if(!c)return;
         ly.on('mouseover',e=>{e.target.setStyle({weight:2.5,color:'#38bdf8',fillOpacity:0.95});e.target.bringToFront();});
         ly.on('mouseout',e=>{geoLayer.resetStyle(e.target);});
-        const gs=c.ga?`€${c.ga.toFixed(3)}/kWh`:'N/A';
-        const lk=c.sl?`<a href="${c.sl}" target="_blank" style="color:#38bdf8;font-size:0.78rem;">Official subsidy →</a>`:'';
-        const a2aNote=c.a2a?'<div style="font-size:0.68rem;color:#fb923c;margin-top:4px;">⚠ Market data may incl. air-to-air</div>':'';
-        ly.bindPopup(`<div class="pop-t">${c.f} ${c.n}</div>
-          <div class="pop-r"><span class="pop-l">Max subsidy</span><span class="pop-v" style="color:#4ade80">€${c.ms.toLocaleString()}</span></div>
-          <div class="pop-r"><span class="pop-l">Market (${c.yr})</span><span class="pop-v">${c.s}k units</span></div>
-          <div class="pop-r"><span class="pop-l">Electricity</span><span class="pop-v">€${c.e.toFixed(3)}/kWh</span></div>
-          <div class="pop-r"><span class="pop-l">Gas</span><span class="pop-v">${gs}</span></div>
-          ${c.pen!=='N/A'?`<div class="pop-r"><span class="pop-l">HP penetration</span><span class="pop-v">${c.pen} of households</span></div>`:''}
-          ${a2aNote}${lk}`,{maxWidth:260});
         ly.on('click',()=>openM(c.n));
       }
     }).addTo(map);
