@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Systems Catalog — AI Landscape</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <header>
+    <div class="hdr">
+      <div class="hdr-brand">
+        <div class="hdr-logo">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M15.5 3.5c3.6 0 6 2.4 6 5.6 0 1.6-.6 2.7-1.2 3.7l.9 2.1c.2.5-.1 1-.7 1h-1.5v2.4c0 .7-.5 1.2-1.2 1.2h-3.4v2"/><path d="M15.5 3.5c-3 0-5 1.5-5.6 3.5"/><path d="M9.9 7c-.4 1.4-.1 2.7.6 3.6"/><circle cx="14" cy="9.5" r="1.1" fill="currentColor" stroke="none"/><circle cx="17" cy="11.5" r="0.7" fill="currentColor" stroke="none"/><circle cx="13.5" cy="13" r="0.7" fill="currentColor" stroke="none"/><line x1="14" y1="9.5" x2="17" y2="11.5"/><line x1="17" y1="11.5" x2="13.5" y2="13"/><line x1="14" y1="9.5" x2="13.5" y2="13"/><circle cx="3.2" cy="8.5" r="1.1" fill="currentColor" stroke="none"/><circle cx="3.2" cy="14.5" r="1.1" fill="currentColor" stroke="none"/><line x1="4.3" y1="8.5" x2="9.8" y2="9.5"/><line x1="4.3" y1="14.5" x2="10" y2="13.5"/></svg>
+        </div>
+        <div class="hdr-text">
+          <div class="hdr-title">AI Landscape</div>
+          <div class="hdr-sub">Premium overview of AI systems for text and code</div>
+        </div>
+      </div>
+      <ul class="hdr-tabs">
+        <li><a href="index.html" class="hdr-tab">Dashboard</a></li>
+        <li><a href="systems.html" class="hdr-tab">Systems</a></li>
+        <li><a href="synergies.html" class="hdr-tab">Synergies</a></li>
+        <li><a href="news.html" class="hdr-tab">News & Events</a></li>
+      </ul>
+      <div class="hdr-right">
+        <span class="hdr-scope">LLM · Code · Reasoning</span>
+        <button class="btn-refresh" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
+          Refresh
+        </button>
+        <button class="btn-theme" type="button">Light mode</button>
+        <span class="hdr-date"></span>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <header class="page-header">
+      <h1>AI Systems Catalog</h1>
+      <p>Detailed profiles of every major LLM chatbot and AI coding tool — search, filter, and compare side-by-side.</p>
+    </header>
+
+    <div class="toolbar">
+      <input type="text" id="search-input" class="search-input" placeholder="Search AI systems...">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="llm">LLM Chatbots</button>
+      <button class="filter-btn" data-filter="coding">Coding Tools</button>
+    </div>
+
+    <section class="section" id="llm-section">
+      <h2 class="section__title">
+        <span class="icon-box"><svg class="icon" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+        LLM Chatbots
+      </h2>
+
+      <div class="tbl-w">
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Name</th>
+              <th>Developer</th>
+              <th>Country</th>
+              <th>Free</th>
+              <th>Pro Price</th>
+              <th>Est. Users</th>
+            </tr>
+          </thead>
+          <tbody id="llm-table-body"></tbody>
+        </table>
+      </div>
+
+      <div id="llm-grid">
+        <div class="loading">Loading LLM chatbots</div>
+      </div>
+    </section>
+
+    <section class="section" id="coding-section">
+      <h2 class="section__title">
+        <span class="icon-box"><svg class="icon" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span>
+        AI Coding Tools
+      </h2>
+
+      <div class="tbl-w">
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Name</th>
+              <th>Developer</th>
+              <th>Country</th>
+              <th>Free</th>
+              <th>Pro Price</th>
+              <th>Est. Users</th>
+            </tr>
+          </thead>
+          <tbody id="coding-table-body"></tbody>
+        </table>
+      </div>
+
+      <div id="coding-grid">
+        <div class="loading">Loading coding tools</div>
+      </div>
+    </section>
+
+    <div class="last-updated" id="last-updated">Loading</div>
+  </main>
+
+  <footer class="footer">
+    AI Landscape · Privacy-first · No tracking · No cookies · GDPR compliant
+  </footer>
+
+  <script src="data/llm_chatbots.js"></script>
+  <script src="data/coding_tools.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
