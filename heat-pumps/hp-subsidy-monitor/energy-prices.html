@@ -86,6 +86,7 @@ footer{text-align:center;padding:20px 0;border-top:1px solid var(--glass-b);colo
       <th onclick="sortPT(1)">Electricity</th>
       <th onclick="sortPT(2)">Gas</th>
       <th onclick="sortPT(3)">Ratio</th>
+      <th style="cursor:default;">Source</th>
     </tr></thead><tbody id="pt"></tbody></table>
   </div>
 </div>
@@ -154,17 +155,28 @@ function update(){
   }});
 }
 
+// Source mapping — official primary sources for current electricity prices
+const SRC={
+  Eurostat:{n:'Eurostat',u:'https://ec.europa.eu/eurostat/databrowser/view/nrg_pc_204/default/table',t:'Eurostat NRG_PC_204 — Electricity prices for household consumers, H1 2025 (official EU source)'},
+  Ofgem:{n:'Ofgem',u:'https://www.ofgem.gov.uk/energy-policy-and-regulation/policy-and-regulatory-programmes/default-tariff-cap-energy-price-cap',t:'Ofgem — UK Default Tariff Cap (official UK regulator)'},
+  SSB:{n:'SSB',u:'https://www.ssb.no/en/energi-og-industri/energi/statistikk/elektrisitetspriser',t:'Statistics Norway — Electricity prices (official NO statistics agency)'},
+  ElCom:{n:'ElCom',u:'https://www.strompreis.elcom.admin.ch/',t:'ElCom — Swiss Federal Electricity Commission (official CH regulator)'}
+};
+const SRC_BY={UK:'Ofgem',Norway:'SSB',Switzerland:'ElCom'}; // default = Eurostat
+
 // Table
 function renderPT(){
   const all=[...P].sort((a,b)=>b.e-a.e);
   document.getElementById('pt').innerHTML=all.map(c=>{
     const r=c.ga?c.e/c.ga:null;
     const rc=r?r>3.5?'color:var(--red)':r>2.5?'color:var(--yellow)':'color:var(--green)':'';
+    const s=SRC[SRC_BY[c.n]||'Eurostat'];
     return`<tr style="cursor:pointer;" onclick="sel.value='${c.n}';update();window.scrollTo({top:0,behavior:'smooth'});">
       <td style="font-weight:500;">${c.f} ${c.n}</td>
       <td style="font-family:Menlo,Consolas,monospace;">€${c.e.toFixed(3)}</td>
       <td style="font-family:Menlo,Consolas,monospace;">${c.ga?'€'+c.ga.toFixed(3):'N/A'}</td>
       <td style="font-family:Menlo,Consolas,monospace;${rc}">${r?r.toFixed(2)+'x':'N/A'}</td>
+      <td><a href="${s.u}" target="_blank" rel="noopener" title="${s.t}" onclick="event.stopPropagation();" style="font-size:0.7rem;color:var(--accent);font-weight:500;">${s.n} ↗</a></td>
     </tr>`;
   }).join('');
 }
