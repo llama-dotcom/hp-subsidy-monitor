@@ -260,20 +260,31 @@ module.exports = async function handler(req, res) {
 
         const articleList = articles.map((a, i) => `${i + 1}. "${a.title}" (${a.source}, ${a.date})`).join('\n');
 
+        // Build current-data context for Llama (so it can spot updates vs current values)
+        const currentContext = [
+          country.max_subsidy ? `max_subsidy: €${country.max_subsidy}` : 'max_subsidy: unknown',
+          country.subsidy_program ? `subsidy_program: "${country.subsidy_program}"` : 'subsidy_program: unknown',
+          country.market_size ? `market_size: ${country.market_size}k units/year installed` : 'market_size: unknown'
+        ].join('\n  ');
+
         const completion = await groq.chat.completions.create({
           messages: [
-            { role: 'system', content: 'You analyze real news articles about heat pump subsidies. Return JSON only.' },
-            { role: 'user', content: `Real news articles about heat pumps in ${country.name}:\n\n${articleList}\n\nFor each RELEVANT article (subsidies, energy policy, heating regulations), create a summary.\n\nReturn: {"items": [{"title": "headline max 80 chars", "description": "2-3 sentences", "impact": "critical|medium|info", "original_index": number}]}\n\nSkip unrelated. If none relevant: {"items": []}` }
+            { role: 'system', content: 'You analyze real news articles about heat pump policy. Return JSON only. Be conservative — only extract structured data if articles contain clear, specific numeric facts.' },
+            { role: 'user', content: `Real news articles about heat pumps in ${country.name}:\n\n${articleList}\n\nCurrent data we track for ${country.name}:\n  ${currentContext}\n\nDo TWO tasks:\n\nTASK 1 — SUMMARIZE: For each RELEVANT article (subsidies, energy policy, heating regulations), create a summary.\n\nTASK 2 — EXTRACT STRUCTURED UPDATES: If any article contains a SPECIFIC NUMERIC OR FACTUAL UPDATE that would change our tracked data, extract it. Examples:\n- "Germany raised BEG to €25,000" → {data_type:"subsidy_amount", field_name:"max_subsidy", new_value:25000}\n- "Germany installed 350k heat pumps in 2025 (EHPA)" → {data_type:"market_size", field_name:"market_size", new_value:350}\n- "Italy abolished Conto Termico" → {data_type:"subsidy_program", field_name:"subsidy_program", new_value:"ABOLISHED"}\n\nRules:\n- Only extract if the article contains a CLEAR SPECIFIC FACT (not speculation, not vague mentions)\n- new_value must be a number for subsidy_amount/market_size, a string for subsidy_program\n- confidence: 0.9+ for crystal-clear specific facts, 0.6-0.9 for clear but indirect, <0.6 for soft mentions\n- If nothing extractable: extractions: []\n\nReturn:\n{\n  "items": [{"title":"headline max 80 chars","description":"2-3 sentences","impact":"critical|medium|info","original_index":N}],\n  "extractions": [{"original_index":N,"data_type":"subsidy_amount|subsidy_program|market_size","field_name":"max_subsidy|subsidy_program|market_size","new_value":<num or string>,"reasoning":"1 sentence","confidence":0.0-1.0}]\n}\n\nIf nothing relevant: {"items":[],"extractions":[]}` }
           ],
-          model: 'llama-3.3-70b-versatile', temperature: 0.2, max_tokens: 800,
+          model: 'llama-3.3-70b-versatile', temperature: 0.2, max_tokens: 1500,
           response_format: { type: 'json_object' }
         });
 
         const content = completion.choices[0]?.message?.content;
         if (!content) continue;
 
-        let newsItems;
-        try { newsItems = JSON.parse(content).items || []; } catch (e) { continue; }
+        let newsItems, extractions;
+        try {
+          const parsed = JSON.parse(content);
+          newsItems = parsed.items || [];
+          extractions = parsed.extractions || [];
+        } catch (e) { continue; }
 
         for (const item of newsItems) {
           if (!item.title) continue;
@@ -302,6 +313,50 @@ module.exports = async function handler(req, res) {
             })
           });
           results.news++;
+        }
+
+        // === Phase E2: Process structured extractions → pending_data_review ===
+        const validFields = new Set(['max_subsidy', 'subsidy_program', 'market_size']);
+        for (const ex of extractions) {
+          if (!ex || !ex.data_type || !ex.field_name || ex.new_value == null) continue;
+          if (!validFields.has(ex.field_name)) continue;
+          // Get current DB value
+          const currentVal = country[ex.field_name];
+          const currentStr = currentVal != null ? String(currentVal) : null;
+          const newStr = String(ex.new_value);
+          // Skip if no actual change
+          if (currentStr === newStr) continue;
+          // Skip if value is suspicious (too low/high for the field)
+          if (ex.field_name === 'max_subsidy' && (Number(newStr) < 100 || Number(newStr) > 500000)) continue;
+          if (ex.field_name === 'market_size' && (Number(newStr) < 0.1 || Number(newStr) > 10000)) continue;
+
+          const origArt = articles[ex.original_index - 1] || articles[0];
+          try {
+            await fetch(`${SUPABASE_URL}/rest/v1/pending_data_review?on_conflict=country_code,data_type,field_name,source_article_url`, {
+              method: 'POST',
+              headers: {
+                'apikey': SUPABASE_KEY,
+                'Authorization': `Bearer ${SUPABASE_KEY}`,
+                'Content-Type': 'application/json',
+                'Prefer': 'resolution=merge-duplicates,return=minimal'
+              },
+              body: JSON.stringify({
+                country_code: country.id,
+                data_type: ex.data_type,
+                field_name: ex.field_name,
+                current_value: currentStr,
+                suggested_value: newStr,
+                reasoning: ex.reasoning || '',
+                source_article_title: origArt.title || '',
+                source_article_url: origArt.url || '',
+                confidence: typeof ex.confidence === 'number' ? Math.max(0, Math.min(1, ex.confidence)) : 0.5,
+                status: 'pending'
+              })
+            });
+            results.extractions = (results.extractions || 0) + 1;
+          } catch (e) {
+            results.errors.push(`Extraction ${country.id}: ${e.message}`);
+          }
         }
       } catch (e) { results.errors.push(`News ${country.name}: ${e.message}`); }
     }
@@ -418,32 +473,43 @@ module.exports = async function handler(req, res) {
         results.errors.push(`UK DESNZ: ${e.message}`);
       }
 
-      // --- 4. SYNC: patch countries.electricity_price/gas_price/price_ratio with latest ---
-      // For each country, find the most recent (year, period) row and patch the legacy columns.
-      // This ensures index.html (reads countries.*) shows the same numbers as energy-prices.html.
+      // --- 4. SYNC: patch countries.electricity_price/gas_price/price_ratio ---
+      // For each country, compute the LATEST YEAR's ANNUAL value using the same priority as
+      // the front-end chart: average(H1+H2) → H2 → H1 → A. This guarantees that
+      // index.html (countries.*) and energy-prices.html (energy_prices.*) show identical numbers.
       try {
-        // Period priority: H2 > H1 > A (H2 is more recent within a year; A is annual fallback)
-        const periodRank = { H2: 3, H1: 2, A: 1 };
-        const latestByCountry = {};
+        // Group fresh rows by country → year → period
+        const grouped = {};
         for (const r of allFreshRows) {
-          const key = r.country_code;
-          const cur = latestByCountry[key];
-          if (!cur ||
-              r.year > cur.year ||
-              (r.year === cur.year && (periodRank[r.period] || 0) > (periodRank[cur.period] || 0))) {
-            latestByCountry[key] = r;
-          }
+          if (!grouped[r.country_code]) grouped[r.country_code] = {};
+          if (!grouped[r.country_code][r.year]) grouped[r.country_code][r.year] = {};
+          grouped[r.country_code][r.year][r.period] = r;
         }
+        // For each country, find latest year and compute annual aggregate
         let synced = 0;
-        for (const [code, row] of Object.entries(latestByCountry)) {
-          // Compute price ratio (electricity / gas) for HP economics
-          let ratio = null;
-          if (row.electricity_eur_kwh && row.gas_eur_kwh) {
-            ratio = +(row.electricity_eur_kwh / row.gas_eur_kwh).toFixed(2);
+        for (const [code, byYear] of Object.entries(grouped)) {
+          const latestYear = Math.max(...Object.keys(byYear).map(Number));
+          const yd = byYear[latestYear];
+          let elec = null, gas = null;
+          if (yd.H1 && yd.H2) {
+            // Average both semesters when both available
+            elec = (yd.H1.electricity_eur_kwh != null && yd.H2.electricity_eur_kwh != null)
+              ? +((yd.H1.electricity_eur_kwh + yd.H2.electricity_eur_kwh) / 2).toFixed(5)
+              : (yd.H2.electricity_eur_kwh ?? yd.H1.electricity_eur_kwh);
+            gas = (yd.H1.gas_eur_kwh != null && yd.H2.gas_eur_kwh != null)
+              ? +((yd.H1.gas_eur_kwh + yd.H2.gas_eur_kwh) / 2).toFixed(5)
+              : (yd.H2.gas_eur_kwh ?? yd.H1.gas_eur_kwh);
+          } else if (yd.H2) {
+            elec = yd.H2.electricity_eur_kwh; gas = yd.H2.gas_eur_kwh;
+          } else if (yd.H1) {
+            elec = yd.H1.electricity_eur_kwh; gas = yd.H1.gas_eur_kwh;
+          } else if (yd.A) {
+            elec = yd.A.electricity_eur_kwh; gas = yd.A.gas_eur_kwh;
           }
+          const ratio = (elec && gas) ? +(elec / gas).toFixed(2) : null;
           const patch = {
-            electricity_price: row.electricity_eur_kwh,
-            gas_price: row.gas_eur_kwh,
+            electricity_price: elec,
+            gas_price: gas,
             price_ratio: ratio,
             updated_at: nowIso
           };
