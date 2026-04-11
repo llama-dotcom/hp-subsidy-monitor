@@ -165,8 +165,25 @@ const App = {
     });
   },
 
-  // --- Data Loading (uses global vars from script tags) ---
-  getData(name) {
+  // --- Data Loading ---
+  // Tries API first (live Supabase data via /api/ai-landscape-data),
+  // falls back to static JS files (DATA_* globals) if API unavailable.
+  _apiCache: null,
+
+  async fetchAPI() {
+    if (this._apiCache) return this._apiCache;
+    try {
+      const r = await fetch('/api/ai-landscape-data');
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      this._apiCache = await r.json();
+      return this._apiCache;
+    } catch (e) {
+      console.warn('API unavailable, using static fallback:', e.message);
+      return null;
+    }
+  },
+
+  getStatic(name) {
     const map = {
       'llm_chatbots': typeof DATA_LLM_CHATBOTS !== 'undefined' ? DATA_LLM_CHATBOTS : null,
       'coding_tools': typeof DATA_CODING_TOOLS !== 'undefined' ? DATA_CODING_TOOLS : null,
@@ -175,6 +192,21 @@ const App = {
       'events': typeof DATA_EVENTS !== 'undefined' ? DATA_EVENTS : null
     };
     return map[name] || null;
+  },
+
+  async getData(name) {
+    const api = await this.fetchAPI();
+    if (api) {
+      const map = {
+        'llm_chatbots': api.llms,
+        'coding_tools': api.coding,
+        'synergies': api.synergies,
+        'news': api.news,
+        'events': api.events,
+      };
+      if (map[name]) return map[name];
+    }
+    return this.getStatic(name);
   },
 
   async loadPageData() {
@@ -199,8 +231,8 @@ const App = {
 
   // --- Dashboard ---
   async loadDashboard() {
-    const llms = this.getData('llm_chatbots');
-    const coding = this.getData('coding_tools');
+    const llms = await this.getData('llm_chatbots');
+    const coding = await this.getData('coding_tools');
     if (!llms || !coding) return;
 
     this.data.llms = llms;
@@ -274,8 +306,8 @@ const App = {
 
   // --- Systems Page ---
   async loadSystems() {
-    const llms = this.getData('llm_chatbots');
-    const coding = this.getData('coding_tools');
+    const llms = await this.getData('llm_chatbots');
+    const coding = await this.getData('coding_tools');
     if (!llms || !coding) return;
 
     this.data.llms = llms;
@@ -513,7 +545,7 @@ const App = {
   },
 
   async loadSynergies() {
-    const data = this.getData('synergies');
+    const data = await this.getData('synergies');
     if (!data) return;
 
     const grid = document.getElementById('synergies-grid');
@@ -538,8 +570,8 @@ const App = {
 
   // --- News Page ---
   async loadNews() {
-    const newsData = this.getData('news');
-    const eventsData = this.getData('events');
+    const newsData = await this.getData('news');
+    const eventsData = await this.getData('events');
 
     if (newsData) this.renderNews(newsData);
     this.initEventFilters();
