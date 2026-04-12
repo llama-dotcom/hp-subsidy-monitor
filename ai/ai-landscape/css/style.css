@@ -111,15 +111,32 @@ header {
 }
 
 .hdr-logo {
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   border-radius: 8px;
-  background: linear-gradient(135deg, #c9a84c, #e8dcc8);
+  background: rgba(56,189,248,0.1);
+  border: 1px solid rgba(56,189,248,0.25);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  color: #2a2015;
+  color: var(--accent);
+  transition: all 0.2s;
+}
+
+.hdr-logo:hover {
+  background: rgba(56,189,248,0.18);
+  border-color: rgba(56,189,248,0.4);
+}
+
+[data-theme="light"] .hdr-logo {
+  background: rgba(0,102,179,0.06);
+  border-color: rgba(0,102,179,0.2);
+  color: var(--accent);
+}
+
+[data-theme="light"] .hdr-logo:hover {
+  background: rgba(0,102,179,0.12);
 }
 
 .hdr-logo svg {
