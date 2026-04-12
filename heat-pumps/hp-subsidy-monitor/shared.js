@@ -84,6 +84,6 @@ document.head.appendChild(sharedCSS);
 
 // AI disclaimer — small fixed text, bottom-right, all pages
 const aiDisclaimer = document.createElement('div');
-aiDisclaimer.style.cssText = 'position:fixed;bottom:8px;right:12px;font-size:0.58rem;color:var(--dim);opacity:0.4;z-index:10;pointer-events:none;font-family:inherit;letter-spacing:0.2px;';
+aiDisclaimer.style.cssText = 'position:fixed;bottom:10px;right:14px;font-size:0.65rem;color:var(--dim);opacity:0.6;z-index:10;pointer-events:none;font-family:inherit;letter-spacing:0.3px;';
 aiDisclaimer.textContent = 'AI-assisted data · Errors possible · Verify before decisions';
 document.body.appendChild(aiDisclaimer);
