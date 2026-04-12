@@ -329,18 +329,21 @@ async function loadFromDB(){
       sortByCode[c.id] = c.sort_weight || c.market_size || 0;
     }
 
-    // Group news by country (max 5 per country, newest first — already sorted by created_at desc)
+    // Filter news to ONLY energy-price-related topics (max 1 per country)
+    // This page is about prices, not subsidies — only show price-relevant news
+    const PRICE_KEYWORDS = /electricit|energy price|energy cost|tariff|grid|strompreis|energiepreis|netzentgelt|prix.*[eé]nergi|precio.*energ|ofgem|price cap|wholesale|kWh|gas price|fuel cost|network charge|EEG|grid fee/i;
     const newsByCode = {};
     for (const n of newsRows) {
       const code = n.country_id;
-      if (!newsByCode[code]) newsByCode[code] = [];
-      if (newsByCode[code].length < 5) {
-        newsByCode[code].push({
+      if (newsByCode[code]) continue; // max 1 per country
+      const text = (n.title || '') + ' ' + (n.description || '');
+      if (PRICE_KEYWORDS.test(text)) {
+        newsByCode[code] = [{
           d: n.date || '',
           t: n.title || '',
           ds: n.description || '',
           u: n.source_url || ''
-        });
+        }];
       }
     }
 
