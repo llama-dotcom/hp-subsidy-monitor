@@ -3,18 +3,6 @@
     {
       "path": "/api/update",
       "schedule": "0 6 * * *"
-    },
-    {
-      "path": "/api/refresh-data?batch=1",
-      "schedule": "0 4 1,15 * *"
-    },
-    {
-      "path": "/api/refresh-data?batch=2",
-      "schedule": "0 4 2,16 * *"
-    },
-    {
-      "path": "/api/news-hub-update",
-      "schedule": "0 8 * * *"
     }
   ],
   "headers": [
