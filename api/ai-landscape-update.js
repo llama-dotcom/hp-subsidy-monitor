@@ -33,7 +33,9 @@ module.exports = async function handler(req, res) {
     const groq = new Groq({ apiKey: GROQ_KEY });
     const today = new Date();
     const todayISO = today.toISOString().slice(0, 10);
-    const isMonday = today.getUTCDay() === 1;
+    const year = today.getFullYear();
+    // Always do full refresh (triggered manually via Refresh button)
+    const isFullRefresh = true;
 
     // Helper: ask Groq, parse JSON
     async function askGroq(prompt, maxTokens = 4000) {
@@ -63,16 +65,16 @@ module.exports = async function handler(req, res) {
     // ============================================
     try {
       const queries = [
-        'GPT OpenAI ChatGPT AI release 2026',
-        'Claude Anthropic AI release 2026',
-        'Gemini Google DeepMind AI 2026',
-        'Llama Meta Mistral open source AI 2026',
-        'AI funding round billion valuation 2026',
-        'EU AI Act regulation enforcement 2026',
-        'AI coding tool Cursor Copilot Claude Code 2026',
-        'DeepSeek Qwen Chinese AI model 2026',
-        'AI conference summit expo 2026',
-        'AI startup acquisition merger 2026',
+        `GPT OpenAI ChatGPT AI release ${year}`,
+        `Claude Anthropic AI release ${year}`,
+        `Gemini Google DeepMind AI ${year}`,
+        `Llama Meta Mistral open source AI ${year}`,
+        `AI funding round billion valuation ${year}`,
+        `EU AI Act regulation enforcement ${year}`,
+        `AI coding tool Cursor Copilot Claude Code ${year}`,
+        `DeepSeek Qwen Chinese AI model ${year}`,
+        `AI conference summit expo ${year}`,
+        `AI startup acquisition merger ${year}`,
       ];
       const fetched = [];
       for (const q of queries) {
@@ -132,7 +134,7 @@ Only report changes you are confident about. Do NOT speculate.`;
     // ============================================
     // 3. WEEKLY (Monday): full system refresh + new systems + events
     // ============================================
-    if (isMonday) {
+    if (isFullRefresh) {
       // 3a. Full system data refresh
       try {
         const existingR = await fetch(`${SUPABASE_URL}/rest/v1/ai_systems?select=*&order=type.asc,market_position.asc`, { headers: sbH });
@@ -226,7 +228,7 @@ Focus on:
 3. Major global AI events (NeurIPS, ICML, Google I/O, etc.)
 
 For each event return a JSON object:
-{"id": "slug-2026", "name": "Event Name", "date_start": "YYYY-MM-DD", "date_end": "YYYY-MM-DD", "location_city": "City", "location_country": "Country", "region": "germany|europe|world", "type": "conference|expo|summit|workshop", "description": "1-2 sentences", "url": "https://...", "estimated_attendees": "N+" or null, "highlight": true/false}
+{"id": "slug-${year}", "name": "Event Name", "date_start": "YYYY-MM-DD", "date_end": "YYYY-MM-DD", "location_city": "City", "location_country": "Country", "region": "germany|europe|world", "type": "conference|expo|summit|workshop", "description": "1-2 sentences", "url": "https://...", "estimated_attendees": "N+" or null, "highlight": true/false}
 
 Reply with JSON: {"events": [...], "notes": "summary"}
 Only include events you are confident about dates. If unsure of exact date, skip.`;
@@ -261,12 +263,12 @@ Only include events you are confident about dates. If unsure of exact date, skip
       { key: 'last_news_update', value: now, updated_at: now },
       { key: 'last_systems_update', value: now, updated_at: now },
       { key: 'last_run', value: now, updated_at: now },
-      { key: 'last_run_type', value: isMonday ? 'weekly_full' : 'daily_light', updated_at: now },
+      { key: 'last_run_type', value: 'manual_full', updated_at: now },
     ], 'key');
 
     return res.status(200).json({
       ok: true,
-      run_type: isMonday ? 'weekly_full' : 'daily_light',
+      run_type: 'manual_full',
       elapsed_ms: Date.now() - startTime,
       ...results,
     });
