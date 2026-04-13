@@ -67,7 +67,7 @@ module.exports = async function handler(req, res) {
       if (!r.ok) return [];
       const xml = await r.text();
       const items = xml.match(/<item>[\s\S]*?<\/item>/g) || [];
-      return items.slice(0, 5).map(item => {
+      return items.slice(0, 8).map(item => {
         const title = ((item.match(/<title>(.*?)<\/title>/) || [])[1] || '')
           .replace(/<!\[CDATA\[(.*?)\]\]>/, '$1')
           .replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/&quot;/g, '"').trim();
@@ -199,7 +199,7 @@ module.exports = async function handler(req, res) {
 
         const filterResult = await askGroq(`${section.filterPrompt}
 
-Here are ${recent.length} articles. Select the most important and relevant ones (max 10). For each selected article:
+Here are ${recent.length} articles. Select the most important and relevant ones (max 15). For each selected article:
 1. Translate the title to Russian
 2. Write a detailed summary in Russian (4-6 sentences) explaining what happened, why it matters, and key details
 
