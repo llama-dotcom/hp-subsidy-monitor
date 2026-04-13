@@ -18,7 +18,7 @@ module.exports = async function handler(req, res) {
 
     // Fetch all news ordered by date desc
     const r = await fetch(
-      `${SUPABASE_URL}/rest/v1/news?select=*&order=published_at.desc&limit=100`,
+      `${SUPABASE_URL}/rest/v1/news?select=*&order=published_at.desc&limit=200`,
       { headers: sbH }
     );
     if (!r.ok) throw new Error(`Supabase: HTTP ${r.status}`);
