@@ -28,7 +28,7 @@
     const btn = document.querySelector('.btn-theme');
     if (!btn) return;
     const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-    btn.textContent = isDark ? '\u2600\uFE0F' : '\uD83C\uDF19';
+    btn.classList.toggle('is-dark', isDark);
     btn.setAttribute('aria-label', isDark ? 'Светлая тема' : 'Тёмная тема');
   }
 
