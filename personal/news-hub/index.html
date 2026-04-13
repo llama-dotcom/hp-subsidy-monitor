@@ -27,15 +27,14 @@
 
       <nav class="hdr-tabs" id="nav-tabs">
         <button class="hdr-tab active" data-section="politics">Мировая политика</button>
+        <button class="hdr-tab" data-section="tech">Технологии</button>
         <button class="hdr-tab" data-section="esslingen">Эсслинген</button>
         <button class="hdr-tab" data-section="saratov">Энгельс и Саратов</button>
-        <button class="hdr-tab" data-section="beauty">Красота</button>
-        <button class="hdr-tab" data-section="carnivore">Карнивор</button>
-        <button class="hdr-tab" data-section="tech">Технологии</button>
+        <button class="hdr-tab" data-section="lifestyle">Для себя</button>
       </nav>
 
       <div class="hdr-right">
-        <button class="btn-theme" type="button">Light mode</button>
+        <button class="btn-theme" type="button" aria-label="Сменить тему">&#9728;&#65039;</button>
         <span class="hdr-date"></span>
       </div>
     </div>
@@ -43,7 +42,7 @@
 
   <main class="container">
 
-    <!-- World Politics -->
+    <!-- 1. World Politics -->
     <section class="news-section active" id="section-politics">
       <div class="section-header">
         <h1 class="section-title">
@@ -53,67 +52,11 @@
         <p class="section-desc">Главные геополитические события, международные отношения, дипломатия и глобальная политика</p>
       </div>
       <div class="news-grid" id="grid-politics">
-        <div class="loading">Loading news...</div>
+        <div class="loading">Загрузка...</div>
       </div>
     </section>
 
-    <!-- Esslingen -->
-    <section class="news-section" id="section-esslingen">
-      <div class="section-header">
-        <h1 class="section-title">
-          <span class="icon-box"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/><path d="M9 9v.01"/><path d="M9 12v.01"/><path d="M9 15v.01"/><path d="M9 18v.01"/></svg></span>
-          Эсслинген, Германия
-        </h1>
-        <p class="section-desc">Местные новости Эсслинген-на-Неккаре, района Эсслинген и региона Штутгарт</p>
-      </div>
-      <div class="news-grid" id="grid-esslingen">
-        <div class="loading">Loading news...</div>
-      </div>
-    </section>
-
-    <!-- Engels / Saratov -->
-    <section class="news-section" id="section-saratov">
-      <div class="section-header">
-        <h1 class="section-title">
-          <span class="icon-box"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
-          Энгельс и Саратов, Россия
-        </h1>
-        <p class="section-desc">Новости Энгельса, Саратова и Саратовской области</p>
-      </div>
-      <div class="news-grid" id="grid-saratov">
-        <div class="loading">Loading news...</div>
-      </div>
-    </section>
-
-    <!-- Beauty -->
-    <section class="news-section" id="section-beauty">
-      <div class="section-header">
-        <h1 class="section-title">
-          <span class="icon-box"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></span>
-          Красота и массаж лица
-        </h1>
-        <p class="section-desc">Техники массажа лица, фейс-йога, гуаша, наука по уходу за кожей и anti-aging</p>
-      </div>
-      <div class="news-grid" id="grid-beauty">
-        <div class="loading">Loading news...</div>
-      </div>
-    </section>
-
-    <!-- Carnivore -->
-    <section class="news-section" id="section-carnivore">
-      <div class="section-header">
-        <h1 class="section-title">
-          <span class="icon-box"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.5 2.5c2 0 4 1.5 4 4 0 1.2-.5 2.2-1.2 3l-6.3 7.5-3-3L16 7.5"/><path d="M9 13l-4.5 4.5"/><path d="M10.5 8.5L7 12"/><path d="M5 19a2 2 0 0 0 2 2h.5"/><path d="M17 5c.3-.8.7-1.5 1.2-2"/></svg></span>
-          Карнивор диета
-        </h1>
-        <p class="section-desc">Исследования мясной диеты, истории успеха, рецепты и научные данные о здоровье</p>
-      </div>
-      <div class="news-grid" id="grid-carnivore">
-        <div class="loading">Loading news...</div>
-      </div>
-    </section>
-
-    <!-- Tech & AI -->
+    <!-- 2. Tech & AI -->
     <section class="news-section" id="section-tech">
       <div class="section-header">
         <h1 class="section-title">
@@ -123,7 +66,49 @@
         <p class="section-desc">Последние технологические прорывы, инновации в разных сферах, гаджеты и научные открытия</p>
       </div>
       <div class="news-grid" id="grid-tech">
-        <div class="loading">Loading news...</div>
+        <div class="loading">Загрузка...</div>
+      </div>
+    </section>
+
+    <!-- 3. Esslingen -->
+    <section class="news-section" id="section-esslingen">
+      <div class="section-header">
+        <h1 class="section-title">
+          <span class="icon-box"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/><path d="M9 9v.01"/><path d="M9 12v.01"/><path d="M9 15v.01"/><path d="M9 18v.01"/></svg></span>
+          Эсслинген, Германия
+        </h1>
+        <p class="section-desc">Местные новости Эсслинген-на-Неккаре, района Эсслинген и региона Штутгарт</p>
+      </div>
+      <div class="news-grid" id="grid-esslingen">
+        <div class="loading">Загрузка...</div>
+      </div>
+    </section>
+
+    <!-- 4. Engels / Saratov -->
+    <section class="news-section" id="section-saratov">
+      <div class="section-header">
+        <h1 class="section-title">
+          <span class="icon-box"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
+          Энгельс и Саратов, Россия
+        </h1>
+        <p class="section-desc">Новости Энгельса, Саратова и Саратовской области</p>
+      </div>
+      <div class="news-grid" id="grid-saratov">
+        <div class="loading">Загрузка...</div>
+      </div>
+    </section>
+
+    <!-- 5. Lifestyle (Beauty + Carnivore combined) -->
+    <section class="news-section" id="section-lifestyle">
+      <div class="section-header">
+        <h1 class="section-title">
+          <span class="icon-box"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></span>
+          Для себя
+        </h1>
+        <p class="section-desc">Массаж лица, уход за кожей, карнивор диета и здоровье</p>
+      </div>
+      <div class="news-grid" id="grid-lifestyle">
+        <div class="loading">Загрузка...</div>
       </div>
     </section>
 
