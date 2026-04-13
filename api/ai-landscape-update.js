@@ -96,8 +96,29 @@ module.exports = async function handler(req, res) {
         } catch (e) { results.errors.push(`news "${q.slice(0,30)}": ${e.message}`); }
       }
       const seen = new Set();
-      const deduped = fetched.filter(n => { const k = n.title.slice(0, 60).toLowerCase(); if (seen.has(k)) return false; seen.add(k); return true; }).slice(0, 30);
-      if (deduped.length) { await upsert('ai_news', deduped); results.news = deduped.length; }
+      const deduped = fetched.filter(n => { const k = n.title.slice(0, 60).toLowerCase(); if (seen.has(k)) return false; seen.add(k); return true; }).slice(0, 25);
+
+      // Generate real summaries via Groq (batch all titles in one call)
+      if (deduped.length > 0) {
+        try {
+          const titles = deduped.map((n, i) => `${i}. ${n.title}`).join('\n');
+          const sumResp = await askGroq(`You are an AI news editor. For each headline below, write a 2-sentence summary explaining what happened and why it matters. Be specific and informative.
+
+Headlines:
+${titles}
+
+Reply with JSON: {"summaries": ["summary for item 0", "summary for item 1", ...]}
+Return exactly ${deduped.length} summaries in the same order.`, 4000);
+
+          const sums = sumResp.summaries || [];
+          for (let i = 0; i < Math.min(sums.length, deduped.length); i++) {
+            if (sums[i] && sums[i].length > 20) deduped[i].summary = sums[i];
+          }
+        } catch (e) { results.errors.push(`news summaries: ${e.message}`); }
+
+        await upsert('ai_news', deduped);
+        results.news = deduped.length;
+      }
       // Cleanup >60 days
       await fetch(`${SUPABASE_URL}/rest/v1/ai_news?date=lt.${new Date(Date.now() - 60 * 86400000).toISOString().slice(0, 10)}`, { method: 'DELETE', headers: sbH });
     } catch (e) { results.errors.push(`news: ${e.message}`); }
