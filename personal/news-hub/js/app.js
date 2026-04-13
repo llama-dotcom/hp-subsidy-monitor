@@ -7,7 +7,7 @@
 
   // --- Config ---
   const API_URL = '/api/news-hub-data';
-  const SECTIONS = ['politics', 'esslingen', 'saratov', 'beauty', 'carnivore', 'tech'];
+  const SECTIONS = ['politics', 'tech', 'esslingen', 'saratov', 'lifestyle'];
 
   // --- Theme ---
   function initTheme() {
@@ -28,7 +28,8 @@
     const btn = document.querySelector('.btn-theme');
     if (!btn) return;
     const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-    btn.textContent = isDark ? 'Светлая тема' : 'Тёмная тема';
+    btn.textContent = isDark ? '\u2600\uFE0F' : '\uD83C\uDF19';
+    btn.setAttribute('aria-label', isDark ? 'Светлая тема' : 'Тёмная тема');
   }
 
   // --- Date display ---
@@ -90,11 +91,12 @@
     grid.innerHTML = articles.map(a => {
       const date = a.published_at ? formatDate(a.published_at) : '';
       const source = escapeHtml(a.source || '');
-      const title = escapeHtml(a.title || 'Untitled');
+      const title = escapeHtml(a.title || 'Без заголовка');
       const summary = escapeHtml(a.summary || '');
       const url = a.url || '#';
+      const cardSection = a.section || sectionId;
 
-      return `<article class="news-card" data-section="${sectionId}">
+      return `<article class="news-card" data-section="${cardSection}">
         <h3 class="news-card__title"><a href="${escapeHtml(url)}" target="_blank" rel="noopener">${title}</a></h3>
         ${summary ? `<p class="news-card__summary">${summary}</p>` : ''}
         <div class="news-card__meta">
@@ -127,10 +129,18 @@
       if (!res.ok) throw new Error('API error ' + res.status);
       const data = await res.json();
 
-      SECTIONS.forEach(s => {
-        const articles = data[s] || [];
-        renderCards(s, articles);
+      // Render regular sections
+      ['politics', 'tech', 'esslingen', 'saratov'].forEach(s => {
+        renderCards(s, data[s] || []);
       });
+
+      // Merge beauty + carnivore into lifestyle
+      const lifestyle = [
+        ...(data['beauty'] || []),
+        ...(data['carnivore'] || []),
+      ].sort((a, b) => new Date(b.published_at) - new Date(a.published_at));
+      renderCards('lifestyle', lifestyle);
+
     } catch (err) {
       console.warn('API unavailable, trying fallback data...', err);
       loadFallbackData();
@@ -138,16 +148,9 @@
   }
 
   function loadFallbackData() {
-    // If static DATA_* globals exist (from fallback JS), use them
     SECTIONS.forEach(s => {
-      const key = 'DATA_' + s.toUpperCase();
-      const articles = window[key] || [];
-      if (articles.length > 0) {
-        renderCards(s, articles);
-      } else {
-        const grid = document.getElementById('grid-' + s);
-        if (grid) grid.innerHTML = '<div class="empty-state"><div class="empty-state__icon">&#128240;</div>Новости появятся после первого автоматического обновления.</div>';
-      }
+      const grid = document.getElementById('grid-' + s);
+      if (grid) grid.innerHTML = '<div class="empty-state"><div class="empty-state__icon">&#128240;</div>Новости появятся после первого автоматического обновления.</div>';
     });
   }
 
