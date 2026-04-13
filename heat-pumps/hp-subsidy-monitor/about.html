@@ -35,7 +35,6 @@ strong{color:var(--text);}
 .tag{display:inline-block;padding:2px 8px;border-radius:5px;font-size:0.7rem;font-weight:600;}
 .t-d{background:rgba(74,222,128,0.12);color:var(--green);}
 .t-m{background:rgba(56,189,248,0.12);color:var(--accent);}
-.t-o{background:rgba(148,163,184,0.15);color:var(--dim);}
 table{width:100%;border-collapse:collapse;font-size:0.82rem;margin:10px 0;}
 th{text-align:left;padding:8px;color:var(--dim);font-size:0.7rem;text-transform:uppercase;border-bottom:1px solid var(--glass-b);}
 td{padding:8px;border-bottom:1px solid rgba(51,65,85,0.2);}
@@ -51,123 +50,98 @@ footer{text-align:center;margin-top:40px;padding-top:20px;border-top:1px solid v
 <div class="content">
 
 <h1 class="page-title">About HP Subsidy Monitor</h1>
-<p class="page-sub">A comprehensive dashboard tracking heat pump subsidies, energy prices, and market data across 29 European countries.</p>
+<p class="page-sub">An interactive dashboard providing a global overview of heat pump and hybrid heating markets across 32 European countries — with a strong focus on government subsidies, policy changes, energy prices, and market trends.</p>
 
-<h2><i data-lucide="target" style="width:18px;height:18px;color:var(--accent);"></i> Purpose</h2>
+<!-- ============ 1. WHAT THIS DASHBOARD COVERS ============ -->
+<h2><i data-lucide="layers" style="width:18px;height:18px;color:var(--accent);"></i> What This Dashboard Covers</h2>
 <div class="gc">
-  <p>HP Subsidy Monitor provides a centralized view of government subsidy programs for heat pumps and hybrid heating systems across Europe. It helps industry professionals, policy analysts, and consumers understand the current subsidy landscape, track policy changes, and compare conditions across countries.</p>
+  <p><strong>Market Intelligence</strong> — Heat pump market size by country, annual sales volumes, growth trends, and key adoption indicators. Focus on hydronic systems (air-to-water, ground-source, exhaust-air, hybrids). Where data includes air-to-air units, this is explicitly labeled.</p>
+  <p><strong>Policy & Subsidies</strong> — Overview of current subsidy programs by country: type and size of grants, tax credits, and incentives. Tracking of policy changes over time — introductions, increases, reductions, cancellations. Special attention to hybrid systems (heat pump + gas boiler) where applicable.</p>
+  <p><strong>News & Signals</strong> — Latest news related to heat pumps, heating policies, and subsidies from 25 countries in local languages. AI-generated summaries of articles with tagging of key events: subsidy increases, policy rollbacks, new regulations, and signals that may impact the market.</p>
 </div>
 
-<h2><i data-lucide="layers" style="width:18px;height:18px;color:var(--accent);"></i> What We Track</h2>
+<!-- ============ 2. TECHNOLOGY SCOPE ============ -->
+<h2><i data-lucide="target" style="width:18px;height:18px;color:var(--accent);"></i> Technology Scope</h2>
 <div class="gc">
-  <p><strong>Technology scope:</strong></p>
   <ul>
-    <li><strong>AW</strong> — Air-to-Water heat pumps (residential &lt;20kW, commercial 20–350kW)</li>
+    <li><strong>AW</strong> — Air-to-Water heat pumps (residential and commercial)</li>
     <li><strong>LW</strong> — Liquid-to-Water / Ground-source / Brine-to-Water</li>
     <li><strong>EW</strong> — Exhaust Air heat pumps (with water distribution)</li>
     <li><strong>Hybrids</strong> — Heat pump + gas boiler systems (add-on and integrated)</li>
   </ul>
-  <p style="margin-top:10px;"><strong>Excluded:</strong> Air-to-Air reversible heat pumps (split systems, VRF). Where market data includes A2A units, this is clearly marked.</p>
+  <p style="margin-top:10px;"><strong>Excluded:</strong> Air-to-Air reversible heat pumps (split systems, VRF). Where market data includes A2A, this is clearly marked.</p>
 </div>
 
-<h2><i data-lucide="database" style="width:18px;height:18px;color:var(--accent);"></i> How Data Stays Current</h2>
+<!-- ============ 3. DATA SOURCES & UPDATE FREQUENCY ============ -->
+<h2><i data-lucide="database" style="width:18px;height:18px;color:var(--accent);"></i> Data Sources & Update Frequency</h2>
 <div class="gc">
-  <p style="margin-bottom:14px;">All data on this site is updated automatically via scheduled jobs (Vercel Cron). No manual data entry. Every number links to a verifiable source.</p>
   <table>
-    <thead><tr><th>Data</th><th>Frequency</th><th>Method</th><th>Source</th></tr></thead>
+    <thead><tr><th>Data</th><th>Frequency</th><th>Source</th></tr></thead>
     <tbody>
-      <tr><td><strong>News & policy signals</strong></td><td><span class="tag t-d">Daily 08:00 CET</span></td><td>Google News RSS in 25 languages → AI summary (Llama 3.3 70B via Groq). Max 5 articles per country.</td><td>Google News (real-time articles from government portals, industry press, national media)</td></tr>
-      <tr><td><strong>Electricity prices</strong></td><td><span class="tag t-m">Monthly (1st)</span></td><td>Direct JSON API — no AI involved. Fully deterministic.</td><td>Eurostat NRG_PC_204 (29 EU/EFTA countries), gov.uk DESNZ IEA tables (UK), ElCom SPARQL (Switzerland)</td></tr>
-      <tr><td><strong>Gas prices</strong></td><td><span class="tag t-m">Monthly (1st)</span></td><td>Direct JSON API — no AI involved.</td><td>Eurostat NRG_PC_202, gov.uk DESNZ. N/A where no residential gas market (Norway, Finland, Switzerland).</td></tr>
-      <tr><td><strong>Elec / Gas ratio</strong></td><td><span class="tag t-m">Monthly (1st)</span></td><td>Auto-computed: electricity ÷ gas</td><td>Derived from the two rows above</td></tr>
-      <tr><td><strong>Subsidy programs & max amounts</strong></td><td><span class="tag t-m">Monthly (1st–2nd)</span></td><td>AI research via Gemini 2.5 Flash + Google Search grounding. Searches official government sites, extracts program details with breakdown of components. Tiered trust model: gov sources auto-apply; secondary sources require higher confidence + smaller change bounds.</td><td>Official government portals (KfW, MaPrimeRénov, ISDE, BUS, etc.) verified via Google Search</td></tr>
-      <tr><td><strong>Market size (annual HP sales)</strong></td><td><span class="tag t-m">Monthly (1st–2nd)</span></td><td>AI research via Gemini + Google Search. Year-forward rule: only updates if newer year than existing data. If hydronic-only figure unavailable, total is used with an explicit label.</td><td>National HP associations (BWP, Uniclima, SULPU, etc.), EHPA, Eurostat, IEA</td></tr>
+      <tr><td><strong>Electricity prices</strong></td><td><span class="tag t-m">Monthly</span></td><td>Eurostat NRG_PC_204 (29 EU/EFTA countries), gov.uk DESNZ (UK), ElCom (Switzerland). Residential band 2500–5000 kWh/year, all taxes included, in EUR.</td></tr>
+      <tr><td><strong>Gas prices</strong></td><td><span class="tag t-m">Monthly</span></td><td>Eurostat NRG_PC_202, gov.uk DESNZ. N/A where no residential gas market.</td></tr>
+      <tr><td><strong>Elec/Gas ratio</strong></td><td><span class="tag t-m">Monthly</span></td><td>Computed automatically from electricity ÷ gas price.</td></tr>
+      <tr><td><strong>Subsidy programs</strong></td><td><span class="tag t-m">Monthly</span></td><td>Official government portals (KfW, MaPrimeRénov, ISDE, BUS, Conto Termico, Czyste Powietrze, etc.) via AI-powered web search and verification.</td></tr>
+      <tr><td><strong>Market size</strong></td><td><span class="tag t-m">Monthly</span></td><td>National HP associations (BWP, Uniclima, SULPU, VWP, HPA, PORT PC, WPA, VPI, FWS), EHPA, IEA. Year-forward rule: only updates when newer annual data becomes available.</td></tr>
+      <tr><td><strong>News & signals</strong></td><td><span class="tag t-d">Daily</span></td><td>Google News RSS in 25 languages. AI-summarized with deduplication (same story from different outlets → one combined summary). Max 5 articles per country.</td></tr>
     </tbody>
   </table>
 </div>
 
-<h2><i data-lucide="workflow" style="width:18px;height:18px;color:var(--accent);"></i> Automated Pipeline — How It Works</h2>
+<!-- ============ 4. HOW UPDATES WORK ============ -->
+<h2><i data-lucide="refresh-cw" style="width:18px;height:18px;color:var(--accent);"></i> How Updates Work</h2>
 <div class="gc">
-  <p style="font-size:0.82rem;color:var(--muted);line-height:1.8;">
-    <strong>Step 1 — Scheduled trigger:</strong> Vercel Cron Jobs automatically call our API endpoints on schedule. No human intervention needed.<br>
-    <strong>Step 2 — Data collection:</strong> Each endpoint fetches data from its designated source. Energy prices come from official statistical APIs (Eurostat, gov.uk, ElCom) — deterministic, no AI. Subsidies and market data come from Gemini AI with Google Search grounding — it reads official government pages and extracts structured data with source URLs.<br>
-    <strong>Step 3 — Validation:</strong> Every update passes through safety checks: year-forward rule (never overwrite newer data with older), sanity bounds (reject unreasonable values), tiered trust (government sources trusted more than secondary), change limits (large swings from secondary sources are blocked).<br>
-    <strong>Step 4 — Database write:</strong> Validated data is written to Supabase (PostgreSQL, EU Frankfurt). Each record stores: value, year, source URL, method note, and timestamp.<br>
-    <strong>Step 5 — Display:</strong> When you open any page, the browser fetches the latest data from Supabase in real-time. All pages read from the same database — identical numbers everywhere. Source links (↗) let you verify any number by clicking through to the official page.
-  </p>
-  <p style="margin-top:10px;font-size:0.78rem;color:var(--dim);"><strong>Scope:</strong> Only hydronic heat pumps (AW, LW, EW, Hybrids) — residential and commercial. Air-to-Air systems are excluded. Where market data includes A2A, this is explicitly labeled.</p>
-  <p style="margin-top:6px;font-size:0.78rem;color:var(--dim);"><strong>Disclaimer:</strong> Subsidy and market data is AI-assisted (Gemini + Google Search). While we verify against official sources and apply multiple safety checks, errors are possible. Always verify critical figures via the source links provided before making financial decisions.</p>
+  <p>Data is refreshed automatically on a fixed schedule — no manual input required. Energy prices are pulled directly from official statistical databases (Eurostat, gov.uk, ElCom) using their public APIs. Subsidy and market data is researched monthly via AI-powered web search of official government and industry sources. Every update passes validation checks: newer data cannot be overwritten by older, values must fall within reasonable bounds, and government sources are prioritized over secondary. All numbers on the dashboard include a source link (↗) for independent verification.</p>
+  <p style="margin-top:8px;font-size:0.78rem;color:var(--dim);">Currency conversions (GBP, CHF → EUR) use official ECB exchange rates via the <a href="https://www.frankfurter.app/" target="_blank">Frankfurter API</a>.</p>
 </div>
 
-<h2><i data-lucide="cpu" style="width:18px;height:18px;color:var(--accent);"></i> Technology Stack</h2>
+<!-- ============ 5. SOURCES ============ -->
+<h2><i data-lucide="link" style="width:18px;height:18px;color:var(--accent);"></i> Sources</h2>
 <div class="gc">
-  <ul>
-    <li><strong>Frontend:</strong> HTML, CSS, JavaScript (no frameworks)</li>
-    <li><strong>Maps:</strong> Leaflet.js + CARTO tiles + world-atlas TopoJSON</li>
-    <li><strong>Charts:</strong> Chart.js</li>
-    <li><strong>Database:</strong> Supabase (PostgreSQL, EU Frankfurt region)</li>
-    <li><strong>AI — News summaries:</strong> Groq API + Llama 3.3 70B (daily)</li>
-    <li><strong>AI — Subsidy & market research:</strong> Google Gemini 2.5 Flash + Google Search grounding (monthly)</li>
-    <li><strong>Price data APIs:</strong> Eurostat JSON-stat, gov.uk DESNZ XLSX, ElCom SPARQL, ECB Frankfurter</li>
-    <li><strong>News source:</strong> Google News RSS (25 languages, real-time articles)</li>
-    <li><strong>Automation:</strong> Vercel Cron Jobs — daily (news + prices) + monthly (subsidies + market)</li>
-    <li><strong>Hosting:</strong> Vercel (auto-deploy from GitHub)</li>
-    <li><strong>Domain:</strong> insight-map.com</li>
-  </ul>
-</div>
-
-<h2><i data-lucide="flask-conical" style="width:18px;height:18px;color:var(--accent);"></i> Methodology</h2>
-<div class="gc">
-  <p><strong>Energy prices:</strong> Latest Eurostat H1+H2 average (covering 2500–4999 kWh/year residential band, all taxes included, in EUR). For UK: gov.uk DESNZ "Domestic prices in the IEA" annual data, converted from pence/kWh to EUR via European Central Bank rates. For Switzerland: ElCom national median tariff for category H4 (typical 4500 kWh household), in CHF/kWh, converted via ECB.</p>
-  <p><strong>Market data:</strong> National associations with hydronic-only data are preferred (BWP, Uniclima, SULPU, VWP, HPA, PORT PC, WPA, VPI, FWS). Where only total figures exist (incl. A2A), this is marked. Updates extracted from news articles via Llama, then human-approved.</p>
-  <p><strong>HP penetration:</strong> cumulative installed base ÷ total households × 100%. Cumulative base updated when news articles cite EHPA cumulative figures (e.g., "Germany has 1.6M heat pumps installed").</p>
-  <p><strong>Subsidies:</strong> Verified against official government portals. Max available amount shown. Updates detected from news via Llama, then human-approved before going live.</p>
-</div>
-
-<h2><i data-lucide="link" style="width:18px;height:18px;color:var(--accent);"></i> Energy Price Sources</h2>
-<div class="gc">
+  <p style="margin-bottom:8px;"><strong>Energy Prices</strong></p>
   <div class="src-list">
-    🇪🇺 <a href="https://ec.europa.eu/eurostat/databrowser/view/nrg_pc_204/default/table" target="_blank">Eurostat NRG_PC_204 — Electricity prices, household consumers</a><br>
-    🇪🇺 <a href="https://ec.europa.eu/eurostat/databrowser/view/nrg_pc_202/default/table" target="_blank">Eurostat NRG_PC_202 — Natural gas prices, household consumers</a><br>
-    🇬🇧 <a href="https://www.gov.uk/government/statistical-data-sets/international-domestic-energy-prices" target="_blank">UK DESNZ — Domestic electricity & gas prices in the IEA (QEP 5.5.1, 5.9.1)</a><br>
-    🇨🇭 <a href="https://www.strompreis.elcom.admin.ch/" target="_blank">ElCom — Swiss Federal Electricity Commission median tariff</a><br>
-    💱 <a href="https://www.frankfurter.app/" target="_blank">Frankfurter — ECB official exchange rates (free, no key)</a>
+    🇪🇺 <a href="https://ec.europa.eu/eurostat/databrowser/view/nrg_pc_204/default/table" target="_blank">Eurostat — Electricity prices, household consumers (NRG_PC_204)</a><br>
+    🇪🇺 <a href="https://ec.europa.eu/eurostat/databrowser/view/nrg_pc_202/default/table" target="_blank">Eurostat — Natural gas prices, household consumers (NRG_PC_202)</a><br>
+    🇬🇧 <a href="https://www.gov.uk/government/statistical-data-sets/international-domestic-energy-prices" target="_blank">UK DESNZ — Domestic electricity & gas prices in the IEA</a><br>
+    🇨🇭 <a href="https://www.strompreis.elcom.admin.ch/" target="_blank">ElCom — Swiss electricity tariff median</a>
   </div>
-</div>
 
-<h2><i data-lucide="bar-chart-3" style="width:18px;height:18px;color:var(--accent);"></i> Market Data Sources</h2>
-<div class="gc">
+  <p style="margin-top:16px;margin-bottom:8px;"><strong>Market Data</strong></p>
   <div class="src-list">
-    ‣ <a href="https://www.ehpa.org/market-data/" target="_blank">EHPA — European HP Market Report 2025</a><br>
+    ‣ <a href="https://www.ehpa.org/market-data/" target="_blank">EHPA — European HP Market Data</a><br>
     ‣ <a href="https://www.iea.org/energy-system/buildings/heat-pumps" target="_blank">IEA — Heat Pump Tracker</a><br>
-    🇩🇪 <a href="https://www.waermepumpe.de/presse/" target="_blank">BWP — German HP Association (hydronic only)</a><br>
-    🇫🇷 <a href="https://www.uniclima.fr/" target="_blank">Uniclima — French HP data (A2W only)</a><br>
-    🇫🇮 <a href="https://www.sulpu.fi/en/" target="_blank">SULPU — Finnish HP Association</a><br>
-    🇳🇱 <a href="https://warmte-pompen.nl/" target="_blank">VWP — Dutch HP Association</a><br>
-    🇬🇧 <a href="https://www.mcscertified.com/" target="_blank">MCS/HPA — UK Installations</a><br>
-    🇵🇱 <a href="https://portpc.pl/" target="_blank">PORT PC — Polish HP Association</a><br>
-    🇦🇹 <a href="https://www.waermepumpe-austria.at/" target="_blank">WPA — Austrian HP Association</a><br>
-    🇩🇰 <a href="https://varmepumpeindustrien.dk/" target="_blank">VPI — Danish HP Industry</a><br>
-    🇨🇭 <a href="https://www.fws.ch/statistiken/" target="_blank">FWS — Swiss HP Association</a><br>
+    🇩🇪 <a href="https://www.waermepumpe.de/presse/" target="_blank">BWP — German HP Association</a>
+    · 🇫🇷 <a href="https://www.uniclima.fr/" target="_blank">Uniclima</a>
+    · 🇫🇮 <a href="https://www.sulpu.fi/en/" target="_blank">SULPU</a>
+    · 🇳🇱 <a href="https://warmte-pompen.nl/" target="_blank">VWP</a>
+    · 🇬🇧 <a href="https://www.mcscertified.com/" target="_blank">MCS/HPA</a>
+    · 🇵🇱 <a href="https://portpc.pl/" target="_blank">PORT PC</a>
+    · 🇦🇹 <a href="https://www.waermepumpe-austria.at/" target="_blank">WPA</a>
+    · 🇩🇰 <a href="https://varmepumpeindustrien.dk/" target="_blank">VPI</a>
+    · 🇨🇭 <a href="https://www.fws.ch/statistiken/" target="_blank">FWS</a><br>
     ‣ <a href="https://www.cleanenergywire.org" target="_blank">Clean Energy Wire — Policy Analysis</a>
   </div>
+
+  <p style="margin-top:16px;margin-bottom:8px;"><strong>Subsidy Programs</strong></p>
+  <div class="src-list">
+    🇩🇪 <a href="https://www.kfw.de" target="_blank">KfW — BEG/KfW 458</a>
+    · 🇫🇷 <a href="https://www.service-public.gouv.fr/particuliers/vosdroits/F35083" target="_blank">MaPrimeRénov'</a>
+    · 🇳🇱 <a href="https://www.rvo.nl/subsidies-financiering/isde" target="_blank">ISDE</a>
+    · 🇬🇧 <a href="https://www.gov.uk/apply-boiler-upgrade-scheme" target="_blank">BUS</a><br>
+    🇮🇹 <a href="https://www.gse.it/servizi-per-te/conto-termico" target="_blank">Conto Termico 3.0</a>
+    · 🇵🇱 <a href="https://czystepowietrze.gov.pl/" target="_blank">Czyste Powietrze</a>
+    · 🇪🇸 <a href="https://www.idae.es/" target="_blank">PRTR/IDAE</a>
+    · 🇦🇹 <a href="https://www.sanierungsoffensive.gv.at/" target="_blank">Sanierungsoffensive</a><br>
+    🇨🇭 <a href="https://www.dasgebaeudeprogramm.ch/" target="_blank">Gebäudeprogramm</a>
+    · 🇱🇺 <a href="https://guichet.public.lu/" target="_blank">Klimabonus</a>
+    · ‣ <a href="https://ehpa.org/wp-content/uploads/2025/11/Subsidies-for-residential-heat-pumps-in-Europe-1.pdf" target="_blank">EHPA Subsidies Overview (PDF)</a>
+  </div>
 </div>
 
-<h2><i data-lucide="shield-check" style="width:18px;height:18px;color:var(--accent);"></i> Subsidy Sources</h2>
+<!-- ============ 6. DISCLAIMER ============ -->
+<h2><i data-lucide="alert-triangle" style="width:18px;height:18px;color:var(--accent);"></i> Disclaimer</h2>
 <div class="gc">
-  <div class="src-list">
-    🇩🇪 <a href="https://www.kfw.de" target="_blank">Germany — BEG/KfW 458</a><br>
-    🇫🇷 <a href="https://www.service-public.gouv.fr/particuliers/vosdroits/F35083" target="_blank">France — MaPrimeRénov'</a><br>
-    🇳🇱 <a href="https://www.rvo.nl/subsidies-financiering/isde" target="_blank">Netherlands — ISDE</a><br>
-    🇬🇧 <a href="https://www.gov.uk/apply-boiler-upgrade-scheme" target="_blank">UK — Boiler Upgrade Scheme</a><br>
-    🇮🇹 <a href="https://www.gse.it/servizi-per-te/conto-termico" target="_blank">Italy — Conto Termico 3.0</a><br>
-    🇵🇱 <a href="https://czystepowietrze.gov.pl/" target="_blank">Poland — Czyste Powietrze</a><br>
-    🇪🇸 <a href="https://www.idae.es/" target="_blank">Spain — PRTR/IDAE</a><br>
-    🇦🇹 <a href="https://www.sanierungsoffensive.gv.at/" target="_blank">Austria — Sanierungsoffensive</a><br>
-    🇨🇭 <a href="https://www.dasgebaeudeprogramm.ch/" target="_blank">Switzerland — Gebäudeprogramm</a><br>
-    🇱🇺 <a href="https://guichet.public.lu/" target="_blank">Luxembourg — Klimabonus</a><br>
-    ‣ <a href="https://ehpa.org/wp-content/uploads/2025/11/Subsidies-for-residential-heat-pumps-in-Europe-1.pdf" target="_blank">EHPA — Subsidies Overview 2025 (PDF)</a>
-  </div>
+  <p>This dashboard uses AI-assisted data collection and processing. While all data is sourced from official government portals, statistical agencies, and industry associations, and multiple validation checks are applied, <strong>errors are possible</strong>. Always verify critical figures via the source links (↗) provided on the dashboard before making financial or business decisions.</p>
 </div>
 
 </div>
@@ -177,7 +151,6 @@ footer{text-align:center;margin-top:40px;padding-top:20px;border-top:1px solid v
 </footer>
 
 <script>
-// Theme handled by shared.js
 lucide.createIcons();
 </script>
 </body>
