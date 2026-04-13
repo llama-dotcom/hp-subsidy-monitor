@@ -40,7 +40,7 @@ module.exports = async function handler(req, res) {
     // --- Helper: ask Groq ---
     async function askGroq(prompt, maxTokens = 4000) {
       const c = await groq.chat.completions.create({
-        model: 'llama-3.3-70b-versatile',
+        model: 'llama-3.1-8b-instant',
         messages: [{ role: 'user', content: prompt }],
         temperature: 0.15,
         max_tokens: maxTokens,
