@@ -3,44 +3,44 @@
    Consistent with HP Subsidy & AI Landscape
    ============================================ */
 
-/* --- Theme Tokens --- */
+/* --- Theme Tokens: Soft Rose --- */
 :root, [data-theme="dark"] {
-  --bg:        #0f1629;
-  --bg2:       #141d33;
-  --card:      rgba(20,29,51,0.7);
-  --glass:     rgba(25,36,60,0.5);
-  --glass-b:   rgba(90,110,150,0.22);
-  --glass-h:   rgba(56,189,248,0.08);
-  --accent:    #38bdf8;
-  --accent2:   #22d3ee;
-  --green:     #4ade80;
-  --red:       #f87171;
-  --yellow:    #fbbf24;
-  --orange:    #fb923c;
-  --text:      #e8ecf4;
-  --muted:     #a8b5c8;
-  --dim:       #7b8aa0;
-  --border:    rgba(60,75,100,0.45);
+  --bg:        #1e1618;          /* warm dark brown */
+  --bg2:       #261d1f;          /* slightly lighter */
+  --card:      rgba(38,29,31,0.75);
+  --glass:     rgba(45,34,37,0.5);
+  --glass-b:   rgba(120,90,95,0.25);
+  --glass-h:   rgba(200,160,165,0.08);
+  --accent:    #c8a0a5;          /* dusty rose */
+  --accent2:   #d4b0b5;          /* lighter rose */
+  --green:     #8bc5a0;
+  --red:       #e07070;
+  --yellow:    #d4b070;
+  --orange:    #d4956a;
+  --text:      #ede5e6;
+  --muted:     #b5a3a5;
+  --dim:       #8a787a;
+  --border:    rgba(100,75,80,0.4);
   --radius:    14px;
 }
 
 [data-theme="light"] {
-  --bg:        #f5f0e8;
-  --bg2:       #faf7f2;
-  --card:      rgba(250,247,242,0.9);
-  --glass:     rgba(250,247,240,0.8);
-  --glass-b:   rgba(190,180,165,0.4);
-  --glass-h:   rgba(0,100,180,0.05);
-  --accent:    #0066b3;
-  --accent2:   #005599;
-  --green:     #15803d;
-  --red:       #b91c1c;
-  --yellow:    #92600a;
-  --orange:    #c2410c;
-  --text:      #1a1510;
-  --muted:     #4a4035;
-  --dim:       #6b5f52;
-  --border:    rgba(190,180,165,0.4);
+  --bg:        #f7f0ef;          /* soft warm white */
+  --bg2:       #fdf8f7;
+  --card:      rgba(253,248,247,0.9);
+  --glass:     rgba(250,245,243,0.8);
+  --glass-b:   rgba(200,175,178,0.35);
+  --glass-h:   rgba(180,120,125,0.06);
+  --accent:    #996065;          /* deeper rose for contrast */
+  --accent2:   #804550;
+  --green:     #3d8a5e;
+  --red:       #b33a3a;
+  --yellow:    #8a6a20;
+  --orange:    #a85830;
+  --text:      #2a1f20;
+  --muted:     #5a4548;
+  --dim:       #7a6568;
+  --border:    rgba(200,175,178,0.4);
 }
 
 /* --- Reset & Base --- */
@@ -96,8 +96,8 @@ header {
   width: 34px;
   height: 34px;
   border-radius: 8px;
-  background: rgba(56,189,248,0.1);
-  border: 1px solid rgba(56,189,248,0.25);
+  background: rgba(200,160,165,0.12);
+  border: 1px solid rgba(200,160,165,0.3);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -106,8 +106,8 @@ header {
 }
 
 [data-theme="light"] .hdr-logo {
-  background: rgba(0,102,179,0.06);
-  border-color: rgba(0,102,179,0.2);
+  background: rgba(153,96,101,0.08);
+  border-color: rgba(153,96,101,0.2);
 }
 
 .hdr-logo svg { width: 20px; height: 20px; }
@@ -148,13 +148,13 @@ header {
 
 .hdr-tab.active {
   color: var(--accent);
-  background: rgba(56,189,248,0.15);
-  box-shadow: 0 0 12px rgba(56,189,248,0.08);
+  background: rgba(200,160,165,0.18);
+  box-shadow: 0 0 12px rgba(200,160,165,0.1);
 }
 
 [data-theme="light"] .hdr-tab.active {
-  background: rgba(0,102,179,0.1);
-  box-shadow: 0 0 12px rgba(0,102,179,0.08);
+  background: rgba(153,96,101,0.12);
+  box-shadow: 0 0 12px rgba(153,96,101,0.08);
 }
 
 .hdr-right {
@@ -174,14 +174,14 @@ header {
   cursor: pointer;
   transition: all 0.2s;
   font-family: inherit;
-  background: linear-gradient(135deg, #e8dcc8, #f5eede);
-  color: #3a3025;
+  background: linear-gradient(135deg, #d4b0b5, #e0c5c8);
+  color: #2a1f20;
   white-space: nowrap;
 }
 
 [data-theme="light"] .btn-theme {
-  background: linear-gradient(135deg, #2a2f3d, #3d4556);
-  color: #e0dcd4;
+  background: linear-gradient(135deg, #2a2025, #3d3035);
+  color: #e8dde0;
 }
 
 .btn-theme:hover {
@@ -241,8 +241,8 @@ header {
   width: 36px;
   height: 36px;
   border-radius: 10px;
-  background: rgba(56,189,248,0.1);
-  border: 1px solid rgba(56,189,248,0.2);
+  background: rgba(200,160,165,0.12);
+  border: 1px solid rgba(200,160,165,0.2);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -251,8 +251,8 @@ header {
 }
 
 [data-theme="light"] .icon-box {
-  background: rgba(0,102,179,0.06);
-  border-color: rgba(0,102,179,0.15);
+  background: rgba(153,96,101,0.08);
+  border-color: rgba(153,96,101,0.15);
 }
 
 .icon { width: 20px; height: 20px; stroke: currentColor; fill: none; }
@@ -339,11 +339,11 @@ header {
 .news-card[data-section="politics"]  { border-left: 3px solid var(--red); }
 .news-card[data-section="esslingen"] { border-left: 3px solid var(--green); }
 .news-card[data-section="saratov"]   { border-left: 3px solid var(--yellow); }
-.news-card[data-section="beauty"]    { border-left: 3px solid #e879f9; }
+.news-card[data-section="beauty"]    { border-left: 3px solid #d4a0c0; }
 .news-card[data-section="carnivore"] { border-left: 3px solid var(--orange); }
 .news-card[data-section="tech"]      { border-left: 3px solid var(--accent); }
 
-[data-theme="light"] .news-card[data-section="beauty"] { border-left-color: #a21caf; }
+[data-theme="light"] .news-card[data-section="beauty"] { border-left-color: #a06080; }
 
 /* --- Loading / Empty --- */
 .loading, .empty-state {
