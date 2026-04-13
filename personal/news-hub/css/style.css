@@ -166,28 +166,39 @@ header {
 }
 
 .btn-theme {
-  padding: 5px 12px;
+  width: 34px;
+  height: 34px;
   border-radius: 8px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  border: none;
+  border: 1px solid var(--glass-b);
   cursor: pointer;
   transition: all 0.2s;
-  font-family: inherit;
-  background: linear-gradient(135deg, #d4b0b5, #e0c5c8);
-  color: #2a1f20;
-  white-space: nowrap;
-}
-
-[data-theme="light"] .btn-theme {
-  background: linear-gradient(135deg, #2a2025, #3d3035);
-  color: #e8dde0;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  color: var(--accent);
 }
 
 .btn-theme:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  background: var(--glass-h);
+  border-color: var(--accent);
 }
+
+.theme-icon {
+  width: 18px;
+  height: 18px;
+  display: none;
+}
+
+/* Dark theme: show sun icon (switch to light) */
+.btn-theme.is-dark .theme-icon--sun { display: block; }
+.btn-theme.is-dark .theme-icon--moon { display: none; }
+
+/* Light theme: show moon icon (switch to dark) */
+.btn-theme:not(.is-dark) .theme-icon--sun { display: none; }
+.btn-theme:not(.is-dark) .theme-icon--moon { display: block; }
 
 .hdr-date {
   font-size: 0.65rem;
