@@ -583,7 +583,7 @@ async function loadFromDB(){
       const newsCount={};
       dbNews.forEach(n=>{
         const code=n.country_id;
-        if((newsCount[code]||0)>=5)return; // hard cap: max 5 per country
+        if((newsCount[code]||0)>=6)return; // hard cap: max 6 per country
         newsCount[code]=(newsCount[code]||0)+1;
         const country=dbCountries.find(c=>c.id===code);
         NEWS.push({
