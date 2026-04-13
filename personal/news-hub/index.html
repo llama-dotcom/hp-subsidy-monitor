@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My News Hub — Personalized News Dashboard</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <header>
+    <div class="hdr">
+      <div class="hdr-brand">
+        <div class="hdr-logo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/>
+            <path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6z"/>
+          </svg>
+        </div>
+        <div class="hdr-text">
+          <div class="hdr-title">My News Hub</div>
+          <div class="hdr-sub">Personalized daily news digest</div>
+        </div>
+      </div>
+
+      <button class="hdr-toggle" type="button" aria-label="Menu">&#9776;</button>
+
+      <nav class="hdr-tabs" id="nav-tabs">
+        <button class="hdr-tab active" data-section="politics">World Politics</button>
+        <button class="hdr-tab" data-section="esslingen">Esslingen</button>
+        <button class="hdr-tab" data-section="saratov">Engels &amp; Saratov</button>
+        <button class="hdr-tab" data-section="beauty">Beauty</button>
+        <button class="hdr-tab" data-section="carnivore">Carnivore</button>
+        <button class="hdr-tab" data-section="tech">Tech &amp; AI</button>
+      </nav>
+
+      <div class="hdr-right">
+        <button class="btn-theme" type="button">Light mode</button>
+        <span class="hdr-date"></span>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- World Politics -->
+    <section class="news-section active" id="section-politics">
+      <div class="section-header">
+        <h1 class="section-title">
+          <span class="icon-box"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span>
+          World Politics
+        </h1>
+        <p class="section-desc">Major geopolitical events, international relations, diplomacy and global policy</p>
+      </div>
+      <div class="news-grid" id="grid-politics">
+        <div class="loading">Loading news...</div>
+      </div>
+    </section>
+
+    <!-- Esslingen -->
+    <section class="news-section" id="section-esslingen">
+      <div class="section-header">
+        <h1 class="section-title">
+          <span class="icon-box"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/><path d="M9 9v.01"/><path d="M9 12v.01"/><path d="M9 15v.01"/><path d="M9 18v.01"/></svg></span>
+          Esslingen, Germany
+        </h1>
+        <p class="section-desc">Local news from Esslingen am Neckar, Landkreis Esslingen and Stuttgart region</p>
+      </div>
+      <div class="news-grid" id="grid-esslingen">
+        <div class="loading">Loading news...</div>
+      </div>
+    </section>
+
+    <!-- Engels / Saratov -->
+    <section class="news-section" id="section-saratov">
+      <div class="section-header">
+        <h1 class="section-title">
+          <span class="icon-box"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
+          Engels &amp; Saratov, Russia
+        </h1>
+        <p class="section-desc">News from Engels, Saratov and the Saratov Oblast</p>
+      </div>
+      <div class="news-grid" id="grid-saratov">
+        <div class="loading">Loading news...</div>
+      </div>
+    </section>
+
+    <!-- Beauty -->
+    <section class="news-section" id="section-beauty">
+      <div class="section-header">
+        <h1 class="section-title">
+          <span class="icon-box"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></span>
+          Beauty &amp; Face Massage
+        </h1>
+        <p class="section-desc">Facial massage techniques, face yoga, gua sha, skincare science and anti-aging</p>
+      </div>
+      <div class="news-grid" id="grid-beauty">
+        <div class="loading">Loading news...</div>
+      </div>
+    </section>
+
+    <!-- Carnivore -->
+    <section class="news-section" id="section-carnivore">
+      <div class="section-header">
+        <h1 class="section-title">
+          <span class="icon-box"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.5 2.5c2 0 4 1.5 4 4 0 1.2-.5 2.2-1.2 3l-6.3 7.5-3-3L16 7.5"/><path d="M9 13l-4.5 4.5"/><path d="M10.5 8.5L7 12"/><path d="M5 19a2 2 0 0 0 2 2h.5"/><path d="M17 5c.3-.8.7-1.5 1.2-2"/></svg></span>
+          Carnivore Diet
+        </h1>
+        <p class="section-desc">Carnivore and meat-based diet research, success stories, recipes and health studies</p>
+      </div>
+      <div class="news-grid" id="grid-carnivore">
+        <div class="loading">Loading news...</div>
+      </div>
+    </section>
+
+    <!-- Tech & AI -->
+    <section class="news-section" id="section-tech">
+      <div class="section-header">
+        <h1 class="section-title">
+          <span class="icon-box"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="m6.34 6.34 2.83 2.83"/><path d="M2 12h4"/><path d="m17.66 6.34-2.83 2.83"/><path d="M22 12h-4"/><path d="m6.34 17.66 2.83-2.83"/><path d="M12 22v-4"/><path d="m17.66 17.66-2.83-2.83"/></svg></span>
+          Tech &amp; AI
+        </h1>
+        <p class="section-desc">Latest technology breakthroughs, AI innovations, gadgets and science discoveries</p>
+      </div>
+      <div class="news-grid" id="grid-tech">
+        <div class="loading">Loading news...</div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <p>My News Hub &mdash; auto-updated daily at 10:00 Berlin time</p>
+    <p><a href="https://insight-map.com/">insight-map.com</a></p>
+  </footer>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
