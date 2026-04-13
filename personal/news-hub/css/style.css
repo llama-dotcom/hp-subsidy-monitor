@@ -385,11 +385,12 @@ header {
 
 .site-footer p + p { margin-top: 4px; }
 
-/* --- Responsive --- */
+/* --- Responsive: Tablet --- */
 @media (max-width: 900px) {
   .hdr {
     flex-wrap: wrap;
     gap: 8px;
+    padding: 0 16px;
   }
 
   .hdr-tabs {
@@ -402,6 +403,9 @@ header {
   .hdr-tabs.open {
     display: flex;
     flex-wrap: wrap;
+    gap: 6px;
+    padding: 8px 0;
+    border-top: 1px solid var(--glass-b);
   }
 
   .hdr-toggle {
@@ -418,20 +422,158 @@ header {
 
   .news-grid {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
 
   .section-title {
     font-size: 1.2rem;
   }
+
+  .container {
+    padding: 20px 16px;
+  }
 }
 
+/* --- Responsive: Mobile --- */
 @media (max-width: 480px) {
+  header {
+    padding: 10px 0;
+  }
+
+  .hdr {
+    padding: 0 12px;
+    gap: 6px;
+  }
+
+  .hdr-brand {
+    gap: 8px;
+  }
+
+  .hdr-logo {
+    width: 30px;
+    height: 30px;
+  }
+
+  .hdr-logo svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  .hdr-title {
+    font-size: 0.92rem;
+  }
+
+  .hdr-sub {
+    font-size: 0.6rem;
+  }
+
+  .hdr-toggle {
+    width: 36px;
+    height: 36px;
+    font-size: 1.2rem;
+  }
+
+  .hdr-tabs.open {
+    gap: 4px;
+  }
+
   .hdr-tab {
+    padding: 8px 12px;
+    font-size: 0.75rem;
+    border-radius: 6px;
+    min-height: 36px;
+  }
+
+  .btn-theme {
     padding: 6px 10px;
-    font-size: 0.72rem;
+    font-size: 0.7rem;
+  }
+
+  .container {
+    padding: 16px 12px;
+  }
+
+  .section-header {
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-size: 1.1rem;
+    gap: 8px;
+  }
+
+  .icon-box {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+  }
+
+  .icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .section-desc {
+    font-size: 0.78rem;
+  }
+
+  .news-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
   }
 
   .news-card {
-    padding: 16px;
+    padding: 14px;
+    border-radius: 10px;
+    gap: 8px;
+  }
+
+  .news-card__title {
+    font-size: 0.88rem;
+    line-height: 1.35;
+  }
+
+  .news-card__summary {
+    font-size: 0.78rem;
+    line-height: 1.5;
+  }
+
+  .news-card__meta {
+    gap: 8px;
+    font-size: 0.68rem;
+    padding-top: 6px;
+  }
+
+  .site-footer {
+    padding: 24px 12px;
+    margin-top: 24px;
+  }
+
+  .loading, .empty-state {
+    padding: 40px 16px;
+    font-size: 0.82rem;
+  }
+}
+
+/* --- Touch-friendly: ensure tap targets >= 44px --- */
+@media (pointer: coarse) {
+  .hdr-tab {
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+  }
+
+  .hdr-toggle {
+    width: 40px;
+    height: 40px;
+  }
+
+  .btn-theme {
+    min-height: 36px;
+  }
+
+  .news-card__title a {
+    display: block;
+    padding: 2px 0;
   }
 }
