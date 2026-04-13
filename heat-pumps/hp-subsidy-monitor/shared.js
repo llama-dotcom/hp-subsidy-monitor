@@ -35,7 +35,7 @@ function initHeader(activePage){
         <span class="hdr-scope">AW · LW · EW · Hybrids</span>
         <!-- Refresh button removed: triggers public API call that burns Groq quota -->
         <button class="hdr-theme" onclick="toggleTheme()"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg> <span id="theme-label">${themeLbl}</span></button>
-        <span class="hdr-date" id="last-updated">${new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</span>
+        <span class="hdr-date" id="last-updated">Loading...</span>
       </div>
     </div>`;
   document.body.prepend(header);
@@ -92,6 +92,28 @@ header{background:var(--bg);border-bottom:1px solid var(--glass-b);padding:12px 
 }
 `;
 document.head.appendChild(sharedCSS);
+
+// Fetch last updated timestamp from Supabase → show "Last update: dd.mm.yy HH:MM"
+(async function(){
+  try {
+    const r = await fetch('https://eyjlrfoaefleugamcvuo.supabase.co/rest/v1/countries?select=updated_at&order=updated_at.desc&limit=1',
+      {headers:{'apikey':'sb_publishable_aTjldMpez0BhB1L5ubPuNA_KaOGXG1q','Authorization':'Bearer sb_publishable_aTjldMpez0BhB1L5ubPuNA_KaOGXG1q'}});
+    const d = await r.json();
+    if(d&&d[0]&&d[0].updated_at){
+      const dt=new Date(d[0].updated_at);
+      const dd=String(dt.getDate()).padStart(2,'0');
+      const mm=String(dt.getMonth()+1).padStart(2,'0');
+      const yy=String(dt.getFullYear()).slice(-2);
+      const hh=String(dt.getHours()).padStart(2,'0');
+      const mi=String(dt.getMinutes()).padStart(2,'0');
+      const el=document.getElementById('last-updated');
+      if(el) el.textContent=`Last update: ${dd}.${mm}.${yy} ${hh}:${mi}`;
+    }
+  }catch(e){
+    const el=document.getElementById('last-updated');
+    if(el) el.textContent='';
+  }
+})();
 
 // AI disclaimer — small fixed text, bottom-right, all pages
 const aiDisclaimer = document.createElement('div');
