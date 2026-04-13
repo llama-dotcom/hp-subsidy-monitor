@@ -199,13 +199,15 @@ module.exports = async function handler(req, res) {
 
         const filterResult = await askGroq(`${section.filterPrompt}
 
-Here are ${recent.length} articles. Select the most important and relevant ones (max 10). For each selected article, write a 2-3 sentence summary in English.
+Here are ${recent.length} articles. Select the most important and relevant ones (max 10). For each selected article:
+1. Translate the title to Russian
+2. Write a detailed summary in Russian (4-6 sentences) explaining what happened, why it matters, and key details
 
 Articles:
 ${titlesForGroq}
 
-Reply with JSON: {"selected": [{"index": 1, "summary": "2-3 sentence summary in English"}]}
-Only select truly relevant articles. Quality over quantity.`, 3000);
+Reply with JSON: {"selected": [{"index": 1, "title_ru": "Заголовок на русском", "summary": "Подробное описание на русском, 4-6 предложений"}]}
+Only select truly relevant articles. Quality over quantity. ALL text must be in Russian.`, 5000);
 
         // 5. Build rows for Supabase
         const rows = [];
@@ -218,8 +220,8 @@ Only select truly relevant articles. Quality over quantity.`, 3000);
           rows.push({
             id,
             section: sectionId,
-            title: item.title.slice(0, 300),
-            summary: (sel.summary || '').slice(0, 500),
+            title: (sel.title_ru || item.title).slice(0, 300),
+            summary: (sel.summary || '').slice(0, 800),
             url: item.link,
             source: item.source || 'Google News',
             published_at: new Date(item.pubDate).toISOString(),
