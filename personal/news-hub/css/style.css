@@ -341,9 +341,11 @@ header {
 .news-card[data-section="saratov"]   { border-left: 3px solid var(--yellow); }
 .news-card[data-section="beauty"]    { border-left: 3px solid #d4a0c0; }
 .news-card[data-section="carnivore"] { border-left: 3px solid var(--orange); }
+.news-card[data-section="lifestyle"] { border-left: 3px solid #d4a0c0; }
 .news-card[data-section="tech"]      { border-left: 3px solid var(--accent); }
 
 [data-theme="light"] .news-card[data-section="beauty"] { border-left-color: #a06080; }
+[data-theme="light"] .news-card[data-section="lifestyle"] { border-left-color: #a06080; }
 
 /* --- Loading / Empty --- */
 .loading, .empty-state {
