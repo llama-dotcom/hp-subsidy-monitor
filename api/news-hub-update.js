@@ -117,7 +117,7 @@ module.exports = async function handler(req, res) {
         filterPrompt: 'You are a local news editor for Engels and Saratov, Russia (Saratov Oblast). Keep news directly relevant to Engels city, Saratov city, or Saratov Oblast. Include: local events, infrastructure, culture, city news, regional economy. Remove: federal Russian politics unless directly affecting the region.',
       },
       beauty: {
-        label: 'Beauty & Face Massage',
+        label: 'Beauty, Face Massage & Biohacking',
         maxAge: 14,
         queries: [
           { q: 'face massage techniques benefits', lang: 'en', gl: 'US' },
@@ -125,8 +125,11 @@ module.exports = async function handler(req, res) {
           { q: 'anti aging skincare science research', lang: 'en', gl: 'US' },
           { q: 'lymphatic drainage face sculpting', lang: 'en', gl: 'US' },
           { q: 'face massage tools microcurrent', lang: 'en', gl: 'US' },
+          { q: 'biohacking longevity optimization', lang: 'en', gl: 'US' },
+          { q: 'biohacking supplements cold exposure red light therapy', lang: 'en', gl: 'US' },
+          { q: 'biohacking sleep optimization hormesis', lang: 'en', gl: 'US' },
         ],
-        filterPrompt: 'You are a beauty and skincare editor specializing in facial massage. Keep articles about: face massage techniques (gua sha, buccal, lymphatic drainage, facial yoga, sculpting), anti-aging research with scientific basis, skincare innovations, face massage tools and devices. Remove: makeup tutorials, hair care, body massage unrelated to face, celebrity gossip, product ads without substance.',
+        filterPrompt: 'You are an editor covering beauty, facial massage, and biohacking. Keep articles about: face massage techniques (gua sha, buccal, lymphatic drainage, facial yoga, sculpting), anti-aging research with scientific basis, skincare innovations, face massage tools and devices, biohacking (longevity, cold exposure, red light therapy, supplements, sleep optimization, hormesis, fasting protocols, breathwork, nootropics, HRV training). Remove: makeup tutorials, hair care, celebrity gossip, product ads without substance, unproven snake-oil claims.',
       },
       carnivore: {
         label: 'Carnivore Diet',
