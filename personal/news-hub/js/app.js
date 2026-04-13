@@ -28,7 +28,7 @@
     const btn = document.querySelector('.btn-theme');
     if (!btn) return;
     const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-    btn.textContent = isDark ? 'Light mode' : 'Dark mode';
+    btn.textContent = isDark ? 'Светлая тема' : 'Тёмная тема';
   }
 
   // --- Date display ---
@@ -36,7 +36,7 @@
     const el = document.querySelector('.hdr-date');
     if (!el) return;
     const now = new Date();
-    el.textContent = now.toLocaleDateString('en-GB', {
+    el.textContent = now.toLocaleDateString('ru-RU', {
       weekday: 'short', day: 'numeric', month: 'short', year: 'numeric'
     });
   }
@@ -83,7 +83,7 @@
     if (!grid) return;
 
     if (!articles || articles.length === 0) {
-      grid.innerHTML = '<div class="empty-state"><div class="empty-state__icon">&#128240;</div>No news yet. Check back after the next update.</div>';
+      grid.innerHTML = '<div class="empty-state"><div class="empty-state__icon">&#128240;</div>Новостей пока нет. Загляни после следующего обновления.</div>';
       return;
     }
 
@@ -108,7 +108,7 @@
   function formatDate(dateStr) {
     try {
       const d = new Date(dateStr);
-      return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+      return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' });
     } catch {
       return dateStr;
     }
@@ -146,7 +146,7 @@
         renderCards(s, articles);
       } else {
         const grid = document.getElementById('grid-' + s);
-        if (grid) grid.innerHTML = '<div class="empty-state"><div class="empty-state__icon">&#128240;</div>News will appear after the first automated update.</div>';
+        if (grid) grid.innerHTML = '<div class="empty-state"><div class="empty-state__icon">&#128240;</div>Новости появятся после первого автоматического обновления.</div>';
       }
     });
   }
