@@ -294,8 +294,8 @@ module.exports = async function handler(req, res) {
         // Llama: news summarization only (subsidy/market extraction moved to Gemini cron)
         const completion = await groq.chat.completions.create({
           messages: [
-            { role: 'system', content: 'You analyze real news articles about heat pump subsidies. Return JSON only.' },
-            { role: 'user', content: `Real news articles about heat pumps in ${country.name}:\n\n${articleList}\n\nFor each RELEVANT article (subsidies, energy policy, heating regulations), create a summary.\n\nReturn: {"items": [{"title": "headline max 80 chars", "description": "2-3 sentences", "impact": "critical|medium|info", "original_index": number}]}\n\nSkip unrelated. If none relevant: {"items": []}` }
+            { role: 'system', content: 'You analyze real news articles about heat pump subsidies and policy. Return JSON only.' },
+            { role: 'user', content: `Real news articles about heat pumps in ${country.name}:\n\n${articleList}\n\nFor each RELEVANT article (subsidies, energy policy, heating regulations), create a summary.\n\nIMPORTANT DEDUP RULE: If multiple articles describe the SAME event or topic (e.g. same subsidy change reported by different outlets), merge them into ONE summary and note all sources. Do not create separate entries for the same story from different websites.\n\nReturn: {"items": [{"title": "headline max 80 chars", "description": "2-3 sentences", "impact": "critical|medium|info", "original_index": number}]}\n\nSkip unrelated. If none relevant: {"items": []}` }
           ],
           model: 'llama-3.3-70b-versatile', temperature: 0.2, max_tokens: 800,
           response_format: { type: 'json_object' }
