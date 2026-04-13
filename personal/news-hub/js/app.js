@@ -7,7 +7,7 @@
 
   // --- Config ---
   const API_URL = '/api/news-hub-data';
-  const SECTIONS = ['politics', 'tech', 'esslingen', 'saratov', 'lifestyle'];
+  const SECTIONS = ['politics', 'tech', 'lifestyle', 'esslingen', 'saratov'];
 
   // --- Theme ---
   function initTheme() {
