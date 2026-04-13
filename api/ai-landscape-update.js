@@ -48,9 +48,9 @@ module.exports = async function handler(req, res) {
     }
 
     // Helper: Supabase upsert
-    async function upsert(table, rows) {
+    async function upsert(table, rows, conflictCol = 'id') {
       if (!rows || rows.length === 0) return;
-      const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}?on_conflict=id`, {
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}?on_conflict=${conflictCol}`, {
         method: 'POST',
         headers: { ...sbH, 'Prefer': 'resolution=merge-duplicates,return=minimal' },
         body: JSON.stringify(rows),
@@ -114,7 +114,7 @@ ${existing.map(s => `- ${s.name} (${s.type}): latest_model="${s.latest_model || 
 
 Based on your knowledge through ${todayISO}, have any of these systems released a NEW flagship model in the last 7 days?
 
-Reply JSON: {"updates": [{"id": "system_id", "latest_model": "new model name"}], "notes": "summary"}
+Reply with JSON: {"updates": [{"id": "system_id", "latest_model": "new model name"}], "notes": "summary"}
 If nothing changed, return {"updates": [], "notes": "no changes"}.
 Only report changes you are confident about. Do NOT speculate.`;
 
@@ -161,7 +161,7 @@ Rules:
 - Only report changes you are CONFIDENT about
 - If unsure, skip it — do not guess
 - For user counts, use qualifier like "estimated" or "~"
-- Return: {"pricing_updates": [], "user_updates": [], "description_updates": [], "new_systems": [], "discontinued": [], "notes": "summary"}`;
+- Reply with JSON: {"pricing_updates": [], "user_updates": [], "description_updates": [], "new_systems": [], "discontinued": [], "notes": "summary"}`;
 
         const weekly = await askGroq(weeklyPrompt, 6000);
 
@@ -225,10 +225,10 @@ Focus on:
 2. European events
 3. Major global AI events (NeurIPS, ICML, Google I/O, etc.)
 
-For each event return:
+For each event return a JSON object:
 {"id": "slug-2026", "name": "Event Name", "date_start": "YYYY-MM-DD", "date_end": "YYYY-MM-DD", "location_city": "City", "location_country": "Country", "region": "germany|europe|world", "type": "conference|expo|summit|workshop", "description": "1-2 sentences", "url": "https://...", "estimated_attendees": "N+" or null, "highlight": true/false}
 
-Return: {"events": [...], "notes": "summary"}
+Reply with JSON: {"events": [...], "notes": "summary"}
 Only include events you are confident about dates. If unsure of exact date, skip.`;
 
         const eventsData = await askGroq(eventsPrompt, 4000);
@@ -262,7 +262,7 @@ Only include events you are confident about dates. If unsure of exact date, skip
       { key: 'last_systems_update', value: now, updated_at: now },
       { key: 'last_run', value: now, updated_at: now },
       { key: 'last_run_type', value: isMonday ? 'weekly_full' : 'daily_light', updated_at: now },
-    ]);
+    ], 'key');
 
     return res.status(200).json({
       ok: true,
