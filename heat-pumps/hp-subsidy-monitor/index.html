@@ -472,16 +472,15 @@ function openM(nm){
   const rs=c.r?`${c.r.toFixed(2)}x`:'N/A';
   const cn=NEWS.filter(n=>n.c===nm);
   let h=`<h2>${c.f} ${c.n}</h2>`;
-  h+=`<div class="m-s"><h3><i data-lucide="coins" style="width:14px;height:14px;"></i> Current Subsidies (${c.nsub||1})</h3>`;
-  if(c.subs){c.subs.split(' · ').forEach(s=>{h+=`<div class="m-cd"><div class="nm">${s}</div></div>`;});}
-  else{h+=`<div class="m-cd"><div class="nm">${c.sp}</div><div class="am">Max: €${c.ms.toLocaleString()}</div><div class="dt">${c.det}</div></div>`;}
-  if(c.sl)h+=`<a href="${c.sl}" target="_blank" style="font-size:0.78rem;color:var(--accent);">Official subsidy page →</a>`;
+  // Subsidy: one clean line — program name + max amount + source link
+  // Auto-updated monthly by Gemini cron via countries.subsidy_program/max_subsidy/subsidy_source_url
+  const subUrl = c.subsidyUrl || c.sl || '';
+  const subLink = subUrl ? ` <a href="${subUrl}" target="_blank" rel="noopener" title="${(c.subsidyBreakdown||'Official subsidy page').replace(/"/g,'&quot;')}" style="color:var(--accent);text-decoration:none;font-size:0.78rem;">↗</a>` : '';
+  h+=`<div class="m-s"><h3><i data-lucide="coins" style="width:14px;height:14px;"></i> Subsidy</h3>`;
+  h+=`<div class="m-rw"><span style="color:var(--muted)">${c.sp||'No program'}</span><span style="color:var(--green);font-weight:600;">${c.ms>0?'€'+c.ms.toLocaleString():'N/A'}${subLink}</span></div>`;
+  if(c.det)h+=`<div style="font-size:0.75rem;color:var(--dim);padding:2px 0 6px;">${c.det}</div>`;
   h+=`</div>`;
   h+=`<div class="m-s"><h3><i data-lucide="bolt" style="width:14px;height:14px;"></i> Energy & Market</h3>`;
-  // Max Subsidy: optional ↗ link to verified source URL, optional tooltip with breakdown
-  const subUrl = c.subsidyUrl || c.sl || '';
-  const subLink = subUrl ? ` <a href="${subUrl}" target="_blank" rel="noopener" title="${(c.subsidyBreakdown||'Verified source').replace(/"/g,'&quot;')}" style="color:var(--accent);text-decoration:none;font-size:0.78rem;">↗</a>` : '';
-  h+=`<div class="m-rw"><span style="color:var(--muted)">Max Subsidy</span><span style="color:var(--green);font-weight:600;">€${c.ms.toLocaleString()}${subLink}</span></div>`;
   h+=`<div class="m-rw"><span style="color:var(--muted)">Electricity</span><span>€${c.e.toFixed(3)}/kWh</span></div>`;
   h+=`<div class="m-rw"><span style="color:var(--muted)">Gas</span><span>${gs}</span></div>`;
   h+=`<div class="m-rw"><span style="color:var(--muted)">Ratio</span><span style="color:${c.r&&c.r>3.5?'var(--red)':c.r&&c.r>2.5?'var(--yellow)':'var(--green)'}">${rs}</span></div>`;
