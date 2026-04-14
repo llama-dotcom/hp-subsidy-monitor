@@ -81,12 +81,30 @@ async function loadNews(){
       return;
     }
 
+    // Known manufacturer → domain for logo (Google Favicons API)
+    // If new manufacturer appears and isn't here → shows initials (no data loss)
+    const MFG_LOGO = {
+      'bosch':'bosch.com','vaillant':'vaillant.com','viessmann':'viessmann.com',
+      'daikin':'daikin.com','stiebel':'stiebel-eltron.com','nibe':'nibe.com',
+      'mitsubishi':'mitsubishielectric.com','panasonic':'panasonic.com',
+      'samsung':'samsung.com','lg':'lg.com','wolf':'wolf.eu',
+      'atlantic':'atlantic-comfort.com','ariston':'ariston.com',
+      'carrier':'carrier.com','toshiba':'toshiba.com','alpha innotec':'alpha-innotec.com',
+      'buderus':'buderus.com','junkers':'junkers.com','trane':'trane.com',
+      'fujitsu':'fujitsu-general.com','midea':'midea.com','hisense':'hisense.com'
+    };
+    function getMfgLogo(name) {
+      const lower = name.toLowerCase();
+      for (const [key, domain] of Object.entries(MFG_LOGO)) {
+        if (lower.includes(key)) return `https://www.google.com/s2/favicons?domain=${domain}&sz=32`;
+      }
+      return null;
+    }
+
     // Extract manufacturer name from title ("ManufacturerName: headline")
-    // or from country_id if it's a manufacturer tag
     const byMfg = {};
     for (const n of news) {
       let mfg = 'Other';
-      // Try extracting from title pattern "Name: headline"
       const colonIdx = (n.title || '').indexOf(':');
       if (colonIdx > 0 && colonIdx < 30) {
         mfg = n.title.slice(0, colonIdx).trim();
@@ -101,7 +119,11 @@ async function loadNews(){
     let html = '';
     for (const [mfg, articles] of sorted) {
       html += `<div class="mfg-section">`;
-      html += `<div class="mfg-header"><span class="mfg-name">${mfg}</span><span class="mfg-count">${articles.length} article${articles.length > 1 ? 's' : ''}</span></div>`;
+      const logoUrl = getMfgLogo(mfg);
+      const logoHtml = logoUrl
+        ? `<img src="${logoUrl}" alt="" style="width:24px;height:24px;border-radius:4px;object-fit:contain;">`
+        : `<span style="width:24px;height:24px;border-radius:4px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;">${mfg.charAt(0)}</span>`;
+      html += `<div class="mfg-header">${logoHtml}<span class="mfg-name">${mfg}</span><span class="mfg-count">${articles.length} article${articles.length > 1 ? 's' : ''}</span></div>`;
       for (const n of articles.slice(0, 6)) {
         const ic = n.impact === 'critical' ? 'n-hi' : n.impact === 'medium' ? 'n-me' : '';
         const bc = n.impact === 'critical' ? 'imp-c' : n.impact === 'medium' ? 'imp-m' : 'imp-i';
