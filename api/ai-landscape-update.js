@@ -101,8 +101,12 @@ module.exports = async function handler(req, res) {
       const seen = new Set();
       const deduped = fetched.filter(n => { const k = n.title.slice(0, 60).toLowerCase(); if (seen.has(k)) return false; seen.add(k); return true; }).slice(0, 25);
 
-      // Generate real summaries via Groq (batches of 5 to fit context window)
       if (deduped.length > 0) {
+        // Step 1: Upsert news items (summary = title as placeholder)
+        await upsert('ai_news', deduped);
+        results.news = deduped.length;
+
+        // Step 2: Generate real summaries via Groq and PATCH each item
         const batchSize = 5;
         for (let b = 0; b < deduped.length; b += batchSize) {
           const batch = deduped.slice(b, b + batchSize);
@@ -118,13 +122,16 @@ Return exactly ${batch.length} summaries.`, 3000, 'fast');
 
             const sums = sumResp.summaries || [];
             for (let i = 0; i < Math.min(sums.length, batch.length); i++) {
-              if (sums[i] && sums[i].length > 30) deduped[b + i].summary = sums[i];
+              if (sums[i] && sums[i].length > 30) {
+                // Direct PATCH to guarantee summary is written
+                await fetch(`${SUPABASE_URL}/rest/v1/ai_news?id=eq.${encodeURIComponent(batch[i].id)}`, {
+                  method: 'PATCH', headers: sbH,
+                  body: JSON.stringify({ summary: sums[i] }),
+                });
+              }
             }
           } catch (e) { results.errors.push(`news summaries batch ${b}: ${e.message}`); }
         }
-
-        await upsert('ai_news', deduped);
-        results.news = deduped.length;
       }
       // Cleanup >60 days
       await fetch(`${SUPABASE_URL}/rest/v1/ai_news?date=lt.${new Date(Date.now() - 60 * 86400000).toISOString().slice(0, 10)}`, { method: 'DELETE', headers: sbH });
