@@ -176,29 +176,42 @@ module.exports = async function handler(req, res) {
 
         const filterResult = await askGroq(`${section.filterPrompt}
 
-Here are ${recent.length} articles. Select the most important and relevant ones (max 15). For each selected article:
-1. Translate the title to Russian
-2. Write a detailed summary in Russian (4-6 sentences) explaining what happened, why it matters, and key details
+Here are ${recent.length} articles. Select the most important and relevant ones (max 15).
+
+CRITICAL LANGUAGE REQUIREMENTS — NO EXCEPTIONS:
+- EVERY title_ru field MUST be written in RUSSIAN (Cyrillic script)
+- EVERY summary field MUST be written in RUSSIAN (Cyrillic script)
+- If the original article is in English, German, or any other language — TRANSLATE IT to Russian
+- DO NOT copy the original title as-is if it's not in Russian
+- DO NOT mix languages — Russian only
+- Summary should be 4-6 sentences explaining what happened, why it matters, and key details — ALL IN RUSSIAN
 
 Articles:
 ${titlesForGroq}
 
-Reply with JSON: {"selected": [{"index": 1, "title_ru": "Заголовок на русском", "summary": "Подробное описание на русском, 4-6 предложений"}]}
-Only select truly relevant articles. Quality over quantity. ALL text must be in Russian.`, 5000);
+Reply with JSON: {"selected": [{"index": 1, "title_ru": "Заголовок на русском языке", "summary": "Подробное описание на русском языке, 4-6 предложений"}]}
+Only select truly relevant articles. Quality over quantity. Both title_ru and summary MUST be in Russian Cyrillic.`, 5000);
+
+        // Helper: check if text contains Cyrillic characters
+        const isCyrillic = (s) => /[\u0400-\u04FF]/.test(s || '');
 
         // 5. Build rows for Supabase
         const rows = [];
         for (const sel of (filterResult.selected || [])) {
           const idx = sel.index - 1;
           if (idx < 0 || idx >= recent.length) continue;
+
+          // Require Russian (Cyrillic) title — skip if Groq failed to translate
+          if (!sel.title_ru || !isCyrillic(sel.title_ru)) continue;
+
           const item = recent[idx];
           const id = `${sectionId}_${item.link.split('/articles/')[1]?.slice(0, 30)?.replace(/[^a-zA-Z0-9]/g, '_') || Date.now() + '_' + Math.random().toString(36).slice(2, 8)}`;
 
           rows.push({
             id,
             section: sectionId,
-            title: (sel.title_ru || item.title).slice(0, 300),
-            summary: (sel.summary || '').slice(0, 800),
+            title: sel.title_ru.slice(0, 300),
+            summary: (isCyrillic(sel.summary) ? sel.summary : '').slice(0, 800),
             url: item.link,
             source: item.source || 'Google News',
             published_at: new Date(item.pubDate).toISOString(),
