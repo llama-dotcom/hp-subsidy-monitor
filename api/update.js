@@ -232,12 +232,14 @@ module.exports = async function handler(req, res) {
     // === DAILY: Manufacturer news FIRST (runs before country news to ensure quota) ===
     const currentYear = today.getFullYear(); // dynamic year — no hardcoded "2026"
     try {
+      // Top HP manufacturers by European market share (hydronic focus)
+      // Grouped with OR for efficiency: 1 query catches multiple brands
       const mfgRssFeeds = [
-        { q: 'heat pump manufacturer new model product launch', hl: 'en', gl: 'US', ceid: 'US:en' },
-        { q: 'Wärmepumpe Hersteller neues Modell Produktneuheit', hl: 'de', gl: 'DE', ceid: 'DE:de' },
-        { q: 'pompe chaleur fabricant nouveau modèle lancement produit', hl: 'fr', gl: 'FR', ceid: 'FR:fr' },
-        { q: 'heat pump brand partnership acquisition factory expansion', hl: 'en', gl: 'US', ceid: 'US:en' },
-        { q: 'heat pump R290 natural refrigerant new product', hl: 'en', gl: 'US', ceid: 'US:en' }
+        { q: 'Daikin OR Bosch OR Vaillant heat pump', hl: 'en', gl: 'US', ceid: 'US:en' },
+        { q: 'Viessmann OR "Stiebel Eltron" OR NIBE heat pump', hl: 'en', gl: 'US', ceid: 'US:en' },
+        { q: 'Mitsubishi OR Panasonic OR Samsung heat pump', hl: 'en', gl: 'US', ceid: 'US:en' },
+        { q: 'Daikin OR Bosch OR Vaillant Wärmepumpe', hl: 'de', gl: 'DE', ceid: 'DE:de' },
+        { q: 'Atlantic OR Ariston OR Midea heat pump', hl: 'en', gl: 'US', ceid: 'US:en' }
       ];
       let mfgArticles = [];
       for (const feed of mfgRssFeeds) {
