@@ -93,22 +93,27 @@ header{background:var(--bg);border-bottom:1px solid var(--glass-b);padding:12px 
 `;
 document.head.appendChild(sharedCSS);
 
-// Fetch last updated timestamp from Supabase → show "Last update: dd.mm.yy HH:MM"
+// Fetch last updated timestamp — take the MOST RECENT of countries.updated_at OR news.created_at
 (async function(){
   try {
-    const r = await fetch('https://eyjlrfoaefleugamcvuo.supabase.co/rest/v1/countries?select=updated_at&order=updated_at.desc&limit=1',
-      {headers:{'apikey':'sb_publishable_aTjldMpez0BhB1L5ubPuNA_KaOGXG1q','Authorization':'Bearer sb_publishable_aTjldMpez0BhB1L5ubPuNA_KaOGXG1q'}});
-    const d = await r.json();
-    if(d&&d[0]&&d[0].updated_at){
-      const dt=new Date(d[0].updated_at);
-      const dd=String(dt.getDate()).padStart(2,'0');
-      const mm=String(dt.getMonth()+1).padStart(2,'0');
-      const yy=String(dt.getFullYear()).slice(-2);
-      const hh=String(dt.getHours()).padStart(2,'0');
-      const mi=String(dt.getMinutes()).padStart(2,'0');
-      const el=document.getElementById('last-updated');
-      if(el) el.textContent=`Last update: ${dd}.${mm}.${yy} ${hh}:${mi}`;
-    }
+    const SB='https://eyjlrfoaefleugamcvuo.supabase.co';
+    const K='sb_publishable_aTjldMpez0BhB1L5ubPuNA_KaOGXG1q';
+    const H={headers:{'apikey':K,'Authorization':'Bearer '+K}};
+    const [cRes,nRes]=await Promise.all([
+      fetch(SB+'/rest/v1/countries?select=updated_at&order=updated_at.desc&limit=1',H),
+      fetch(SB+'/rest/v1/news?select=created_at&order=created_at.desc&limit=1',H)
+    ]);
+    const c=await cRes.json(), n=await nRes.json();
+    const cTime=c&&c[0]?new Date(c[0].updated_at):new Date(0);
+    const nTime=n&&n[0]?new Date(n[0].created_at):new Date(0);
+    const dt=cTime>nTime?cTime:nTime;
+    const dd=String(dt.getDate()).padStart(2,'0');
+    const mm=String(dt.getMonth()+1).padStart(2,'0');
+    const yy=String(dt.getFullYear()).slice(-2);
+    const hh=String(dt.getHours()).padStart(2,'0');
+    const mi=String(dt.getMinutes()).padStart(2,'0');
+    const el=document.getElementById('last-updated');
+    if(el) el.textContent=`Last update: ${dd}.${mm}.${yy} ${hh}:${mi}`;
   }catch(e){
     const el=document.getElementById('last-updated');
     if(el) el.textContent='';
