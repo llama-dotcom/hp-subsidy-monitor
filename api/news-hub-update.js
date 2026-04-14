@@ -94,14 +94,12 @@ module.exports = async function handler(req, res) {
     const SECTIONS = {
       politics: {
         label: 'World Politics',
-        maxAge: 7, // days to keep
+        maxAge: 7,
         queries: [
           { q: 'world politics major events', lang: 'en', gl: 'US' },
           { q: 'geopolitics international diplomacy', lang: 'en', gl: 'US' },
-          { q: 'G7 G20 NATO summit', lang: 'en', gl: 'US' },
-          { q: 'war conflict ceasefire peace talks', lang: 'en', gl: 'US' },
+          { q: 'war conflict', lang: 'en', gl: 'US' },
           { q: 'sanctions elections president prime minister', lang: 'en', gl: 'US' },
-          { q: 'UN Security Council resolution', lang: 'en', gl: 'US' },
         ],
         filterPrompt: 'You are a world politics news editor. Keep ONLY truly important global political news: wars, peace deals, major elections, summits (G7/G20/NATO/UN), sanctions, diplomatic breakthroughs, leadership changes in major countries. Remove gossip, opinion, minor domestic politics, entertainment, sports.',
       },
@@ -110,8 +108,7 @@ module.exports = async function handler(req, res) {
         maxAge: 14,
         queries: [
           { q: 'Esslingen am Neckar', lang: 'de', gl: 'DE' },
-          { q: 'Landkreis Esslingen Nachrichten', lang: 'de', gl: 'DE' },
-          { q: 'Esslingen Neckar news events', lang: 'en', gl: 'DE' },
+          { q: 'Landkreis Esslingen Nachrichten events', lang: 'de', gl: 'DE' },
           { q: 'Stuttgart Region Nachrichten aktuell', lang: 'de', gl: 'DE' },
         ],
         filterPrompt: 'You are a local news editor for Esslingen am Neckar, Germany. Keep news directly relevant to Esslingen city, Landkreis Esslingen, or the greater Stuttgart region. Include: local events, city council decisions, infrastructure, culture, weather warnings, local business. Remove: national German politics unless directly affecting the region.',
@@ -121,64 +118,19 @@ module.exports = async function handler(req, res) {
         maxAge: 14,
         queries: [
           { q: 'Энгельс Саратов новости', lang: 'ru', gl: 'RU' },
-          { q: 'Саратовская область события', lang: 'ru', gl: 'RU' },
+          { q: 'Саратовская область новости события', lang: 'ru', gl: 'RU' },
           { q: 'Engels Saratov Russia news', lang: 'en', gl: 'US' },
-          { q: 'Саратов город новости сегодня', lang: 'ru', gl: 'RU' },
         ],
         filterPrompt: 'You are a local news editor for Engels and Saratov, Russia (Saratov Oblast). Keep news directly relevant to Engels city, Saratov city, or Saratov Oblast. Include: local events, infrastructure, culture, city news, regional economy. Remove: federal Russian politics unless directly affecting the region.',
-      },
-      beauty: {
-        label: 'Medicine, Beauty & Biohacking',
-        maxAge: 14,
-        queries: [
-          { q: 'medical breakthrough discovery treatment', lang: 'en', gl: 'US' },
-          { q: 'clinical trial results new drug therapy', lang: 'en', gl: 'US' },
-          { q: 'health research study findings', lang: 'en', gl: 'US' },
-          { q: 'face massage techniques benefits', lang: 'en', gl: 'US' },
-          { q: 'facial yoga gua sha buccal massage', lang: 'en', gl: 'US' },
-          { q: 'anti aging skincare science research', lang: 'en', gl: 'US' },
-          { q: 'biohacking longevity optimization', lang: 'en', gl: 'US' },
-          { q: 'biohacking supplements cold exposure red light therapy', lang: 'en', gl: 'US' },
-          { q: 'biohacking sleep optimization hormesis', lang: 'en', gl: 'US' },
-        ],
-        filterPrompt: 'You are a medical and health news editor. Keep articles about: medical breakthroughs and new treatments, clinical trial results, health research findings, disease prevention, face massage techniques (gua sha, buccal, lymphatic drainage, facial yoga), anti-aging research, skincare science, biohacking (longevity, cold exposure, red light therapy, supplements, sleep optimization, hormesis, fasting, breathwork, nootropics). Remove: makeup tutorials, celebrity gossip, product ads without substance, unproven snake-oil claims, generic wellness fluff.',
-      },
-      carnivore: {
-        label: 'Carnivore Diet',
-        maxAge: 14,
-        queries: [
-          { q: 'carnivore diet health research', lang: 'en', gl: 'US' },
-          { q: 'meat based diet benefits study', lang: 'en', gl: 'US' },
-          { q: 'carnivore diet results transformation', lang: 'en', gl: 'US' },
-          { q: 'animal based diet nutrition science', lang: 'en', gl: 'US' },
-          { q: 'carnivore keto zero carb diet', lang: 'en', gl: 'US' },
-        ],
-        filterPrompt: 'You are a carnivore/animal-based diet news editor. Keep articles about: carnivore diet research and studies, meat-based diet health benefits and risks, success stories and transformations, recipes and practical tips, related nutrition science (ketosis, fasting, animal-based nutrition). Remove: vegan propaganda, generic diet ads, unrelated food industry news, clickbait.',
       },
       tech: {
         label: 'Tech & AI',
         maxAge: 10,
         queries: [
-          // General tech & innovation
           { q: 'technology breakthrough innovation discovery', lang: 'en', gl: 'US' },
-          { q: 'new gadget product launch consumer tech', lang: 'en', gl: 'US' },
-          { q: 'biotech medical technology breakthrough', lang: 'en', gl: 'US' },
-          { q: 'robotics automation industrial innovation', lang: 'en', gl: 'US' },
-          { q: 'space technology exploration mission', lang: 'en', gl: 'US' },
-          { q: 'quantum computing energy technology', lang: 'en', gl: 'US' },
-          { q: 'engineering invention science innovation', lang: 'en', gl: 'US' },
-          // AI-specific (inherited from AI Landscape)
-          { q: 'GPT OpenAI ChatGPT new release', lang: 'en', gl: 'US' },
-          { q: 'Claude Anthropic new model release', lang: 'en', gl: 'US' },
-          { q: 'Gemini Google DeepMind AI', lang: 'en', gl: 'US' },
-          { q: 'Llama Meta Mistral open source AI', lang: 'en', gl: 'US' },
-          { q: 'AI funding round billion valuation', lang: 'en', gl: 'US' },
-          { q: 'EU AI Act regulation enforcement', lang: 'en', gl: 'US' },
-          { q: 'AI coding tool Cursor Copilot Claude Code', lang: 'en', gl: 'US' },
-          { q: 'DeepSeek Qwen Chinese AI model', lang: 'en', gl: 'US' },
-          { q: 'AI startup acquisition merger', lang: 'en', gl: 'US' },
+          { q: 'AI news releases', lang: 'en', gl: 'US' },
         ],
-        filterPrompt: 'You are a technology innovations editor covering ALL sectors including AI. Keep articles about: genuine breakthroughs and inventions across ANY field (AI/LLMs, biotech, medtech, energy, materials, robotics, space, transport, engineering, consumer electronics, quantum computing); AI-specific news — new model releases (GPT, Claude, Gemini, Llama, DeepSeek, Qwen etc.), AI funding rounds, AI regulation (EU AI Act), AI coding tools (Cursor, Copilot, Claude Code), major AI acquisitions. Focus on real innovations — new products, scientific discoveries, engineering feats, prototype demonstrations. Remove: stock market noise, opinion pieces, minor software updates, recycled PR without substance, corporate earnings reports, generic "AI will change everything" fluff.',
+        filterPrompt: 'You are a technology innovations editor covering ALL sectors including AI. Keep articles about: genuine breakthroughs and inventions across ANY field (AI/LLMs, biotech, medtech, energy, materials, robotics, space, transport, engineering, consumer electronics, quantum computing); AI-specific news — new model releases (GPT, Claude, Gemini, Llama, DeepSeek, Qwen etc.), AI funding rounds, AI regulation, AI coding tools, major AI acquisitions. Focus on real innovations — new products, scientific discoveries, engineering feats, prototype demonstrations. Remove: stock market noise, opinion pieces, minor software updates, recycled PR without substance, corporate earnings reports, generic "AI will change everything" fluff.',
       },
     };
 
