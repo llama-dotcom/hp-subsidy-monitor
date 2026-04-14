@@ -323,7 +323,7 @@ const NEWS=[
 ];
 // Sort news: Spain ms=1380 but real weight ~59
 const newsWeight={'Spain':59};
-NEWS.sort((a,b)=>(newsWeight[b.c]||b.ms)-(newsWeight[a.c]||a.ms));
+NEWS.sort((a,b)=>new Date(b.created_at||b.d||0)-new Date(a.created_at||a.d||0));
 
 const ISO={250:"France",276:"Germany",380:"Italy",528:"Netherlands",616:"Poland",752:"Sweden",246:"Finland",826:"UK",203:"Czech Republic",56:"Belgium",208:"Denmark",40:"Austria",756:"Switzerland",442:"Luxembourg",703:"Slovakia",428:"Latvia",100:"Bulgaria",191:"Croatia",348:"Hungary",642:"Romania",688:"Serbia-Montenegro",804:"Ukraine",792:"Turkey",620:"Portugal",724:"Spain",300:"Greece",372:"Ireland",705:"Slovenia",70:"Bosnia-Herzegovina",578:"Norway",233:"Estonia",440:"Lithuania"};
 
@@ -605,12 +605,12 @@ async function loadFromDB(){
         NEWS.push({
           c:country?country.name:code,
           ms:country?(country.sort_weight||country.market_size||0):0,
-          d:n.date||'',t:n.title||'',ds:n.description||'',i:n.impact||'info',
+          d:n.date||'',t:n.title||'',ds:n.description||'',i:n.impact||'info',created_at:n.created_at||'',
           src:n.source_name?[{n:n.source_name,u:n.source_url||''}]:[]
         });
       });
       const nw={'Spain':59};
-      NEWS.sort((a,b)=>(nw[b.c]||b.ms)-(nw[a.c]||a.ms));
+      NEWS.sort((a,b)=>new Date(b.created_at||b.d||0)-new Date(a.created_at||a.d||0));
       // Re-render everything
       renderT();
       document.getElementById('news').innerHTML=NEWS.map(n=>{
