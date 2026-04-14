@@ -587,12 +587,9 @@ const App = {
     `).join('');
   },
 
-  // --- News Page ---
+  // --- Events Page ---
   async loadNews() {
-    const newsData = await this.getData('news');
     const eventsData = await this.getData('events');
-
-    if (newsData) this.renderNews(newsData);
     this.initEventFilters();
     if (eventsData) this.renderEvents(eventsData);
   },
