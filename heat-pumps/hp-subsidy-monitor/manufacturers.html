@@ -90,11 +90,13 @@ async function loadNews(){
     for (const n of allNews) {
       if (n.category === 'manufacturer') { news.push(n); continue; } // always include dedicated mfg news
       const text = ((n.title||'') + ' ' + (n.description||'')).toLowerCase();
+      // Only include from country news if BOTH: brand mentioned AND product-related keywords present
+      const PRODUCT_KEYWORDS = /\b(model|launch|product|r290|r32|new.*pump|release|factory|partner|acqui|merger|expand|revenue|sales.*unit|install)/i;
+      if (!PRODUCT_KEYWORDS.test(text)) continue; // skip pure policy/subsidy articles
       for (const brand of BRANDS) {
-        // Avoid false positives: "LG" alone is too short, require "LG " or "LG," or "LG Electronics"
         const bl = brand.toLowerCase();
         if (bl.length <= 2) {
-          if (text.includes(bl + ' ') || text.includes(bl + ',') || text.includes(bl + '.') || text.includes(bl + "'")) {
+          if (text.includes(bl + ' ') || text.includes(bl + ',') || text.includes(bl + '.')) {
             n._brand = brand; news.push(n); break;
           }
         } else if (text.includes(bl)) {
