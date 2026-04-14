@@ -7,7 +7,7 @@
 
   // --- Config ---
   const API_URL = '/api/news-hub-data';
-  const SECTIONS = ['politics', 'tech', 'lifestyle', 'esslingen', 'saratov'];
+  const SECTIONS = ['politics', 'tech', 'esslingen', 'saratov'];
 
   // --- Theme ---
   function initTheme() {
@@ -131,17 +131,9 @@
       if (!res.ok) throw new Error('API error ' + res.status);
       const data = await res.json();
 
-      // Render regular sections
-      ['politics', 'tech', 'esslingen', 'saratov'].forEach(s => {
+      SECTIONS.forEach(s => {
         renderCards(s, data[s] || []);
       });
-
-      // Merge beauty + carnivore into lifestyle
-      const lifestyle = [
-        ...(data['beauty'] || []),
-        ...(data['carnivore'] || []),
-      ].sort((a, b) => new Date(b.published_at) - new Date(a.published_at));
-      renderCards('lifestyle', lifestyle);
 
     } catch (err) {
       console.warn('API unavailable, trying fallback data...', err);
