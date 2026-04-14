@@ -108,22 +108,20 @@ async function loadNews(){
       return;
     }
 
-    // Known manufacturer → domain for logo (Google Favicons API)
-    // If new manufacturer appears and isn't here → shows initials (no data loss)
+    // Manufacturer logos — stored locally in /logos/ folder (no external API dependency)
     const MFG_LOGO = {
-      'bosch':'bosch.com','vaillant':'vaillant.com','viessmann':'viessmann.com',
-      'daikin':'daikin.com','stiebel':'stiebel-eltron.com','nibe':'nibe.com',
-      'mitsubishi':'mitsubishielectric.com','panasonic':'panasonic.com',
-      'samsung':'samsung.com','lg':'lg.com','wolf':'wolf.eu',
-      'atlantic':'atlantic-comfort.com','ariston':'ariston.com',
-      'carrier':'carrier.com','toshiba':'toshiba.com','alpha innotec':'alpha-innotec.com',
-      'buderus':'buderus.com','junkers':'junkers.com','trane':'trane.com',
-      'fujitsu':'fujitsu-general.com','midea':'midea.com','hisense':'hisense.com'
+      'bosch':'bosch','vaillant':'vaillant','viessmann':'viessmann',
+      'daikin':'daikin','stiebel':'stiebel-eltron','nibe':'nibe',
+      'mitsubishi':'mitsubishi','panasonic':'panasonic',
+      'samsung':'samsung','lg':'lg','wolf':'wolf',
+      'atlantic':'atlantic','ariston':'ariston',
+      'carrier':'carrier','toshiba':'toshiba','alpha innotec':'alpha-innotec',
+      'buderus':'buderus','midea':'midea','hisense':'hisense','danfoss':'danfoss'
     };
     function getMfgLogo(name) {
       const lower = name.toLowerCase();
-      for (const [key, domain] of Object.entries(MFG_LOGO)) {
-        if (lower.includes(key)) return `https://www.google.com/s2/favicons?domain=${domain}&sz=32`;
+      for (const [key, file] of Object.entries(MFG_LOGO)) {
+        if (lower.includes(key)) return `logos/${file}.png`;
       }
       return null;
     }
