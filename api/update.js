@@ -173,6 +173,22 @@ const EUROSTAT_COUNTRIES = {
   // Not covered by Eurostat: CH (handled by ElCom), GB (handled by DESNZ), UA (manual)
 };
 
+// Groq call with automatic model fallback on quota errors
+const GROQ_MODELS = ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant'];
+async function groqChat(groq, messages, opts = {}) {
+  for (const model of GROQ_MODELS) {
+    try {
+      return await groq.chat.completions.create({ ...opts, model, messages });
+    } catch (e) {
+      if (e?.status === 429 || (e?.message || '').includes('429') || (e?.message || '').includes('rate_limit')) {
+        continue; // try next model
+      }
+      throw e; // non-quota error, rethrow
+    }
+  }
+  throw new Error('All Groq models quota exhausted');
+}
+
 module.exports = async function handler(req, res) {
   try {
     // Auth check — only allow Vercel Cron or requests with secret
@@ -244,14 +260,10 @@ module.exports = async function handler(req, res) {
       }
       if (mfgArticles.length > 0) {
         const mfgList = mfgArticles.map((a, i) => `${i+1}. "${a.title}" (${a.source}, ${a.date})`).join('\n');
-        const mfgCompletion = await groq.chat.completions.create({
-          messages: [
+        const mfgCompletion = await groqChat(groq, [
             { role: 'system', content: 'You analyze news about heat pump manufacturers. Return JSON only.' },
             { role: 'user', content: `News articles about heat pump manufacturers:\n\n${mfgList}\n\nFor each article about a SPECIFIC manufacturer (new model, product launch, partnership, acquisition, factory, financial results), create a summary.\n\nFor each item, identify the MANUFACTURER NAME (e.g., "Bosch", "Daikin", "Vaillant").\n\nIMPORTANT: If multiple articles are about the same event from different outlets, merge into ONE summary.\n\nReturn: {"items": [{"title": "ManufacturerName: headline max 80 chars", "description": "2-3 sentences", "impact": "critical|medium|info", "manufacturer": "ManufacturerName", "original_index": number}]}\n\nSkip articles not about a specific manufacturer. If none: {"items": []}` }
-          ],
-          model: 'llama-3.3-70b-versatile', temperature: 0.2, max_tokens: 800,
-          response_format: { type: 'json_object' }
-        });
+          ], { temperature: 0.2, max_tokens: 800, response_format: { type: 'json_object' } });
         const mfgContent = mfgCompletion.choices[0]?.message?.content;
         if (mfgContent) {
           let mfgItems;
@@ -365,14 +377,10 @@ module.exports = async function handler(req, res) {
         const articleList = articles.map((a, i) => `${i + 1}. "${a.title}" (${a.source}, ${a.date})`).join('\n');
 
         // Llama: news summarization only (subsidy/market extraction moved to Gemini cron)
-        const completion = await groq.chat.completions.create({
-          messages: [
+        const completion = await groqChat(groq, [
             { role: 'system', content: 'You analyze real news articles about heat pump subsidies and policy. Return JSON only.' },
             { role: 'user', content: `Real news articles about heat pumps in ${country.name}:\n\n${articleList}\n\nFor each RELEVANT article (subsidies, energy policy, heating regulations), create a summary.\n\nIMPORTANT DEDUP RULE: If multiple articles describe the SAME event or topic (e.g. same subsidy change reported by different outlets), merge them into ONE summary and note all sources. Do not create separate entries for the same story from different websites.\n\nReturn: {"items": [{"title": "headline max 80 chars", "description": "2-3 sentences", "impact": "critical|medium|info", "original_index": number}]}\n\nSkip unrelated. If none relevant: {"items": []}` }
-          ],
-          model: 'llama-3.3-70b-versatile', temperature: 0.2, max_tokens: 800,
-          response_format: { type: 'json_object' }
-        });
+          ], { temperature: 0.2, max_tokens: 800, response_format: { type: 'json_object' } });
 
         const content = completion.choices[0]?.message?.content;
         if (!content) continue;
@@ -590,14 +598,10 @@ module.exports = async function handler(req, res) {
       if (isFirstOfMonth) for (const country of topCountries) {
         try {
           const query = encodeURIComponent(`${country.name} heat pump sales 2025 2026 units market`);
-          const completion = await groq.chat.completions.create({
-            messages: [
+          const completion = await groqChat(groq, [
               { role: 'system', content: 'You track heat pump market data. Return JSON only.' },
               { role: 'user', content: `Current market data for ${country.name}: ${country.market_size}k units. Based on latest available reports, is there newer data?\n\nReturn: {"market_size": number_in_thousands, "year": YYYY, "source": "source name", "updated": true}\nIf no update: {"updated": false}` }
-            ],
-            model: 'llama-3.3-70b-versatile', temperature: 0.1, max_tokens: 200,
-            response_format: { type: 'json_object' }
-          });
+            ], { temperature: 0.1, max_tokens: 200, response_format: { type: 'json_object' } });
 
           const mktContent = completion.choices[0]?.message?.content;
           if (mktContent) {
