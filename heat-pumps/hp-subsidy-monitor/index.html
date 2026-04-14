@@ -605,7 +605,7 @@ async function loadFromDB(){
         const code=n.country_id;
         const TOP5_IDS=['DE','FR','NL','GB','IT'];
         const TOP10_IDS=['SE','PL','ES','AT','BE','CH'];
-        const maxPerCountry=TOP5_IDS.includes(code)?6:TOP10_IDS.includes(code)?3:0;
+        const maxPerCountry=TOP5_IDS.includes(code)?6:TOP10_IDS.includes(code)?3:1;
         if((newsCount[code]||0)>=maxPerCountry)return;
         newsCount[code]=(newsCount[code]||0)+1;
         const country=dbCountries.find(c=>c.id===code);
