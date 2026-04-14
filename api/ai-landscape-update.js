@@ -99,14 +99,10 @@ module.exports = async function handler(req, res) {
         } catch (e) { results.errors.push(`news "${q.slice(0,30)}": ${e.message}`); }
       }
       const seen = new Set();
-      const deduped = fetched.filter(n => { const k = n.title.slice(0, 60).toLowerCase(); if (seen.has(k)) return false; seen.add(k); return true; }).slice(0, 25);
+      const deduped = fetched.filter(n => { const k = n.title.slice(0, 60).toLowerCase(); if (seen.has(k)) return false; seen.add(k); return true; }).slice(0, 20);
 
       if (deduped.length > 0) {
-        // Step 1: Upsert news items (summary = title as placeholder)
-        await upsert('ai_news', deduped);
-        results.news = deduped.length;
-
-        // Step 2: Generate real summaries via Groq and PATCH each item
+        // Generate real summaries via Groq BEFORE inserting
         const batchSize = 5;
         for (let b = 0; b < deduped.length; b += batchSize) {
           const batch = deduped.slice(b, b + batchSize);
@@ -123,15 +119,20 @@ Return exactly ${batch.length} summaries.`, 3000, 'fast');
             const sums = sumResp.summaries || [];
             for (let i = 0; i < Math.min(sums.length, batch.length); i++) {
               if (sums[i] && sums[i].length > 30) {
-                // Direct PATCH to guarantee summary is written
-                await fetch(`${SUPABASE_URL}/rest/v1/ai_news?id=eq.${encodeURIComponent(batch[i].id)}`, {
-                  method: 'PATCH', headers: sbH,
-                  body: JSON.stringify({ summary: sums[i] }),
-                });
+                deduped[b + i].summary = sums[i];
               }
             }
           } catch (e) { results.errors.push(`news summaries batch ${b}: ${e.message}`); }
         }
+
+        // Delete ALL existing news, then insert fresh ones with real summaries
+        await fetch(`${SUPABASE_URL}/rest/v1/ai_news?id=neq.___`, { method: 'DELETE', headers: sbH });
+        // Insert fresh
+        const insertR = await fetch(`${SUPABASE_URL}/rest/v1/ai_news`, {
+          method: 'POST', headers: sbH, body: JSON.stringify(deduped),
+        });
+        if (!insertR.ok) throw new Error(`news insert: ${insertR.status} ${await insertR.text()}`);
+        results.news = deduped.length;
       }
       // Cleanup >60 days
       await fetch(`${SUPABASE_URL}/rest/v1/ai_news?date=lt.${new Date(Date.now() - 60 * 86400000).toISOString().slice(0, 10)}`, { method: 'DELETE', headers: sbH });
