@@ -453,7 +453,9 @@ function filterT(){
 document.getElementById('news').innerHTML=NEWS.map(n=>{
   const ic=n.i==='critical'?'n-hi':n.i==='medium'?'n-me':'n-lo';
   const bc=n.i==='critical'?'imp-c':n.i==='medium'?'imp-m':'imp-i';
-  return`<div class="gc n-card ${ic}"><div class="n-mt"><span>${n.c} · ${n.d}</span><span class="imp ${bc}">${n.i}</span></div><div class="n-tt">${n.t}</div><div class="n-ds">${n.ds}</div><div class="n-sr">${n.src.map(s=>`<a href="${s.u}" target="_blank">${s.n}</a>`).join(' · ')}</div></div>`;
+  const nDate=n.created_at?new Date(n.created_at):null;
+  const nDateStr=nDate?`${String(nDate.getDate()).padStart(2,'0')}.${String(nDate.getMonth()+1).padStart(2,'0')}.${nDate.getFullYear()}`:n.d;
+  return`<div class="gc n-card ${ic}"><div class="n-mt"><span>${n.c} · ${nDateStr}</span><span class="imp ${bc}">${n.i}</span></div><div class="n-tt">${n.t}</div><div class="n-ds">${n.ds}</div><div class="n-sr">${n.src.map(s=>`<a href="${s.u}" target="_blank">${s.n}</a>`).join(' · ')}</div></div>`;
 }).join('');
 
 // === COUNTRY GRID ===
@@ -509,7 +511,9 @@ function openM(nm){
   if(cn.length){
     h+=`<div class="m-s"><h3><i data-lucide="radio-tower" style="width:14px;height:14px;"></i> Policy Changes</h3>`;
     cn.forEach(n=>{const bc=n.i==='critical'?'imp-c':n.i==='medium'?'imp-m':'imp-i';
-      h+=`<div class="m-cd"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;"><span class="nm">${n.t}</span><span class="imp ${bc}">${n.i}</span></div><div class="dt">${n.ds}</div>${n.src&&n.src.length?`<div style="margin-top:4px;">${n.src.map(s=>`<a href="${s.u}" target="_blank" style="font-size:0.72rem;color:var(--accent);">${s.n} →</a>`).join(' · ')}</div>`:''}</div>`;});
+      const mDate=n.created_at?new Date(n.created_at):null;
+      const mDateStr=mDate?`${String(mDate.getDate()).padStart(2,'0')}.${String(mDate.getMonth()+1).padStart(2,'0')}.${mDate.getFullYear()}`:(n.d||'');
+      h+=`<div class="m-cd"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;"><span class="nm">${n.t}</span><span class="imp ${bc}">${n.i}</span></div><div style="font-size:0.68rem;color:var(--dim);margin-bottom:3px;">${mDateStr}</div><div class="dt">${n.ds}</div>${n.src&&n.src.length?`<div style="margin-top:4px;">${n.src.map(s=>`<a href="${s.u}" target="_blank" style="font-size:0.72rem;color:var(--accent);">${s.n} →</a>`).join(' · ')}</div>`:''}</div>`;});
     h+=`</div>`;
   }
   h+=`<div class="m-s"><h3><i data-lucide="compass" style="width:14px;height:14px;"></i> Outlook</h3><p style="font-size:0.82rem;color:var(--muted);line-height:1.6;">${c.ol}</p></div>`;
@@ -613,13 +617,24 @@ async function loadFromDB(){
         });
       });
       const nw={'Spain':59};
-      // News already sorted by created_at desc from Supabase query — keep DB order (newest first)
+            // Sort news: primary = country importance (Top5 first), secondary = date desc (newest first)
+      const COUNTRY_RANK = {DE:1,FR:2,NL:3,GB:4,IT:5,SE:6,PL:7,ES:8,AT:9,BE:10,CH:11};
+      const codeByName = {};
+      dbCountries.forEach(c => { codeByName[c.name] = c.id; });
+      NEWS.sort((a, b) => {
+        const ra = COUNTRY_RANK[codeByName[a.c]] || 99;
+        const rb = COUNTRY_RANK[codeByName[b.c]] || 99;
+        if (ra !== rb) return ra - rb;
+        return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+      });
       // Re-render everything
       renderT();
       document.getElementById('news').innerHTML=NEWS.map(n=>{
         const ic=n.i==='critical'?'n-hi':n.i==='medium'?'n-me':'n-lo';
         const bc=n.i==='critical'?'imp-c':n.i==='medium'?'imp-m':'imp-i';
-        return`<div class="gc n-card ${ic}"><div class="n-mt"><span>${n.c} · ${n.d}</span><span class="imp ${bc}">${n.i}</span></div><div class="n-tt">${n.t}</div><div class="n-ds">${n.ds}</div><div class="n-sr">${n.src.map(s=>`<a href="${s.u}" target="_blank" style="color:var(--accent);font-size:0.72rem;">${s.n} →</a>`).join(' · ')}</div></div>`;
+        const nDate2=n.created_at?new Date(n.created_at):null;
+        const nDateStr2=nDate2?`${String(nDate2.getDate()).padStart(2,'0')}.${String(nDate2.getMonth()+1).padStart(2,'0')}.${nDate2.getFullYear()}`:n.d;
+        return`<div class="gc n-card ${ic}"><div class="n-mt"><span>${n.c} · ${nDateStr2}</span><span class="imp ${bc}">${n.i}</span></div><div class="n-tt">${n.t}</div><div class="n-ds">${n.ds}</div><div class="n-sr">${n.src.map(s=>`<a href="${s.u}" target="_blank" style="color:var(--accent);font-size:0.72rem;">${s.n} →</a>`).join(' · ')}</div></div>`;
       }).join('');
       console.log('✅ Loaded from Supabase:',C.length,'countries,',NEWS.length,'news');
     }
