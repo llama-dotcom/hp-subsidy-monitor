@@ -208,8 +208,75 @@ module.exports = async function handler(req, res) {
     const countries = await countriesRes.json();
     const topCountries = countries.slice(0, 15);
 
-    // === DAILY: News from Google News RSS ===
+    // === DAILY: Manufacturer news FIRST (runs before country news to ensure quota) ===
     const currentYear = today.getFullYear(); // dynamic year — no hardcoded "2026"
+    try {
+      const mfgRssFeeds = [
+        { q: 'heat pump manufacturer new model product launch', hl: 'en', gl: 'US', ceid: 'US:en' },
+        { q: 'Wärmepumpe Hersteller neues Modell Produktneuheit', hl: 'de', gl: 'DE', ceid: 'DE:de' },
+        { q: 'pompe chaleur fabricant nouveau modèle lancement produit', hl: 'fr', gl: 'FR', ceid: 'FR:fr' },
+        { q: 'heat pump brand partnership acquisition factory expansion', hl: 'en', gl: 'US', ceid: 'US:en' },
+        { q: 'heat pump R290 natural refrigerant new product', hl: 'en', gl: 'US', ceid: 'US:en' }
+      ];
+      let mfgArticles = [];
+      for (const feed of mfgRssFeeds) {
+        try {
+          const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(feed.q)}&hl=${feed.hl}&gl=${feed.gl}&ceid=${feed.ceid}`;
+          const rssRes = await fetch(rssUrl);
+          const rssText = await rssRes.text();
+          const itemRegex = /<item>[\s\S]*?<title>([\s\S]*?)<\/title>[\s\S]*?<link>([\s\S]*?)<\/link>[\s\S]*?<pubDate>([\s\S]*?)<\/pubDate>[\s\S]*?<source[^>]*>([\s\S]*?)<\/source>[\s\S]*?<\/item>/g;
+          let match;
+          while ((match = itemRegex.exec(rssText)) !== null && mfgArticles.length < 15) {
+            const pubDate = new Date(match[3].trim());
+            const daysDiff = (today - pubDate) / (1000 * 60 * 60 * 24);
+            if (daysDiff <= 14) {
+              const title = match[1].trim().replace(/<!\[CDATA\[|\]\]>/g, '');
+              if (!mfgArticles.some(a => a.title === title)) {
+                mfgArticles.push({ title, url: match[2].trim(), date: pubDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }), source: match[4].trim().replace(/<!\[CDATA\[|\]\]>/g, '') });
+              }
+            }
+          }
+        } catch (e) { /* skip feed */ }
+      }
+      if (mfgArticles.length > 0) {
+        const mfgList = mfgArticles.map((a, i) => `${i+1}. "${a.title}" (${a.source}, ${a.date})`).join('\n');
+        const mfgCompletion = await groq.chat.completions.create({
+          messages: [
+            { role: 'system', content: 'You analyze news about heat pump manufacturers. Return JSON only.' },
+            { role: 'user', content: `News articles about heat pump manufacturers:\n\n${mfgList}\n\nFor each article about a SPECIFIC manufacturer (new model, product launch, partnership, acquisition, factory, financial results), create a summary.\n\nFor each item, identify the MANUFACTURER NAME (e.g., "Bosch", "Daikin", "Vaillant").\n\nIMPORTANT: If multiple articles are about the same event from different outlets, merge into ONE summary.\n\nReturn: {"items": [{"title": "ManufacturerName: headline max 80 chars", "description": "2-3 sentences", "impact": "critical|medium|info", "manufacturer": "ManufacturerName", "original_index": number}]}\n\nSkip articles not about a specific manufacturer. If none: {"items": []}` }
+          ],
+          model: 'llama-3.3-70b-versatile', temperature: 0.2, max_tokens: 800,
+          response_format: { type: 'json_object' }
+        });
+        const mfgContent = mfgCompletion.choices[0]?.message?.content;
+        if (mfgContent) {
+          let mfgItems;
+          try { mfgItems = JSON.parse(mfgContent).items || []; } catch (e) { mfgItems = []; }
+          for (const item of mfgItems) {
+            if (!item.title || !item.manufacturer) continue;
+            const origArticle = mfgArticles[item.original_index - 1] || mfgArticles[0];
+            const existCheck = await fetch(`${SUPABASE_URL}/rest/v1/news?category=eq.manufacturer&title=eq.${encodeURIComponent(item.title)}&limit=1`, {
+              headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+            });
+            const existing = await existCheck.json();
+            if (existing.length > 0) continue;
+            await fetch(`${SUPABASE_URL}/rest/v1/news`, {
+              method: 'POST',
+              headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+              body: JSON.stringify({
+                country_id: 'MFG', date: origArticle.date, title: item.title,
+                description: item.description || '', impact: item.impact || 'info',
+                source_name: origArticle.source || '', source_url: origArticle.url || '',
+                category: 'manufacturer'
+              })
+            });
+            results.mfg_news = (results.mfg_news || 0) + 1;
+          }
+        }
+      }
+    } catch (e) { results.errors.push(`Manufacturer news: ${e.message}`); }
+
+    // === DAILY: Country news from Google News RSS ===
     for (const country of topCountries) {
       try {
         // Local language searches — PRIMARY source for each country
@@ -254,7 +321,7 @@ module.exports = async function handler(req, res) {
         };
         const extraQuery = extraQueries[country.id];
         const extraRssUrl = extraQuery ? `https://news.google.com/rss/search?q=${encodeURIComponent(extraQuery)}&hl=en&gl=US&ceid=US:en` : null;
-        const maxArticles = ['DE','FR','GB'].includes(country.id) ? 10 : 5;
+        const maxArticles = ['DE','FR','GB'].includes(country.id) ? 6 : 4; // optimized: match display limit, save Groq tokens
 
         let articles = [];
         // Fetch from both English and local language RSS
@@ -548,74 +615,6 @@ module.exports = async function handler(req, res) {
         } catch (e) { results.errors.push(`Market ${country.name}: ${e.message}`); }
       }
     }
-
-    // === DAILY: Manufacturer news (generic queries, no hardcoded names) ===
-    try {
-      const mfgRssFeeds = [
-        { q: 'heat pump manufacturer new model product launch', hl: 'en', gl: 'US', ceid: 'US:en' },
-        { q: 'Wärmepumpe Hersteller neues Modell Produktneuheit', hl: 'de', gl: 'DE', ceid: 'DE:de' },
-        { q: 'pompe chaleur fabricant nouveau modèle lancement produit', hl: 'fr', gl: 'FR', ceid: 'FR:fr' },
-        { q: 'heat pump brand partnership acquisition factory expansion', hl: 'en', gl: 'US', ceid: 'US:en' },
-        { q: 'heat pump R290 natural refrigerant new product', hl: 'en', gl: 'US', ceid: 'US:en' }
-      ];
-      let mfgArticles = [];
-      for (const feed of mfgRssFeeds) {
-        try {
-          const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(feed.q)}&hl=${feed.hl}&gl=${feed.gl}&ceid=${feed.ceid}`;
-          const rssRes = await fetch(rssUrl);
-          const rssText = await rssRes.text();
-          const itemRegex = /<item>[\s\S]*?<title>([\s\S]*?)<\/title>[\s\S]*?<link>([\s\S]*?)<\/link>[\s\S]*?<pubDate>([\s\S]*?)<\/pubDate>[\s\S]*?<source[^>]*>([\s\S]*?)<\/source>[\s\S]*?<\/item>/g;
-          let match;
-          while ((match = itemRegex.exec(rssText)) !== null && mfgArticles.length < 20) {
-            const pubDate = new Date(match[3].trim());
-            const daysDiff = (today - pubDate) / (1000 * 60 * 60 * 24);
-            if (daysDiff <= 14) {
-              const title = match[1].trim().replace(/<!\[CDATA\[|\]\]>/g, '');
-              if (!mfgArticles.some(a => a.title === title)) {
-                mfgArticles.push({ title, url: match[2].trim(), date: pubDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }), source: match[4].trim().replace(/<!\[CDATA\[|\]\]>/g, '') });
-              }
-            }
-          }
-        } catch (e) { /* skip feed */ }
-      }
-      if (mfgArticles.length > 0) {
-        const mfgList = mfgArticles.map((a, i) => `${i+1}. "${a.title}" (${a.source}, ${a.date})`).join('\n');
-        const mfgCompletion = await groq.chat.completions.create({
-          messages: [
-            { role: 'system', content: 'You analyze news about heat pump manufacturers. Return JSON only.' },
-            { role: 'user', content: `News articles about heat pump manufacturers:\n\n${mfgList}\n\nFor each article about a SPECIFIC manufacturer (new model, product launch, partnership, acquisition, factory, financial results), create a summary.\n\nFor each item, identify the MANUFACTURER NAME (e.g., "Bosch", "Daikin", "Vaillant").\n\nIMPORTANT: If multiple articles are about the same event from different outlets, merge into ONE summary.\n\nReturn: {"items": [{"title": "ManufacturerName: headline max 80 chars", "description": "2-3 sentences", "impact": "critical|medium|info", "manufacturer": "ManufacturerName", "original_index": number}]}\n\nSkip articles not about a specific manufacturer. If none: {"items": []}` }
-          ],
-          model: 'llama-3.3-70b-versatile', temperature: 0.2, max_tokens: 1200,
-          response_format: { type: 'json_object' }
-        });
-        const mfgContent = mfgCompletion.choices[0]?.message?.content;
-        if (mfgContent) {
-          let mfgItems;
-          try { mfgItems = JSON.parse(mfgContent).items || []; } catch (e) { mfgItems = []; }
-          for (const item of mfgItems) {
-            if (!item.title || !item.manufacturer) continue;
-            const origArticle = mfgArticles[item.original_index - 1] || mfgArticles[0];
-            // Dedup check
-            const existCheck = await fetch(`${SUPABASE_URL}/rest/v1/news?category=eq.manufacturer&title=eq.${encodeURIComponent(item.title)}&limit=1`, {
-              headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
-            });
-            const existing = await existCheck.json();
-            if (existing.length > 0) continue;
-            await fetch(`${SUPABASE_URL}/rest/v1/news`, {
-              method: 'POST',
-              headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-              body: JSON.stringify({
-                country_id: 'MFG', date: origArticle.date, title: item.title,
-                description: item.description || '', impact: item.impact || 'info',
-                source_name: origArticle.source || '', source_url: origArticle.url || '',
-                category: 'manufacturer'
-              })
-            });
-            results.mfg_news = (results.mfg_news || 0) + 1;
-          }
-        }
-      }
-    } catch (e) { results.errors.push(`Manufacturer news: ${e.message}`); }
 
     // === EMAIL ALERT if critical news found ===
     if (results.alerts.length > 0) {
