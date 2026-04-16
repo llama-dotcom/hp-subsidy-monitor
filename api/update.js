@@ -231,6 +231,7 @@ module.exports = async function handler(req, res) {
 
     // === DAILY: Manufacturer news FIRST (runs before country news to ensure quota) ===
     const currentYear = today.getFullYear(); // dynamic year — no hardcoded "2026"
+    results.manufacturer_block_entered = true; // DEBUG: confirm this code path runs
     try {
       // Top HP manufacturers by European market share (hydronic focus)
       // Grouped with OR for efficiency: 1 query catches multiple brands
