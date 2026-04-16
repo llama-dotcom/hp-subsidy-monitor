@@ -9,24 +9,60 @@
 
 const Groq = require('groq-sdk');
 
+// In-memory IP rate limiter (survives warm invocations on same instance)
+const rateLimitStore = new Map();
+const RATE_LIMIT_WINDOW_MS = 5 * 60 * 1000; // 5 minutes
+const RATE_LIMIT_MAX = 2; // max 2 requests per IP per 5 minutes
+
+function checkRateLimit(ip) {
+  const now = Date.now();
+  const entry = rateLimitStore.get(ip) || { count: 0, resetAt: now + RATE_LIMIT_WINDOW_MS };
+  if (now > entry.resetAt) {
+    entry.count = 0;
+    entry.resetAt = now + RATE_LIMIT_WINDOW_MS;
+  }
+  entry.count++;
+  rateLimitStore.set(ip, entry);
+  // Cleanup old entries (prevent memory leak)
+  if (rateLimitStore.size > 1000) {
+    for (const [k, v] of rateLimitStore) if (now > v.resetAt) rateLimitStore.delete(k);
+  }
+  return {
+    ok: entry.count <= RATE_LIMIT_MAX,
+    remaining: Math.max(0, RATE_LIMIT_MAX - entry.count),
+    resetIn: Math.ceil((entry.resetAt - now) / 1000),
+  };
+}
+
 module.exports = async function handler(req, res) {
   const startTime = Date.now();
   const results = { systems_updated: 0, systems_added: 0, events_added: 0, events_cleaned: 0, errors: [] };
 
   try {
-    // Auth
+    // Auth: accept Vercel Cron OR valid Bearer token (if CRON_SECRET set)
     const isVercelCron = req.headers['x-vercel-cron'] === '1';
     const cronSecret = process.env.CRON_SECRET_AI_LANDSCAPE;
     const authHeader = req.headers.authorization;
-    if (!isVercelCron && cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-      return res.status(401).json({ error: 'Unauthorized' });
+    const hasValidSecret = cronSecret && authHeader === `Bearer ${cronSecret}`;
+
+    // Public refresh path: rate-limit by IP
+    if (!isVercelCron && !hasValidSecret) {
+      const ip = req.headers['x-forwarded-for']?.split(',')[0].trim()
+              || req.headers['x-real-ip']
+              || 'unknown';
+      const rl = checkRateLimit(ip);
+      res.setHeader('X-RateLimit-Remaining', rl.remaining);
+      res.setHeader('X-RateLimit-Reset', rl.resetIn);
+      if (!rl.ok) {
+        return res.status(429).json({ error: 'rate_limited', retry_in_seconds: rl.resetIn });
+      }
     }
 
     const SUPABASE_URL = process.env.SUPABASE_URL_AI_LANDSCAPE;
     const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY_AI_LANDSCAPE;
     const GROQ_KEY = process.env.GROQ_API_KEY_AI_LANDSCAPE;
     if (!SUPABASE_URL || !SUPABASE_KEY || !GROQ_KEY) {
-      return res.status(500).json({ error: 'Missing env vars' });
+      return res.status(500).json({ error: 'internal_error' });
     }
 
     const sbH = { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' };
@@ -244,6 +280,6 @@ Only include events you are confident about dates. If unsure of exact date, skip
     });
   } catch (err) {
     console.error('ai-landscape-update error:', err);
-    return res.status(500).json({ error: err.message, ...results });
+    return res.status(500).json({ error: 'internal_error', ...results });
   }
 };
