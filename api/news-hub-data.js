@@ -5,8 +5,9 @@
 
 module.exports = async function handler(req, res) {
   try {
+    // Use ANON key — read-only, RLS-enforced. Never use service_role in a public endpoint.
     const SUPABASE_URL = process.env.SUPABASE_URL_NEWS_HUB;
-    const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY_NEWS_HUB;
+    const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY_NEWS_HUB;
     if (!SUPABASE_URL || !SUPABASE_KEY) {
       return res.status(500).json({ error: 'Missing env vars' });
     }
