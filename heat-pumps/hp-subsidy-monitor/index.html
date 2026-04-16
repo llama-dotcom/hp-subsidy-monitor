@@ -617,11 +617,16 @@ async function loadFromDB(){
         });
       });
       const nw={'Spain':59};
-            // Sort news: primary = country importance (Top5 first), secondary = date desc (newest first)
+            // Sort news: primary = date desc (newest first), secondary = country importance
       const COUNTRY_RANK = {DE:1,FR:2,NL:3,GB:4,IT:5,SE:6,PL:7,ES:8,AT:9,BE:10,CH:11};
       const codeByName = {};
       dbCountries.forEach(c => { codeByName[c.name] = c.id; });
       NEWS.sort((a, b) => {
+        // Compare by date (day precision) first — newest day first
+        const da = (a.created_at||'').slice(0,10);
+        const db_ = (b.created_at||'').slice(0,10);
+        if (da !== db_) return db_.localeCompare(da);
+        // Within same day: country rank (Germany first), then exact time
         const ra = COUNTRY_RANK[codeByName[a.c]] || 99;
         const rb = COUNTRY_RANK[codeByName[b.c]] || 99;
         if (ra !== rb) return ra - rb;
