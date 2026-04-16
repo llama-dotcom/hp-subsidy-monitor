@@ -508,7 +508,7 @@ const App = {
           ${sys.latest_model ? `<span class="badge">${this.esc(sys.latest_model)}</span>` : ''}
         </div>
         <div class="card__actions">
-          ${sys.url ? `<a class="card__link" href="${this.esc(sys.url)}" target="_blank" rel="noopener noreferrer">${this.esc(this.shortUrl(sys.url))} ↗</a>` : ''}
+          ${this.safeUrl(sys.url) ? `<a class="card__link" href="${this.esc(this.safeUrl(sys.url))}" target="_blank" rel="noopener noreferrer">${this.esc(this.shortUrl(sys.url))} ↗</a>` : ''}
           <button class="card__expand-btn" onclick="App.toggleCard(this)">
             Details →
           </button>
@@ -667,12 +667,12 @@ const App = {
             <div class="event-card__day">${day}</div>
           </div>
           <div class="event-card__info">
-            <div class="event-card__name">${e.url ? `<a href="${e.url}" target="_blank" rel="noopener noreferrer">${this.esc(e.name)}</a>` : this.esc(e.name)}</div>
+            <div class="event-card__name">${this.safeUrl(e.url) ? `<a href="${this.esc(this.safeUrl(e.url))}" target="_blank" rel="noopener noreferrer">${this.esc(e.name)}</a>` : this.esc(e.name)}</div>
             <div class="event-card__location">${this.esc(e.location_city)}, ${this.esc(e.location_country)}${e.estimated_attendees ? ` · ${this.esc(e.estimated_attendees)} attendees` : ''}</div>
             <div class="event-card__desc">${this.esc(e.description)}</div>
             <div class="event-card__type">
-              <span class="badge">${e.type}</span>
-              <span class="badge">${e.region}</span>
+              <span class="badge">${this.esc(e.type)}</span>
+              <span class="badge">${this.esc(e.region)}</span>
             </div>
           </div>
         </div>
@@ -686,6 +686,14 @@ const App = {
     const div = document.createElement('div');
     div.textContent = str;
     return div.innerHTML;
+  },
+
+  safeUrl(url) {
+    if (!url || typeof url !== 'string') return '';
+    const trimmed = url.trim();
+    // Only allow http://, https:// — blocks javascript:, data:, file:, etc.
+    if (!/^https?:\/\//i.test(trimmed)) return '';
+    return trimmed;
   },
 
   shortUrl(url) {
