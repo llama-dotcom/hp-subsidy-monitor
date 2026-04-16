@@ -257,7 +257,9 @@ module.exports = async function handler(req, res) {
           while ((match = itemRegex.exec(rssText)) !== null && mfgArticles.length < 15) {
             const pubDate = new Date(match[3].trim());
             const daysDiff = (today - pubDate) / (1000 * 60 * 60 * 24);
-            if (daysDiff <= 14) {
+            // 60-day window for manufacturers — HP brands publish less frequently than country news.
+            // 14d window (used for country news) returned 0 mfg articles in production tests.
+            if (daysDiff <= 60) {
               const title = match[1].trim().replace(/<!\[CDATA\[|\]\]>/g, '');
               if (!mfgArticles.some(a => a.title === title)) {
                 mfgArticles.push({ title, url: match[2].trim(), date: pubDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }), source: match[4].trim().replace(/<!\[CDATA\[|\]\]>/g, '') });
