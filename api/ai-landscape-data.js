@@ -7,10 +7,12 @@
 module.exports = async function handler(req, res) {
   try {
     const SUPABASE_URL = process.env.SUPABASE_URL_AI_LANDSCAPE;
-    const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY_AI_LANDSCAPE;
+    // Use ANON key (read-only via RLS), NOT service_role.
+    // Defense in depth: even if this endpoint is compromised, attacker cannot write.
+    const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY_AI_LANDSCAPE || process.env.SUPABASE_SERVICE_KEY_AI_LANDSCAPE;
 
     if (!SUPABASE_URL || !SUPABASE_KEY) {
-      return res.status(500).json({ error: 'Missing Supabase env vars' });
+      return res.status(500).json({ error: 'internal_error' });
     }
 
     const headers = {
@@ -54,6 +56,6 @@ module.exports = async function handler(req, res) {
     });
   } catch (err) {
     console.error('ai-landscape-data error:', err);
-    return res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: 'internal_error' });
   }
 };
