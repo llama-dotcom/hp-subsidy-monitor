@@ -108,57 +108,72 @@ Here are the ${existing.length} AI systems we track:
 ID|Name|Type|LatestModel|ProPrice|EstUsers
 ${summary}
 
-Tasks (reply as JSON):
+Reply with JSON. Provide updates for ANY field that has changed since these systems were first added. Be thorough — this is a comprehensive refresh.
 
-1. "pricing_updates": For any system where you KNOW the pricing has changed, return [{"id": "xxx", "pricing": {"free_tier": bool, "free_details": "...", "pro_price": "$X/mo", "enterprise": bool}}]
+Tasks:
 
-2. "user_updates": For any system where you have NEWER user count data, return [{"id": "xxx", "estimated_users": "new count"}]
+1. "pricing_updates": [{"id": "xxx", "pricing": {"free_tier": bool, "free_details": "...", "pro_price": "$X/mo", "enterprise": bool}}]
 
-3. "description_updates": For any system that had a MAJOR change (acquisition, pivot, rebrand), return [{"id": "xxx", "description": "new 2-sentence description"}]
+2. "user_updates": [{"id": "xxx", "estimated_users": "new count"}]
 
-4. "new_systems": Any MAJOR new AI system (LLM or coding tool) launched in the last month that we don't track yet? Return [{"id": "slug", "type": "llm|coding", "name": "...", "developer": "...", "owner": "...", "country": "...", "country_code": "xx", "cluster": "...", "description": "...", "latest_model": "...", "pricing": {...}, "estimated_users": "...", "market_position": N, "pros": [...], "cons": [...], "use_cases": [...], "url": "https://..."}]
+3. "description_updates": [{"id": "xxx", "description": "new 2-sentence description"}] — only on MAJOR changes (acquisition, pivot, rebrand)
 
-5. "discontinued": Any systems that have been shut down? Return [{"id": "xxx", "reason": "..."}]
+4. "pros_cons_updates": [{"id": "xxx", "pros": [4 strings], "cons": [4 strings]}] — for systems where current pros/cons feel outdated
+
+5. "use_cases_updates": [{"id": "xxx", "use_cases": [3-4 strings]}] — for systems where new use cases have emerged
+
+6. "ides_updates": [{"id": "xxx", "supported_ides": ["..."]}] — coding tools only, when new IDE support added
+
+7. "owner_updates": [{"id": "xxx", "owner": "new owner string"}] — when company is acquired or rebranded
+
+8. "new_systems": Find 10-15 NEW major AI systems (LLM chatbots OR coding tools) launched in the last 6 months that we don't track. BE AGGRESSIVE — include any system with >100K users or major backing. Return [{"id": "slug", "type": "llm|coding", "name": "...", "developer": "...", "owner": "...", "country": "...", "country_code": "xx", "cluster": "...", "description": "...", "latest_model": "..." (LLM only), "pricing": {...}, "estimated_users": "...", "market_position": N, "pros": [4 strings], "cons": [4 strings], "use_cases": [3-4 strings], "supported_ides": [...] (coding only), "url": "https://..."}]
+
+9. "discontinued": [{"id": "xxx", "reason": "..."}] — systems that have been shut down
 
 Rules:
-- Only report changes you are CONFIDENT about
-- If unsure, skip it — do not guess
-- For user counts, use qualifier like "estimated" or "~"
-- Reply with JSON: {"pricing_updates": [], "user_updates": [], "description_updates": [], "new_systems": [], "discontinued": [], "notes": "summary"}`;
+- For TASKS 1-7 (updates): only report changes you are CONFIDENT about, do not guess on existing systems
+- For TASK 8 (new_systems): be thorough — we want comprehensive coverage of the AI landscape
+- For user counts use qualifiers like "estimated" or "~"
+- For coding tools, set type="coding"; for LLM chatbots, type="llm"
+- Cluster values for LLM: frontier|open-weight|search-research|specialized|regional
+- Cluster values for coding: ide-native|ide-extension|cli-agent|cloud-ide|specialized
 
-        const weekly = await askGroq(weeklyPrompt, 6000);
+Reply with JSON: {"pricing_updates": [], "user_updates": [], "description_updates": [], "pros_cons_updates": [], "use_cases_updates": [], "ides_updates": [], "owner_updates": [], "new_systems": [], "discontinued": [], "notes": "summary"}`;
 
-        // Apply pricing updates
+        const weekly = await askGroq(weeklyPrompt, 8000);
+
+        // Helper to PATCH a single field
+        async function patchSystem(id, fields) {
+          await fetch(`${SUPABASE_URL}/rest/v1/ai_systems?id=eq.${id}`, {
+            method: 'PATCH', headers: sbH,
+            body: JSON.stringify({ ...fields, updated_at: new Date().toISOString() }),
+          });
+          results.systems_updated++;
+        }
+
         for (const u of (weekly.pricing_updates || [])) {
-          if (!u.id || !u.pricing) continue;
-          await fetch(`${SUPABASE_URL}/rest/v1/ai_systems?id=eq.${u.id}`, {
-            method: 'PATCH', headers: sbH,
-            body: JSON.stringify({ pricing: u.pricing, updated_at: new Date().toISOString() }),
-          });
-          results.systems_updated++;
+          if (u.id && u.pricing) await patchSystem(u.id, { pricing: u.pricing });
         }
-
-        // Apply user count updates
         for (const u of (weekly.user_updates || [])) {
-          if (!u.id || !u.estimated_users) continue;
-          await fetch(`${SUPABASE_URL}/rest/v1/ai_systems?id=eq.${u.id}`, {
-            method: 'PATCH', headers: sbH,
-            body: JSON.stringify({ estimated_users: u.estimated_users, updated_at: new Date().toISOString() }),
-          });
-          results.systems_updated++;
+          if (u.id && u.estimated_users) await patchSystem(u.id, { estimated_users: u.estimated_users });
         }
-
-        // Apply description updates
         for (const u of (weekly.description_updates || [])) {
-          if (!u.id || !u.description) continue;
-          await fetch(`${SUPABASE_URL}/rest/v1/ai_systems?id=eq.${u.id}`, {
-            method: 'PATCH', headers: sbH,
-            body: JSON.stringify({ description: u.description, updated_at: new Date().toISOString() }),
-          });
-          results.systems_updated++;
+          if (u.id && u.description) await patchSystem(u.id, { description: u.description });
+        }
+        for (const u of (weekly.pros_cons_updates || [])) {
+          if (u.id && u.pros && u.cons) await patchSystem(u.id, { pros: u.pros, cons: u.cons });
+        }
+        for (const u of (weekly.use_cases_updates || [])) {
+          if (u.id && u.use_cases) await patchSystem(u.id, { use_cases: u.use_cases });
+        }
+        for (const u of (weekly.ides_updates || [])) {
+          if (u.id && u.supported_ides) await patchSystem(u.id, { supported_ides: u.supported_ides });
+        }
+        for (const u of (weekly.owner_updates || [])) {
+          if (u.id && u.owner) await patchSystem(u.id, { owner: u.owner });
         }
 
-        // Add new systems
+        // Add new systems (aggressive discovery)
         for (const s of (weekly.new_systems || [])) {
           if (!s.id || !s.name || !s.type) continue;
           s.updated_at = new Date().toISOString();
@@ -168,12 +183,7 @@ Rules:
 
         // Mark discontinued
         for (const d of (weekly.discontinued || [])) {
-          if (!d.id) continue;
-          await fetch(`${SUPABASE_URL}/rest/v1/ai_systems?id=eq.${d.id}`, {
-            method: 'PATCH', headers: sbH,
-            body: JSON.stringify({ description: `[DISCONTINUED] ${d.reason || 'Shut down.'}`, updated_at: new Date().toISOString() }),
-          });
-          results.systems_updated++;
+          if (d.id) await patchSystem(d.id, { description: `[DISCONTINUED] ${d.reason || 'Shut down.'}` });
         }
       } catch (e) { results.errors.push(`weekly systems: ${e.message}`); }
 
