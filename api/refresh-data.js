@@ -286,6 +286,19 @@ function computePatches(country, gemini) {
     const curAmt = Number(country.max_subsidy) || 0;
     const change = curAmt > 0 ? Math.abs(newAmt - curAmt) / curAmt : 0;
 
+    // Currency sanity check: detect raw GBP/CHF values (Gemini sometimes forgets EUR conversion)
+    // For UK/CH, if amount looks suspiciously low (typical GBP/CHF amounts), skip
+    const currencyMismatch = (country.id === 'GB' && newAmt > 0 && newAmt < curAmt * 0.95) ||
+                              (country.id === 'CH' && newAmt > 0 && newAmt < curAmt * 0.95);
+
+    // Subsidy year check: should be currentYear (latest) — old data rejected
+    const newSubYear = Number(subsidy.effective_year) || 0;
+    const subTooOld = newSubYear > 0 && newSubYear < CURRENT_YEAR - 1;
+
+    // Top countries protection: don't allow subsidy reduction >20% from secondary sources
+    const TOP_COUNTRIES = new Set(['DE','FR','NL','GB','IT']);
+    const bigDrop = TOP_COUNTRIES.has(country.id) && curAmt > 0 && newAmt < curAmt * 0.8 && tier > 1;
+
     if (!url) {
       decisions.push(`subsidy: SKIP — no source URL`);
     } else if (tier === 0) {
@@ -294,6 +307,12 @@ function computePatches(country, gemini) {
       decisions.push(`subsidy: SKIP — value out of bounds (€${newAmt})`);
     } else if (!newProgram || newProgram.length > 60) {
       decisions.push(`subsidy: SKIP — program name invalid`);
+    } else if (currencyMismatch) {
+      decisions.push(`subsidy: SKIP — suspected currency conversion error (${country.id}: €${newAmt} too low vs €${curAmt})`);
+    } else if (subTooOld) {
+      decisions.push(`subsidy: SKIP — year ${newSubYear} too old (need ${CURRENT_YEAR-1}+)`);
+    } else if (bigDrop) {
+      decisions.push(`subsidy: SKIP — Top country, big drop ${(change*100).toFixed(0)}% from non-Tier-1 source`);
     } else if (!passesTier(tier, confidence, isFirstWrite, change)) {
       decisions.push(`subsidy: SKIP — tier ${tier} rules failed (conf=${confidence}, change=${(change*100).toFixed(0)}%)`);
     } else {
@@ -338,6 +357,10 @@ function computePatches(country, gemini) {
   }
 
   // ===== MARKET SIZE =====
+  // Rule: market data is annual sales — must be CONFIRMED ACTUAL year (currentYear - 1 or earlier)
+  // Forecasts and current-year H1 numbers are rejected to avoid contamination
+  const CURRENT_YEAR = new Date().getFullYear();
+  const MAX_MARKET_YEAR = CURRENT_YEAR - 1; // e.g., in 2026, latest valid = 2025
   if (market && typeof market === 'object' && market.value_thousands != null) {
     const url = market.source_url;
     const tier = getSourceTier(url);
@@ -358,6 +381,8 @@ function computePatches(country, gemini) {
       decisions.push(`market: SKIP — value out of bounds (${newVal}k)`);
     } else if (!newYear) {
       decisions.push(`market: SKIP — no year tag`);
+    } else if (newYear > MAX_MARKET_YEAR) {
+      decisions.push(`market: SKIP — year ${newYear} > max allowed ${MAX_MARKET_YEAR} (likely forecast or H1 data)`);
     } else if (!passesTier(tier, confidence, isFirstWrite, change)) {
       decisions.push(`market: SKIP — tier ${tier} rules failed (conf=${confidence}, change=${(change*100).toFixed(0)}%)`);
     } else if (newYear < curYear && !isFirstWrite) {
