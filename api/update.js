@@ -268,12 +268,41 @@ module.exports = async function handler(req, res) {
           }
         } catch (e) { results.mfg_feed_errors = (results.mfg_feed_errors || 0) + 1; }
       }
+
+      // Cooling Post (UK industry source) — high-quality manufacturer news, not rate-limited
+      // Reliable backup when Google News throttles Vercel IP
+      try {
+        const cpRes = await fetch('https://www.coolingpost.com/feed/');
+        const cpText = await cpRes.text();
+        // WordPress RSS uses dc:creator instead of <source>; parse with simpler regex
+        const cpRegex = /<item>[\s\S]*?<title>([\s\S]*?)<\/title>[\s\S]*?<link>([\s\S]*?)<\/link>[\s\S]*?<pubDate>([\s\S]*?)<\/pubDate>[\s\S]*?<\/item>/g;
+        let cpMatch;
+        let cpAdded = 0;
+        while ((cpMatch = cpRegex.exec(cpText)) !== null && cpAdded < 10) {
+          const pubDate = new Date(cpMatch[3].trim());
+          const daysDiff = (today - pubDate) / (1000 * 60 * 60 * 24);
+          if (daysDiff <= 60) {
+            const title = cpMatch[1].trim().replace(/<!\[CDATA\[|\]\]>/g, '');
+            if (!mfgArticles.some(a => a.title === title)) {
+              mfgArticles.push({
+                title,
+                url: cpMatch[2].trim(),
+                date: pubDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
+                source: 'Cooling Post'
+              });
+              cpAdded++;
+            }
+          }
+        }
+        results.cooling_post_added = cpAdded;
+      } catch (e) { results.errors.push(`Cooling Post: ${e.message}`); }
+
       results.mfg_articles_fetched = mfgArticles.length;
       if (mfgArticles.length > 0) {
         const mfgList = mfgArticles.map((a, i) => `${i+1}. "${a.title}" (${a.source}, ${a.date})`).join('\n');
         const mfgCompletion = await groqChat(groq, [
-            { role: 'system', content: 'You analyze news about heat pump manufacturers. Return JSON only.' },
-            { role: 'user', content: `News articles about heat pump manufacturers:\n\n${mfgList}\n\nFor each article about a SPECIFIC manufacturer (new model, product launch, partnership, acquisition, factory, financial results), create a summary.\n\nFor each item, identify the MANUFACTURER NAME (e.g., "Bosch", "Daikin", "Vaillant").\n\nIMPORTANT: If multiple articles are about the same event from different outlets, merge into ONE summary.\n\nReturn: {"items": [{"title": "ManufacturerName: headline max 80 chars", "description": "2-3 sentences", "impact": "critical|medium|info", "manufacturer": "ManufacturerName", "original_index": number}]}\n\nSkip articles not about a specific manufacturer. If none: {"items": []}` }
+            { role: 'system', content: 'You curate PRODUCT-focused news about heat pump manufacturers. Return JSON only.' },
+            { role: 'user', content: `News articles potentially about heat pump manufacturers:\n\n${mfgList}\n\n=== ACCEPT (must be about a SPECIFIC named brand) ===\n• New heat pump model / product launch (e.g., "LG launches Therma V R290")\n• Refrigerant or technology release (R290, R32, propane, CO2)\n• Factory news (new plant, capacity expansion, layoffs, relocation)\n• M&A / partnerships / acquisitions involving a brand\n• Financial results / sales volumes by brand\n• New B2B distribution or rental fleet from a brand\n\n=== REJECT (do NOT include even if a brand is mentioned) ===\n• Subsidy / grant / funding programs\n• Government policy / regulation / EPBD / tax credit\n• Generic market trend articles ("heat pump sales up in Country X")\n• Energy price news / electricity / gas tariffs\n• Installation tips / consumer guides / buying advice\n\nFor each ACCEPTED article identify the MANUFACTURER NAME (e.g., "Bosch", "Daikin", "Vaillant", "LG", "NIBE").\n\nIMPORTANT: If multiple articles describe the SAME event from different outlets, merge into ONE summary.\n\nReturn: {"items": [{"title": "ManufacturerName: headline max 80 chars", "description": "2-3 sentences explaining the product/business news", "impact": "critical|medium|info", "manufacturer": "ManufacturerName", "original_index": number}]}\n\nIf NO articles match ACCEPT criteria: {"items": []}` }
           ], { temperature: 0.2, max_tokens: 800, response_format: { type: 'json_object' } });
         const mfgContent = mfgCompletion.choices[0]?.message?.content;
         if (mfgContent) {
