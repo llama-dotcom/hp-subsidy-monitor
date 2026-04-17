@@ -29,9 +29,10 @@ a{color:var(--accent);text-decoration:none;}
 .n-me{border-left-color:var(--orange);}
 .n-mt{display:flex;justify-content:space-between;font-size:0.68rem;color:var(--dim);margin-bottom:3px;}
 .n-tt{font-size:0.84rem;font-weight:600;color:var(--text);margin-bottom:2px;}
-.n-ds{font-size:0.76rem;color:var(--muted);line-height:1.5;}
-.n-sr{margin-top:4px;}
-.n-sr a{font-size:0.7rem;color:var(--accent);}
+.n-ds{font-size:0.78rem;color:var(--muted);line-height:1.65;margin-bottom:6px;}
+.n-sr{margin-top:6px;display:flex;align-items:center;gap:8px;}
+.n-sr a{font-size:0.72rem;color:var(--accent);font-weight:500;}
+.n-src-badge{font-size:0.66rem;color:var(--dim);background:rgba(100,116,139,0.1);padding:1px 6px;border-radius:4px;}
 .imp{padding:2px 6px;border-radius:4px;font-size:0.68rem;font-weight:700;text-transform:uppercase;}
 .imp-c{background:rgba(248,113,113,0.12);color:var(--red);}
 .imp-m{background:rgba(251,146,60,0.12);color:var(--orange);}
@@ -166,7 +167,7 @@ async function loadNews(){
         html += `<div class="n-mt"><span>${dateStr}</span><span class="imp ${bc}">${n.impact || 'info'}</span></div>`;
         html += `<div class="n-tt">${displayTitle}</div>`;
         html += `<div class="n-ds">${n.description || ''}</div>`;
-        if (n.source_url) html += `<div class="n-sr"><a href="${n.source_url}" target="_blank">${n.source_name || 'Source'} →</a></div>`;
+        if (n.source_url) html += `<div class="n-sr"><span class="n-src-badge">${n.source_name || 'Source'}</span><a href="${n.source_url}" target="_blank">Read article →</a></div>`;
         html += `</div>`;
       }
       html += `</div>`;
