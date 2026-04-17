@@ -131,8 +131,8 @@ async function loadNews(){
     // Group by manufacturer: prefer _brand (detected), fallback to title prefix "Name: headline"
     const byMfg = {};
     for (const n of news) {
-      let mfg = n._brand || 'Other';
-      if (mfg === 'Other') {
+      let mfg = n._brand || 'Mixed';
+      if (mfg === 'Mixed') {
         const colonIdx = (n.title || '').indexOf(':');
         if (colonIdx > 0 && colonIdx < 30) mfg = n.title.slice(0, colonIdx).trim();
       }
@@ -140,8 +140,12 @@ async function loadNews(){
       byMfg[mfg].push(n);
     }
 
-    // Sort manufacturers by number of articles (most active first)
-    const sorted = Object.entries(byMfg).sort((a, b) => b[1].length - a[1].length);
+    // Sort: most articles first, but Mixed always last
+    const sorted = Object.entries(byMfg).sort((a, b) => {
+      if (a[0] === 'Mixed') return 1;
+      if (b[0] === 'Mixed') return -1;
+      return b[1].length - a[1].length;
+    });
 
     let html = '';
     for (const [mfg, articles] of sorted) {
