@@ -392,13 +392,14 @@ module.exports = async function handler(req, res) {
           a.directUrl = await decodeGoogleNewsUrl(a.url);
           a.text = await fetchArticleText(a.directUrl || a.url);
         }
+        // Drop articles where we couldn't fetch text (paywall, bot-block) — no text = no reliable summary
+        mfgArticles = mfgArticles.filter(a => a.text && a.text.length > 50);
+        results.mfg_paywall_skipped = (results.mfg_articles_fetched || 0) - mfgArticles.length;
+        if (mfgArticles.length === 0) { /* all paywalled, skip Llama */ }
+        else {
         const mfgList = mfgArticles.map((a, i) => {
           let entry = `${i+1}. "${a.title}" (${a.source}, ${a.date})`;
-          if (a.text) {
-            entry += `\n   Article excerpt: ${a.text.slice(0, 500)}`;
-          } else {
-            entry += `\n   [NO ARTICLE TEXT — paywall or unavailable. Write ONLY a short factual restatement of the headline, max 1-2 sentences. Do NOT add analysis, predictions, or strategy comments.]`;
-          }
+          entry += `\n   Article excerpt: ${a.text.slice(0, 500)}`;
           return entry;
         }).join('\n\n');
         const mfgCompletion = await groqChat(groq, [
@@ -443,6 +444,7 @@ module.exports = async function handler(req, res) {
             }
           }
         }
+      } // end else (mfgArticles.length > 0 after paywall filter)
       }
     } catch (e) { results.errors.push(`Manufacturer news: ${e.message}`); }
 
@@ -569,13 +571,13 @@ module.exports = async function handler(req, res) {
           a.text = await fetchArticleText(a.directUrl || a.url);
         }
 
+        // Drop paywall articles — no text = no reliable summary
+        articles = articles.filter(a => a.text && a.text.length > 50);
+        if (articles.length === 0) continue;
+
         const articleList = articles.map((a, i) => {
           let entry = `${i + 1}. "${a.title}" (${a.source}, ${a.date})`;
-          if (a.text) {
-            entry += `\n   Article excerpt: ${a.text.slice(0, 400)}`;
-          } else {
-            entry += `\n   [NO ARTICLE TEXT — paywall or unavailable. Write ONLY a short factual restatement of the headline, max 1-2 sentences. Do NOT add analysis, predictions, or strategy comments.]`;
-          }
+          entry += `\n   Article excerpt: ${a.text.slice(0, 400)}`;
           return entry;
         }).join('\n\n');
 
