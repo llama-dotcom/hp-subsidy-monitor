@@ -394,7 +394,11 @@ module.exports = async function handler(req, res) {
         }
         const mfgList = mfgArticles.map((a, i) => {
           let entry = `${i+1}. "${a.title}" (${a.source}, ${a.date})`;
-          if (a.text) entry += `\n   Article excerpt: ${a.text.slice(0, 500)}`;
+          if (a.text) {
+            entry += `\n   Article excerpt: ${a.text.slice(0, 500)}`;
+          } else {
+            entry += `\n   [NO ARTICLE TEXT — paywall or unavailable. Write ONLY a short factual restatement of the headline, max 1-2 sentences. Do NOT add analysis, predictions, or strategy comments.]`;
+          }
           return entry;
         }).join('\n\n');
         const mfgCompletion = await groqChat(groq, [
@@ -567,7 +571,11 @@ module.exports = async function handler(req, res) {
 
         const articleList = articles.map((a, i) => {
           let entry = `${i + 1}. "${a.title}" (${a.source}, ${a.date})`;
-          if (a.text) entry += `\n   Article excerpt: ${a.text.slice(0, 400)}`;
+          if (a.text) {
+            entry += `\n   Article excerpt: ${a.text.slice(0, 400)}`;
+          } else {
+            entry += `\n   [NO ARTICLE TEXT — paywall or unavailable. Write ONLY a short factual restatement of the headline, max 1-2 sentences. Do NOT add analysis, predictions, or strategy comments.]`;
+          }
           return entry;
         }).join('\n\n');
 
