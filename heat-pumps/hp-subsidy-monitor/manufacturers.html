@@ -169,7 +169,9 @@ async function loadNews(){
         }
         html += `<div class="gc n-card ${ic}">`;
         // Format created_at as dd.mm.yyyy (more precise than month-only n.date)
-        const dt = n.created_at ? new Date(n.created_at) : null;
+        // Use date field (ISO pubDate from RSS) if available, fallback to created_at
+        const rawDate = n.date && n.date.includes('T') ? n.date : n.created_at;
+        const dt = rawDate ? new Date(rawDate) : null;
         const dateStr = dt ? `${String(dt.getDate()).padStart(2,'0')}.${String(dt.getMonth()+1).padStart(2,'0')}.${dt.getFullYear()}` : (n.date||'');
         html += `<div class="n-mt"><span>${dateStr}</span><span class="imp ${bc}">${n.impact || 'info'}</span></div>`;
         html += `<div class="n-tt">${displayTitle}</div>`;
