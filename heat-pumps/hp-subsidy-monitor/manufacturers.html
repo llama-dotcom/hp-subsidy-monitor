@@ -141,11 +141,27 @@ async function loadNews(){
     }
 
     // Sort: most articles first, but Mixed always last
+    // Priority brands (our main manufacturers), then others, Mixed last
+    const BRAND_PRIORITY = ['Daikin','Bosch','Vaillant','Viessmann','NIBE','Stiebel Eltron',
+      'Mitsubishi','Panasonic','LG','Samsung','Wolf','Buderus','Atlantic','Ariston'];
     const sorted = Object.entries(byMfg).sort((a, b) => {
       if (a[0] === 'Mixed') return 1;
       if (b[0] === 'Mixed') return -1;
+      const pa = BRAND_PRIORITY.indexOf(a[0]);
+      const pb = BRAND_PRIORITY.indexOf(b[0]);
+      const ra = pa >= 0 ? pa : 100;
+      const rb = pb >= 0 ? pb : 100;
+      if (ra !== rb) return ra - rb;
       return b[1].length - a[1].length;
     });
+    // Sort articles within each brand by date (newest first)
+    for (const [, articles] of sorted) {
+      articles.sort((a, b) => {
+        const da = a.date && a.date.includes('T') ? new Date(a.date) : new Date(a.created_at || 0);
+        const db = b.date && b.date.includes('T') ? new Date(b.date) : new Date(b.created_at || 0);
+        return db - da;
+      });
+    }
 
     let html = '';
     for (const [mfg, articles] of sorted) {
