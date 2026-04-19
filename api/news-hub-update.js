@@ -9,7 +9,7 @@
 
 const Groq = require('groq-sdk');
 
-module.exports = async function handler(req, res) {
+const handler = async function (req, res) {
   const startTime = Date.now();
   const results = { total: 0, by_section: {}, errors: [] };
 
@@ -249,3 +249,6 @@ Only select truly relevant articles. Quality over quantity. Both title_ru and su
     return res.status(500).json({ error: err.message, ...results });
   }
 };
+
+module.exports = handler;
+module.exports.config = { maxDuration: 60 };
