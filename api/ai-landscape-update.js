@@ -223,32 +223,82 @@ Reply with JSON: {"pricing_updates": [], "user_updates": [], "description_update
         }
       } catch (e) { results.errors.push(`weekly systems: ${e.message}`); }
 
-      // 3b. New events discovery
+      // 3b. New events discovery via Google News RSS + Groq extraction
       try {
-        const eventsPrompt = `You are an AI events researcher. Today is ${todayISO}.
+        // Step 1: Fetch event announcements from Google News RSS (no year hardcoded)
+        const eventQueries = [
+          { q: 'AI conference Germany summit Konferenz', hl: 'de', gl: 'DE', ceid: 'DE:de' },
+          { q: 'KI Konferenz Deutschland Messe', hl: 'de', gl: 'DE', ceid: 'DE:de' },
+          { q: 'AI summit Europe conference expo', hl: 'en', gl: 'US', ceid: 'US:en' },
+          { q: 'AI conference Berlin Munich Hamburg Frankfurt', hl: 'en', gl: 'DE', ceid: 'DE:en' },
+          { q: 'machine learning conference NeurIPS ICML', hl: 'en', gl: 'US', ceid: 'US:en' },
+          { q: 'artificial intelligence expo summit London Paris', hl: 'en', gl: 'GB', ceid: 'GB:en' },
+          { q: 'AI startup event tech conference Europe', hl: 'en', gl: 'US', ceid: 'US:en' },
+        ];
 
-List upcoming AI conferences, summits, and expos happening in the next 12 months (${todayISO} to ${new Date(Date.now() + 365 * 86400000).toISOString().slice(0, 10)}).
-
-Focus on:
-1. Germany events (highest priority)
-2. European events
-3. Major global AI events (NeurIPS, ICML, Google I/O, etc.)
-
-For each event return a JSON object:
-{"id": "slug-${year}", "name": "Event Name", "date_start": "YYYY-MM-DD", "date_end": "YYYY-MM-DD", "location_city": "City", "location_country": "Country", "region": "germany|europe|world", "type": "conference|expo|summit|workshop", "description": "1-2 sentences", "url": "https://...", "estimated_attendees": "N+" or null, "highlight": true/false}
-
-Reply with JSON: {"events": [...], "notes": "summary"}
-Only include events you are confident about dates. If unsure of exact date, skip.`;
-
-        const eventsData = await askGroq(eventsPrompt, 4000);
-        const newEvents = (eventsData.events || []).filter(e => e.id && e.name && e.date_start);
-
-        if (newEvents.length > 0) {
-          for (const e of newEvents) e.updated_at = new Date().toISOString();
-          await upsert('ai_events', newEvents);
-          results.events_added = newEvents.length;
+        const eventHeadlines = [];
+        for (const eq of eventQueries) {
+          try {
+            const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(eq.q)}&hl=${eq.hl}&gl=${eq.gl}&ceid=${eq.ceid}`;
+            const r = await fetch(rssUrl, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+            if (!r.ok) continue;
+            const xml = await r.text();
+            const items = xml.match(/<item>[\s\S]*?<\/item>/g) || [];
+            for (const item of items.slice(0, 4)) {
+              const title = ((item.match(/<title>(.*?)<\/title>/) || [])[1] || '')
+                .replace(/<!\[CDATA\[(.*?)\]\]>/, '$1').replace(/&amp;/g, '&').replace(/&#39;/g, "'").trim();
+              const pubDate = (item.match(/<pubDate>(.*?)<\/pubDate>/) || [])[1] || '';
+              // Only recent articles (last 30 days)
+              if (pubDate && (Date.now() - new Date(pubDate).getTime()) > 30 * 86400000) continue;
+              if (title) eventHeadlines.push(title);
+            }
+          } catch (e) { /* skip failed RSS */ }
         }
-      } catch (e) { results.errors.push(`weekly events: ${e.message}`); }
+
+        // Step 2: Ask Groq to extract events from headlines
+        if (eventHeadlines.length > 0) {
+          const uniqueHeadlines = [...new Set(eventHeadlines)].slice(0, 25);
+
+          const eventsPrompt = `You are an AI events researcher. Today is ${todayISO}.
+
+These are recent news headlines about AI conferences and events:
+${uniqueHeadlines.map((h, i) => `${i}. ${h}`).join('\n')}
+
+From these headlines, extract any upcoming AI conferences, summits, expos, or workshops.
+Also add any major AI events you know about for the next 12 months that are NOT in these headlines.
+
+For each event return a JSON object with:
+- id: slug (lowercase, hyphenated, include year)
+- name: full event name
+- date_start: YYYY-MM-DD (must be in the future, after ${todayISO})
+- date_end: YYYY-MM-DD (or same as date_start if one day)
+- location_city
+- location_country
+- region: "germany" | "europe" | "world"
+- type: "conference" | "expo" | "summit" | "workshop"
+- description: 1-2 sentences
+- url: official website (if known, otherwise null)
+- estimated_attendees: string or null
+- highlight: true for major events (1000+ attendees)
+
+Priority: Germany first, then Europe, then world.
+Only include events with dates you are confident about.
+Skip past events.
+
+Reply with JSON: {"events": [...]}`;
+
+          const eventsData = await askGroq(eventsPrompt, 4000);
+          const newEvents = (eventsData.events || []).filter(e =>
+            e.id && e.name && e.date_start && new Date(e.date_start) > new Date()
+          );
+
+          if (newEvents.length > 0) {
+            for (const e of newEvents) e.updated_at = new Date().toISOString();
+            await upsert('ai_events', newEvents);
+            results.events_added = newEvents.length;
+          }
+        }
+      } catch (e) { results.errors.push(`events discovery: ${e.message}`); }
     }
 
     // ============================================
