@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<link rel="icon" type="image/png" href="favicon.png">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HP Subsidy Monitor — European Heat Pump Subsidy Dashboard</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous" />
@@ -581,7 +581,7 @@ async function loadFromDB(){
     if(dbCountries&&dbCountries.length>0){
       // Map DB format to C format
       C.length=0;
-      dbCountries.forEach(c=>{
+      dbCountries.filter(c=>c.id!=='MFG').forEach(c=>{
         const countrySubs=dbSubsidies.filter(s=>s.country_id===c.id);
         const subsStr=countrySubs.map(s=>s.program_name+(s.max_amount?' (€'+s.max_amount.toLocaleString()+')':'')).join(' · ');
         C.push({
