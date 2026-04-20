@@ -13,8 +13,8 @@ module.exports = async function handler(req, res) {
 
   try {
     const { message } = req.body || {};
-    if (!message || typeof message !== 'string' || message.trim().length < 5) {
-      return res.status(400).json({ error: 'Message too short (min 5 chars)' });
+    if (!message || typeof message !== 'string' || message.trim().length < 3) {
+      return res.status(400).json({ error: 'Message too short' });
     }
     if (message.length > 5000) {
       return res.status(400).json({ error: 'Message too long (max 5000 chars)' });
