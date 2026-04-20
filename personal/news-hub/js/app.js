@@ -166,6 +166,35 @@
     loadData();
 
     document.querySelector('.btn-theme')?.addEventListener('click', toggleTheme);
+
+    // Refresh button
+    const refreshBtn = document.getElementById('btn-refresh');
+    if (refreshBtn) {
+      refreshBtn.addEventListener('click', async () => {
+        refreshBtn.disabled = true;
+        refreshBtn.classList.add('loading');
+        refreshBtn.querySelector('.btn-refresh__text').textContent = 'Обновляю...';
+
+        try {
+          const r = await fetch('/api/news-hub-update');
+          const data = await r.json();
+          if (data.ok) {
+            refreshBtn.querySelector('.btn-refresh__text').textContent = `Готово! +${data.total} новостей`;
+            await loadData();
+          } else {
+            refreshBtn.querySelector('.btn-refresh__text').textContent = 'Ошибка';
+          }
+        } catch (e) {
+          refreshBtn.querySelector('.btn-refresh__text').textContent = 'Ошибка сети';
+        }
+
+        refreshBtn.classList.remove('loading');
+        setTimeout(() => {
+          refreshBtn.disabled = false;
+          refreshBtn.querySelector('.btn-refresh__text').textContent = 'Обновить';
+        }, 5000);
+      });
+    }
   }
 
   if (document.readyState === 'loading') {
